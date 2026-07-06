@@ -9,6 +9,9 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Changed
 
+- About section migrated to package-tools 2.1's fluent
+  `AboutSectionDefinition` (floor `^2.1`): the contract is a scalar field,
+  the document count a per-field lazy closure.
 - Provider migrated to the laranail/package-tools 2.0 declarative surface
   (floor `^2.0`): event listeners, middleware aliases, the consent-record
   policy, the morph map, scheduled commands, blade/livewire components,

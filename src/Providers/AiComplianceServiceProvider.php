@@ -69,6 +69,7 @@ use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
 use Simtabi\Laranail\Package\Tools\Enums\Cadence;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
+use Simtabi\Laranail\Package\Tools\Support\Definitions\AboutSectionDefinition;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\AutoSeederDefinition;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\ScheduledCommandDefinition;
 
@@ -107,12 +108,15 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 ReportCommand::class,
                 NotifyReconsentCommand::class,
             ])
-            ->hasAboutSection('AI Compliance', fn (): array => [
-                'Contract' => (string) BootPayload::CONTRACT,
-                'Policy documents (default locale)' => (string) count(
-                    $this->app->make(PolicyFileLoader::class)->all($this->defaultLocale()),
-                ),
-            ])
+            ->hasAboutSection(
+                AboutSectionDefinition::make('AI Compliance')
+                    // the contract is a constant; the document count stays a
+                    // per-field lazy closure, resolved only when about runs
+                    ->field('Contract', (string) BootPayload::CONTRACT)
+                    ->field('Policy documents (default locale)', fn (): string => (string) count(
+                        $this->app->make(PolicyFileLoader::class)->all($this->defaultLocale()),
+                    )),
+            )
             ->registerEventListeners([
                 PolicyPublished::class => FlushCompiledPolicyCache::class,
                 PoliciesSynced::class => FlushCompiledPolicyCache::class,
