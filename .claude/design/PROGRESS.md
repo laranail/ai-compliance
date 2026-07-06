@@ -16,7 +16,7 @@ recording the exact failing state and next step.
 | M3 — consent core | done | 2026-07-05 |
 | M4 — Blade + Livewire | done | 2026-07-05 |
 | M5 — JS core + React + Vue | done | 2026-07-05 |
-| M6 — checklist + checks engine | not started | |
+| M6 — checklist + checks engine | done | 2026-07-06 |
 | M7 — activity log + provider enforcement | not started | |
 | M8 — Filament plugin | not started | |
 | M9 — exports, reports, re-consent notifications | not started | |
@@ -218,6 +218,41 @@ Evidence (run 2026-07-05, PHP 8.5.3 / Node 24.17, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M6 acceptance criteria
+
+- [x] fresh install shows the full checklist at Review — `ChecklistSeederTest`
+      ("seeds the full checklist with everything at review": 42 items, all
+      review; seeder idempotent, never touches status/evidence; exactly the 9
+      documented auto keys)
+- [x] classification flips items to N/A with reason (and back) —
+      `ChecklistSeederTest` classification test + `CheckRunnerTest` "skips
+      items switched off by classification"
+- [x] spec acceptance test 6 (kill logging → item degrades + alert) —
+      `CheckRunnerTest` "degrades the alive check to fail and alerts when the
+      log goes silent": event 30h old → Fail + ActivityLogSilentNotification
+      on-demand to the configured inbox
+- [x] checks write results to items; staleness auto-degrade with
+      ChecklistItemDegraded; host checks via container tag — `CheckRunnerTest`
+- [x] audit command exits non-zero while failing, zero when passing —
+      `AuditCommandTest`; daily schedule registered (config-gated)
+- [x] dashboard tiles (FR-1, current-state counts), checklist + evidence
+      (manual only, 409 for auto), classification api, providers CRUD with
+      activity logging, feature kill switches honored by ai.feature
+      middleware AND allows() — `AdminDashboardTest`
+- [x] docs: tools/checks.md, tools/checklist.md,
+      recipes/writing-custom-checks.md, README index, CHANGELOG entry
+
+Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    1 skipped, 146 passed (547 assertions)
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== vitest ==   Tests 23 passed
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -258,6 +293,12 @@ Evidence (run 2026-07-05, PHP 8.5.3 / Node 24.17, prefer-stable):
 | 2026-07-05 | Contract fixture recorded BY the Pest suite (env-gated test), pinned by vitest | One artifact both sides test against; regeneration is a documented one-liner, drift is a red build |
 | 2026-07-05 | JS packages: ESM-only, plain tsc builds, render-function Vue components, npm workspaces + committed package-lock | No bundler/SFC toolchain to maintain; consumers' bundlers handle the rest; npm ci needs the lockfile |
 | 2026-07-05 | npm publish versions stamped from the tag at release time (`0.0.0` in-repo) | Lockstep with the composer tag without version-bump commits; bindings pin the core at the same version during publish |
+| 2026-07-06 | Checklist has 42 items, not 41: the spec's dual-duty "deepfakes and AI-published content" checkbox split in two | One checkbox carried two different applies_when rules; a combined rule would read as AND and wrongly N/A one duty |
+| 2026-07-06 | Feature kill switches default ON when no row exists | The switch is an operations control (emergency off), not a consent control; consent gating stays denied-by-default. Unmigrated databases count as enabled for the same reason |
+| 2026-07-06 | Classification only automates the na<->review transition | ok/fail/manual evidence must never be clobbered by re-answering the intake |
+| 2026-07-06 | Dashboard consent tiles count CURRENT state per (subject, type), not rows | The append-only log is history; the dashboard is now. Anonymized rows carry no current state |
+| 2026-07-06 | Alerting = events always + mail notifications only when AI_COMPLIANCE_ALERT_MAIL is set | Hosts without a compliance inbox still get the events to listen on; no channel guessing |
+| 2026-07-06 | Pennant bridge consults only DEFINED pennant features, wrapped in a throw guard | An undefined pennant feature must never block; pennant-installed-but-unconfigured must never break the gate |
 
 ## Backlog
 

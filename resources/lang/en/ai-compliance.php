@@ -48,4 +48,11 @@ return [
         ],
     ],
 
+    'notifications' => [
+        'check_failed_subject' => 'AI compliance check failed: :item',
+        'log_silent_subject' => 'The AI activity log has gone silent',
+        'log_silent_hint' => 'Every other compliance claim relies on the log receiving events; investigate the logging pipeline.',
+        'due_diligence_subject' => 'AI provider due diligence needs review',
+    ],
+
 ];

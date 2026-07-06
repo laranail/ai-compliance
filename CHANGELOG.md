@@ -9,6 +9,32 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Compliance checklist** (`ai_checklist_items`): forty-plus items extracted
+  from spec sections 4–10, seeded at `review` by `ChecklistSeeder` (wired
+  into `install`); statuses ok/review/fail/na with evidence, verifier, and
+  per-item staleness periods.
+- **Classification intake** (`ai_classification_answers`): the section-2
+  answers switch checklist sections to `na` with the reason recorded, and
+  back; unanswered questions leave items applicable.
+- **Checks engine**: a two-method `Check` contract, nine built-ins
+  (disclosure surfaces, crawler signals, provider registry, vendor due
+  diligence, activity-log alive, accountable owner, consent UI, retention,
+  policy versioning), host checks via the `ai-compliance.checks` container
+  tag, a runner that writes results to the checklist and auto-degrades stale
+  manual verifications, the `laranail::ai-compliance.audit` command
+  (non-zero exit on failures), and a daily schedule.
+- **Alerting**: `CheckFailed` / `ChecklistItemDegraded` events; with
+  `AI_COMPLIANCE_ALERT_MAIL` set, failures notify — log silence and lapsed
+  due diligence with their own notifications.
+- **Provider registry** (`ai_providers`, soft deletes) with admin CRUD and
+  `provider_change` activity logging.
+- **Feature kill switches** (`ai_feature_states`): default-on toggles honored
+  by `AiConsent::allows()`, the new `ai.feature:{feature}` middleware, and a
+  guarded laravel/pennant bridge; toggles fire `FeatureToggled` and log
+  `setting_change`.
+- **Dashboard endpoint** (FR-1): current-state consent tiles split by type,
+  provider and event counts, checklist summary.
+
 - **`@laranail/ai-compliance`** (npm workspace, zero runtime deps): typed
   boot client over the shared contract — `boot` / `granted` / `allows` /
   `set` / `require` / `onChange`, same-origin credentials, automatic CSRF

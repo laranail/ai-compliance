@@ -16,6 +16,7 @@ use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
+use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\ConsentType;
@@ -36,6 +37,7 @@ final readonly class ConsentManager
         private ConfigRepository $config,
         private Dispatcher $events,
         private ActivityRecorder $activity,
+        private FeatureGate $features,
     ) {}
 
     public function grant(Model|Authenticatable|string $subject, string $type, string $source = 'app'): ConsentRecord
@@ -83,9 +85,10 @@ final readonly class ConsentManager
     }
 
     /**
-     * Whether a feature may run for this subject: every consent type the
-     * feature requires (config laranail.ai-compliance.features) must be
-     * granted. Unconfigured features are denied by default.
+     * Whether a feature may run for this subject: the admin kill switch must
+     * be on and every consent type the feature requires (config
+     * laranail.ai-compliance.features) must be granted. Unconfigured
+     * features are denied by default.
      */
     public function allows(Model|Authenticatable|string $subject, string $feature): bool
     {
@@ -93,6 +96,10 @@ final readonly class ConsentManager
         $required = is_array($features) ? ($features[$feature] ?? null) : null;
 
         if (! is_array($required)) {
+            return false;
+        }
+
+        if (! $this->features->enabled($feature)) {
             return false;
         }
 

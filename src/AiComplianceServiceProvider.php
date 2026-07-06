@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
@@ -15,20 +16,36 @@ use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Override;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\ActivityLogAliveCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\ConsentUiReachableCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\CrawlerSignalsCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\DataProtectionContactCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\DisclosureSurfacesCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\PolicyVersioningCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\ProviderRegistryCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\RetentionScheduledCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\VendorDueDiligenceCheck;
+use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
 use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
+use Simtabi\Laranail\AiCompliance\Console\Commands\AuditCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyShowCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
+use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
 use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
 use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
 use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
+use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureConsent;
+use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureFeature;
 use Simtabi\Laranail\AiCompliance\Listeners\FlushCompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Listeners\RecordConsentActivity;
+use Simtabi\Laranail\AiCompliance\Listeners\SendCheckAlerts;
 use Simtabi\Laranail\AiCompliance\Livewire\ConsentPreferences;
 use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
@@ -70,6 +87,7 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
             ->publishDirectory('resources/policies', resource_path('policies/ai-compliance'), 'policies')
             ->hasCommands([
                 InstallCommand::class,
+                AuditCommand::class,
                 PolicyShowCommand::class,
                 PolicySyncCommand::class,
                 PolicyPublishCommand::class,
@@ -100,9 +118,27 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         $this->app->singleton(ConsentTypes::class);
         $this->app->singleton(GuestKeys::class);
         $this->app->singleton(ActivityRecorder::class);
+        $this->app->singleton(FeatureGate::class);
         $this->app->singleton(ConsentManager::class);
+        $this->app->singleton(Classification::class);
         $this->app->singleton(BootPayload::class);
         $this->app->singleton(AiCompliance::class);
+
+        $this->app->singleton(CheckRunner::class, static fn (Application $app): CheckRunner => new CheckRunner(
+            $app,
+            $app->make(Dispatcher::class),
+            [
+                DisclosureSurfacesCheck::class,
+                CrawlerSignalsCheck::class,
+                ProviderRegistryCheck::class,
+                VendorDueDiligenceCheck::class,
+                ActivityLogAliveCheck::class,
+                DataProtectionContactCheck::class,
+                ConsentUiReachableCheck::class,
+                RetentionScheduledCheck::class,
+                PolicyVersioningCheck::class,
+            ],
+        ));
     }
 
     #[Override]
@@ -114,14 +150,33 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         $events->listen(PoliciesSynced::class, FlushCompiledPolicyCache::class);
         $events->listen(ConsentRecorded::class, RecordConsentActivity::class);
         $events->listen(ConsentWithdrawn::class, RecordConsentActivity::class);
+        $events->listen(CheckFailed::class, SendCheckAlerts::class);
 
         $this->app->make(Router::class)->aliasMiddleware('ai.consent', EnsureConsent::class);
+        $this->app->make(Router::class)->aliasMiddleware('ai.feature', EnsureFeature::class);
+
+        $this->registerScheduledChecks();
 
         Gate::policy(ConsentRecord::class, ConsentRecordPolicy::class);
 
         $this->registerMorphMap();
         $this->registerBladeComponents();
         $this->registerLivewireComponents();
+    }
+
+    /**
+     * The automated checks run daily by default; set
+     * laranail.ai-compliance.checks.schedule to null to opt out.
+     */
+    private function registerScheduledChecks(): void
+    {
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $cadence = $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.checks.schedule', 'daily');
+
+            if ($cadence === 'daily') {
+                $schedule->command('laranail::ai-compliance.audit')->daily();
+            }
+        });
     }
 
     private function registerBladeComponents(): void

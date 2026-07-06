@@ -218,4 +218,38 @@ return [
     */
     'features' => [],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Checks and alerting
+    |--------------------------------------------------------------------------
+    |
+    | The automated checks run on this schedule (daily; set null to disable)
+    | and on demand via laranail::ai-compliance.audit or the admin endpoint.
+    | 'alerting.mail' receives check failures; the activity log counts as
+    | silent after 'log_silence_hours' without an event.
+    |
+    */
+    'checks' => [
+        'schedule' => 'daily',
+    ],
+
+    'alerting' => [
+        'mail' => env('AI_COMPLIANCE_ALERT_MAIL'),
+        'log_silence_hours' => 24,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retention
+    |--------------------------------------------------------------------------
+    |
+    | Retention periods in days per store, verified by the retention check.
+    | The pruning jobs arrive with the activity milestone; consent records
+    | are only ever pruned by explicit command, never by schedule.
+    |
+    */
+    'retention' => [
+        'activity_events' => null,
+    ],
+
 ];

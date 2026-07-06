@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
+use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
 
 /**
  * One-shot setup: publish the config and policy files, run the migrations,
- * import the policies as published version 1.0, and report which
- * placeholders the operator still needs to fill.
+ * import the policies as published version 1.0, seed the consent types and
+ * the full checklist (everything at review), and report which placeholders
+ * the operator still needs to fill.
  */
 final class InstallCommand extends Command
 {
@@ -20,7 +23,7 @@ final class InstallCommand extends Command
 
     protected $description = 'Install ai-compliance: publish, migrate, and import the policy documents';
 
-    public function handle(PolicySync $sync, PolicyRepository $policies): int
+    public function handle(PolicySync $sync, PolicyRepository $policies, ConsentTypes $types): int
     {
         if (! $this->option('no-publish')) {
             $this->call('vendor:publish', ['--tag' => 'laranail::ai-compliance-config']);
@@ -28,6 +31,10 @@ final class InstallCommand extends Command
         }
 
         $this->call('migrate');
+
+        $types->seedFromConfig();
+        $this->laravel->make(ChecklistSeeder::class)->run();
+        $this->components->info('consent types and the compliance checklist are seeded (checklist starts at review)');
 
         $result = $sync->sync();
         $this->components->info(sprintf(
