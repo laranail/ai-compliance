@@ -406,14 +406,30 @@ agent + fixes applied in the pre-release commit:
   spec files at root (public domain reference, export-ignored), README
   doc-index em dashes (org-mandated format)
 
-Release-time actions (need the owner's accounts): create laranail/
-ai-compliance on GitHub + push + confirm CI green; repo settings
-(description/homepage/topics/Issues); enable secret scanning + push
-protection, Dependabot alerts, code scanning; branch ruleset on main;
-confirm the @laranail npm org + configure OIDC trusted publishing for the
-three packages + create the protected `npm` environment; submit to
-Packagist; verify docsmith discovery; then move [Unreleased] to v0.1.0 and
-tag.
+GitHub publication (2026-07-06): laranail/ai-compliance created public,
+15-commit history pushed, all five workflows green on main. Settings
+applied via gh: description + homepage, topics (oss/php/laravel/ai/
+compliance/consent/gdpr/eu-ai-act), issues + discussions on, secret
+scanning + push protection, dependabot alerts + security fixes, private
+vulnerability reporting, `npm` deployment environment, `protect-main`
+ruleset (deletion/non-fast-forward/4 required checks, admin bypass for
+direct pushes). Two ci-only failures surfaced and fixed on the way:
+
+- macos case-insensitivity had let git track the psr-4 fixtures dir as
+  lowercase `tests/fixtures/` since m1; linux ci could not autoload the
+  panel provider. renamed in git + references updated
+- the testbench skeleton ships a prebuilt bootstrap/cache/packages.php
+  and laravel only builds the manifest when missing, so package discovery
+  never saw filament's providers on a fresh install. fixed with the
+  canonical `post-autoload-dump: testbench package:discover` hook (the
+  same root cause as the local stale-manifest incident in m8)
+
+Release-time actions still open (need the owner's accounts): confirm the
+@laranail npm org exists + configure OIDC trusted publishing for the three
+packages (repo laranail/ai-compliance, workflow release.yml, environment
+npm); submit the package to Packagist + confirm the auto-update hook;
+verify docsmith discovery picks up docs/; review the day-one dependabot
+PRs (vitest 3->4 is a major); then move [Unreleased] to v0.1.0 and tag.
 
 ## Decision log
 
