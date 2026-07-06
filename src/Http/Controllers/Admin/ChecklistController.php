@@ -23,7 +23,7 @@ final class ChecklistController
     public function index(): JsonResponse
     {
         $items = ChecklistItem::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->orderBy('id')
             ->get()
             ->map(fn (ChecklistItem $item): array => [
@@ -51,7 +51,7 @@ final class ChecklistController
         ]);
 
         $item = ChecklistItem::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('key', $key)
             ->first();
 

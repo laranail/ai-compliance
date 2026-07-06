@@ -7,13 +7,14 @@ namespace Simtabi\Laranail\AiCompliance\Models;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Override;
+use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
  * One answer to the project intake classification (spec section 2). The
  * answers switch checklist sections on or off and are themselves evidence.
  *
  * @property int $id
- * @property string|null $tenant_id
+ * @property string $tenant_id
  * @property string $question_key
  * @property string $answer
  * @property string $answered_by
@@ -21,6 +22,8 @@ use Override;
  */
 class ClassificationAnswer extends Model
 {
+    use BelongsToTenant;
+
     protected $guarded = [];
 
     public function __construct(array $attributes = [])

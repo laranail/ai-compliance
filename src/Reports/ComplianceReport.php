@@ -35,7 +35,7 @@ final readonly class ComplianceReport
     public function data(): array
     {
         $checklist = ChecklistItem::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->orderBy('id')
             ->get()
             ->groupBy('section');
@@ -43,7 +43,7 @@ final readonly class ComplianceReport
         $providers = Provider::query()->orderBy('name')->get();
 
         $documents = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->with('publishedVersion')
             ->orderBy('slug')
             ->get();

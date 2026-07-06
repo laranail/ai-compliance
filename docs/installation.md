@@ -33,6 +33,17 @@ Config resolves under `config('laranail.ai-compliance.*')`. At minimum, fill the
 `placeholders` block (company, product, contact email); see
 [Configuration](configuration.md).
 
+## Seeding
+
+The package's idempotent seeders (the checklist items and the initial
+policy import) also run with your app's `php artisan db:seed`, via the
+package-tools seeder registry. Set `seeders.auto => false` in the config to
+opt out. Demo data never auto-runs:
+
+```bash
+php artisan db:seed --class="Simtabi\\Laranail\\AiCompliance\\Database\\Seeders\\DemoSeeder"
+```
+
 ## Publish the policy files
 
 The fourteen shipped policy documents are markdown files you are meant to edit:

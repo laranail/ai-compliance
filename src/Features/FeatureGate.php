@@ -31,7 +31,7 @@ final readonly class FeatureGate
         try {
             /** @var FeatureState|null $state */
             $state = FeatureState::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->where('feature', $feature)
                 ->first();
         } catch (QueryException) {
@@ -48,7 +48,7 @@ final readonly class FeatureGate
     public function toggle(string $feature, bool $enabled, ?string $toggledBy = null): FeatureState
     {
         $existing = FeatureState::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('feature', $feature)
             ->first();
 
@@ -63,7 +63,7 @@ final readonly class FeatureGate
             $state = $existing;
         } else {
             $state = FeatureState::query()->create([
-                'tenant_id' => null,
+                'tenant_id' => '',
                 'feature' => $feature,
                 ...$attributes,
             ]);
