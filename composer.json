@@ -94,7 +94,8 @@
                 "Simtabi\\Laranail\\AiCompliance\\Providers\\AiComplianceServiceProvider"
             ],
             "aliases": {
-                "AiCompliance": "Simtabi\\Laranail\\AiCompliance\\Facades\\AiCompliance"
+                "AiCompliance": "Simtabi\\Laranail\\AiCompliance\\Facades\\AiCompliance",
+                "AiConsent": "Simtabi\\Laranail\\AiCompliance\\Facades\\AiConsent"
             }
         },
         "branch-alias": {

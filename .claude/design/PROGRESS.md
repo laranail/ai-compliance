@@ -452,6 +452,32 @@ PRs (vitest 3->4 is a major); then move [Unreleased] to v0.1.0 and tag.
   hook fires on any Seeder resolution, which the suite now exercises for
   real (PackageSeedersTest).
 
+## Spec-conformance audit (2026-07-06)
+
+Four parallel audits verified both spec documents feature-by-feature
+against the implementation (checklist sections 1-10, tool spec section 11
+FR-1..FR-12 + acceptance tests, package concept section 12, and the policy
+templates document). Result: substantially complete; every gap found was
+closed in the same session:
+
+- privacy.dpia now uses any_of OR-rules (personal data OR consequential
+  decisions), the one genuine correctness bug; Classification supports
+  ['any_of' => [...]] alongside flat AND maps
+- transparency.sector_disclosures and consent.training_data_documentation
+  no longer over-N/A (no sector question exists; deployers owe the vendor
+  summary regardless); governance.system_inventory staleness 12 -> 3 months
+  per its own evidence line
+- acceptable-use + incident-response carry `internal: true` frontmatter and
+  seed deactivated per templates-doc section 9 (never publicly servable)
+- FeatureCommand added (list/enable/disable kill switches from console);
+  AiConsent composer facade alias added alongside AiCompliance;
+  install --demo added; prune auto-scheduled daily when
+  retention.activity_events is configured (FR-9)
+
+With the gaps closed and the remaining scope decisions recorded below, the
+two spec documents were deleted from the repo (content fully realized;
+history keeps them at commit 258196f and earlier).
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -512,7 +538,13 @@ PRs (vitest 3->4 is a major); then move [Unreleased] to v0.1.0 and tag.
 | 2026-07-06 | Report ships print-ready html, no pdf dependency | Browsers and html-to-pdf tools do this better than a bundled dompdf; PLAN's 'pdf via suggest dep' resolved as not needed |
 | 2026-07-06 | notify-reconsent confirms currency per subject via reconsentFor before mailing | The candidate query over superseded versions alone would mail people who already re-granted |
 | 2026-07-06 | Plain Laravel notifications suffice; laranail/notifications not adopted (backlog decision closed) | Alerts fire events regardless of channel; hosts wanting slack/discord/sms listen to CheckFailed etc. and use whatever channel layer they run — no extra dependency for a mail default |
-| 2026-07-06 | DemoSeeder ships per spec 12.3 (backlog closed): 8 consent rows over two moments, 2 granted / 6 denied, zero providers | Local-dev reproduction of the reference dashboard; never run by install |
+| 2026-07-06 | DemoSeeder ships per spec 12.3 (backlog closed): 8 consent rows over two moments, 2 granted / 6 denied, zero providers | Local-dev reproduction of the reference dashboard; on demand or via install --demo |
+| 2026-07-06 | FR-11 multi-tenancy ships schema-only in 1.0: tenant_id on every table + BelongsToTenant scoping, no tenant resolution api | The isolation layer is the hard-to-retrofit part; a resolver (config + context setter) is additive and lands with the first real multi-tenant consumer (backlog) |
+| 2026-07-06 | Config-swappable model classes (spec 12.2 'models' key) not implemented | Config-driven table names cover renaming; class swapping has no concrete consumer and constrains internals — revisit on demand (backlog) |
+| 2026-07-06 | FR-12 consent-denial-enforcement alerting stays manual-evidence-driven | The enforcement test is the host's pipeline (the package's own suite proves the flag path); a host-runtime probe would be guesswork. The manual checklist item carries it |
+| 2026-07-06 | FR-3 evidence is a reference string, not a file upload | Evidence artifacts belong in the host's document store; the checklist records the pointer and the verifier |
+| 2026-07-06 | FR-2 disclosure check verifies surface documents resolve, not a rendered-page probe | The package renders the banner itself (FR-8), so document-resolvable == bannerable; probing a host page from inside the host is circular |
+| 2026-07-06 | Spec acceptance test 4 (marking survives download) is host-side manual | Marking happens in the host's media pipeline; realized as transparency.machine_readable_marking with CI-check evidence guidance |
 
 ## Backlog
 

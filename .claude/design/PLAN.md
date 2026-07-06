@@ -10,7 +10,7 @@ rector` run performed in that session and pasted into PROGRESS.md.
 
 Scope: full repo scaffold on the laranail toolchain; the file-based pipeline end to
 end (loader → frontmatter → shortcodes → placeholders → cache → boot/policy
-endpoints); the 14 policy md files (en) authored from `ai-policy-templates.md`; all
+endpoints); the 14 policy md files (en) authored from `ai-policy-templates.md` (spec file deleted 2026-07-06 after the conformance audit; see git history); all
 enums; CI; docs. No database.
 
 Ships: composer.json (Packagist deps only — no path repos, see PROGRESS decision

@@ -6,14 +6,14 @@ namespace Simtabi\Laranail\AiCompliance\Checklist;
 
 /**
  * the compliance checklist, extracted from sections 4-10 of the spec
- * (ai-compliance-checklist.md). every checkbox item becomes one definition;
+ * every checkbox item of the compliance spec becomes one definition;
  * the seeder writes them, the check runner keeps the auto ones honest, and
  * classification answers switch sections on or off via applies_when.
  */
 final class ChecklistDefinitions
 {
     /**
-     * @return list<array{key: string, section: string, label: string, description: string, evidence_type: string, staleness_months: int, applies_when: array<string, string>|null}>
+     * @return list<array{key: string, section: string, label: string, description: string, evidence_type: string, staleness_months: int, applies_when: array<string, string>|array{any_of: list<array<string, string>>}|null}>
      */
     public static function all(): array
     {
@@ -25,7 +25,7 @@ final class ChecklistDefinitions
                 'label' => 'AI system inventory exists and is current',
                 'description' => 'Every AI feature, model, and integration is registered with name, purpose, model/provider, version, role, risk classification, markets, and owner. Evidence: a populated registry reviewed at least quarterly and on every release that adds or changes an AI feature.',
                 'evidence_type' => 'manual',
-                'staleness_months' => 12,
+                'staleness_months' => 3, // the evidence line says reviewed at least quarterly
                 'applies_when' => null,
             ],
             [
@@ -142,10 +142,10 @@ final class ChecklistDefinitions
                 'key' => 'transparency.sector_disclosures',
                 'section' => 'transparency',
                 'label' => 'Sector disclosures',
-                'description' => 'Healthcare and regulated-profession interactions disclose AI involvement, and no AI output implies a human professional license it does not have. Evidence: the sector checklist item switched on by classification, with UI proof.',
+                'description' => 'Healthcare and regulated-profession interactions disclose AI involvement, and no AI output implies a human professional license it does not have. Evidence: UI proof, or the verifier records why no regulated sector applies.',
                 'evidence_type' => 'manual',
                 'staleness_months' => 12,
-                'applies_when' => ['interacts_with_people' => 'yes'],
+                'applies_when' => null, // no sector question exists; the verifier decides applicability
             ],
             [
                 'key' => 'transparency.honest_disclosure',
@@ -201,7 +201,7 @@ final class ChecklistDefinitions
                 'description' => 'Developers of public GenAI systems reaching California publish a training-data summary (AB 2013); EU GPAI providers owe a training-content summary; deployers collect the vendor version instead. Evidence: a published page or the vendor summary filed in the provider registry.',
                 'evidence_type' => 'manual',
                 'staleness_months' => 12,
-                'applies_when' => ['trains_on_collected_data' => 'yes'],
+                'applies_when' => null, // deployers owe the vendor summary even when not training themselves
             ],
             [
                 'key' => 'consent.customer_content_protection',
@@ -230,7 +230,11 @@ final class ChecklistDefinitions
                 'description' => 'A DPIA is performed where AI processing is likely high-risk, such as profiling, large scale, sensitive data, or consequential decisions. Evidence: the DPIA document, reviewed on major model or purpose change.',
                 'evidence_type' => 'manual',
                 'staleness_months' => 12,
-                'applies_when' => ['processes_personal_data' => 'yes'],
+                // required when personal data OR consequential decisions
+                'applies_when' => ['any_of' => [
+                    ['processes_personal_data' => 'yes'],
+                    ['consequential_decisions' => 'yes'],
+                ]],
             ],
             [
                 'key' => 'privacy.data_minimization',

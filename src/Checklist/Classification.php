@@ -10,9 +10,12 @@ use Simtabi\Laranail\AiCompliance\Models\ClassificationAnswer;
 
 /**
  * The project intake (spec section 2): answers are stored as evidence and
- * switch checklist sections on or off. An item is switched off (na) when any
- * of its applies_when rules has an answer that mismatches; unanswered
- * questions leave the item applicable — the conservative default.
+ * switch checklist sections on or off. A flat applies_when map requires
+ * every rule: the item is switched off (na) when any rule has an answer
+ * that mismatches. An ['any_of' => [rule-set, ...]] map keeps the item
+ * applicable while at least one alternative holds and switches it off only
+ * when every alternative is answered and defeated. Unanswered questions
+ * leave the item applicable — the conservative default.
  */
 final class Classification
 {
@@ -100,6 +103,10 @@ final class Classification
      */
     private function switchedOffReason(array $rules, array $answers): ?string
     {
+        if (isset($rules['any_of']) && is_array($rules['any_of'])) {
+            return $this->allAlternativesDefeated($rules['any_of'], $answers);
+        }
+
         foreach ($rules as $questionKey => $expected) {
             $answer = $answers[$questionKey] ?? null;
 
@@ -109,5 +116,40 @@ final class Classification
         }
 
         return null;
+    }
+
+    /**
+     * @param  list<array<string, string>>  $alternatives
+     * @param  array<string, string>  $answers
+     */
+    private function allAlternativesDefeated(array $alternatives, array $answers): ?string
+    {
+        $reasons = [];
+
+        foreach ($alternatives as $alternative) {
+            $reason = null;
+
+            foreach ($alternative as $questionKey => $expected) {
+                $answer = $answers[$questionKey] ?? null;
+
+                if ($answer !== $expected) {
+                    // an unanswered question cannot defeat an alternative
+                    if ($answer === null) {
+                        return null;
+                    }
+
+                    $reason = sprintf('%s=%s', $questionKey, $answer);
+                    break;
+                }
+            }
+
+            if ($reason === null) {
+                return null; // this alternative holds; the item applies
+            }
+
+            $reasons[] = $reason;
+        }
+
+        return implode(', ', $reasons);
     }
 }

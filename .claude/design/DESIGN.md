@@ -2,7 +2,7 @@
 
 Architecture for `laranail/ai-compliance`. Conventions per
 [CONVENTIONS.md](CONVENTIONS.md); storage/editor/format/i18n decisions per
-[RESEARCH.md](RESEARCH.md); requirements from `ai-compliance-checklist.md` §11–12
+[RESEARCH.md](RESEARCH.md); requirements from `ai-compliance-checklist.md` §11–12 (spec file deleted 2026-07-06 after the conformance audit; see git history)
 (as corrected in commit `00b85f1`) and `ai-policy-templates.md`. Milestone slicing
 in [PLAN.md](PLAN.md).
 

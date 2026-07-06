@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
 use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
 use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
@@ -19,7 +20,8 @@ use Simtabi\Laranail\Package\Tools\Commands\Command;
 final class InstallCommand extends Command
 {
     protected $signature = 'laranail::ai-compliance.install
-                            {--no-publish : skip publishing config and policy files}';
+                            {--no-publish : skip publishing config and policy files}
+                            {--demo : also seed the demo data (local development only)}';
 
     protected $description = 'Install ai-compliance: publish, migrate, and import the policy documents';
 
@@ -35,6 +37,11 @@ final class InstallCommand extends Command
         $types->seedFromConfig();
         $this->laravel->make(ChecklistSeeder::class)->run();
         $this->components->info('consent types and the compliance checklist are seeded (checklist starts at review)');
+
+        if ($this->option('demo')) {
+            $this->laravel->make(DemoSeeder::class)->run();
+            $this->components->warn('demo data seeded (8 consent records; local development only)');
+        }
 
         $result = $sync->sync();
         $this->components->info(sprintf(

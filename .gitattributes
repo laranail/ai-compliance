@@ -20,5 +20,3 @@
 /package-lock.json     export-ignore
 /tsconfig.base.json    export-ignore
 /vitest.config.ts      export-ignore
-/ai-compliance-checklist.md export-ignore
-/ai-policy-templates.md export-ignore

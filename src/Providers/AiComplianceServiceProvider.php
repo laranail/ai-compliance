@@ -34,6 +34,7 @@ use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
 use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Simtabi\Laranail\AiCompliance\Console\Commands\AuditCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\ExportCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\FeatureCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\NotifyReconsentCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
@@ -107,6 +108,7 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 PruneCommand::class,
                 VerifyChainCommand::class,
                 ExportCommand::class,
+                FeatureCommand::class,
                 ReportCommand::class,
                 NotifyReconsentCommand::class,
             ])
@@ -220,6 +222,10 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
 
             if ($cadence === 'daily') {
                 $schedule->command('laranail::ai-compliance.audit')->daily();
+
+                if ($this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.retention.activity_events') !== null) {
+                    $schedule->command('laranail::ai-compliance.prune')->daily();
+                }
             }
         });
     }

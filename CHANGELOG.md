@@ -9,6 +9,18 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Changed
 
+- Spec-conformance audit fixes: `privacy.dpia` applies when personal data
+  OR consequential decisions is yes (classification rules gained an
+  `any_of` form); `transparency.sector_disclosures` and
+  `consent.training_data_documentation` no longer switch off too eagerly;
+  `governance.system_inventory` staleness matches its quarterly evidence
+  line; the two internal policies (`acceptable-use`, `incident-response`)
+  seed deactivated via `internal: true` frontmatter and never serve
+  publicly.
+- Added the `laranail::ai-compliance.feature` command (list/toggle kill
+  switches), the `AiConsent` facade alias, `install --demo`, and a daily
+  prune schedule when activity retention is configured.
+
 - The ten table migrations merged into one dependency-ordered migration.
   Review fixes shipped with the merge: `tenant_id` is now NOT NULL with an
   empty-string single-tenant sentinel, because composite unique indexes

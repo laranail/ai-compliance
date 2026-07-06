@@ -125,6 +125,10 @@ final class PolicySync
             return $document;
         }
 
+        // internal documents (frontmatter `internal: true`) seed deactivated:
+        // they exist for versioning and the report, never on a public surface
+        $meta = $this->compiler->compile($file)->meta;
+
         return PolicyDocument::query()->create([
             'tenant_id' => '',
             'slug' => $file->slug,
@@ -133,7 +137,7 @@ final class PolicySync
             'consent_type_slug' => Str::startsWith($file->slug, 'consent.') ? Str::after($file->slug, 'consent.') : null,
             'source_path' => $file->relativePath,
             'default_locale' => $defaultLocale,
-            'active' => true,
+            'active' => ($meta['internal'] ?? false) !== true,
         ]);
     }
 
