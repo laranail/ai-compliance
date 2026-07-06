@@ -8,3 +8,16 @@ parameters:
     excludePaths:
         - vendor
     treatPhpDocTypesAsCertain: false
+    # the livewire view-string ignore below only fires on a cold skeleton
+    # (ci); locally a warm view cache makes the namespace resolvable and the
+    # error disappears, so an unmatched ignore must not itself fail the run
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # larastan validates view-string literals against a skeleton app that
+        # never boots this package's provider, so the ai-compliance:: view
+        # namespace is invisible to it. every one of these views is rendered
+        # by the pest suite, which is the real existence check.
+        -
+            identifier: argument.type
+            message: '#Parameter \#1 \$view of function view expects view-string#'
+            path: src/Livewire/*
