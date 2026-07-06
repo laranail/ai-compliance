@@ -32,11 +32,13 @@ Full documentation lives at
 
 - [Policy pipeline](docs/tools/policy-pipeline.md) — files, frontmatter, shortcodes, placeholders, fallback, cache
 - [Policy versioning](docs/tools/policy-versioning.md) — documents, versions, draft/publish, sync, staleness, the editing api
+- [Consent](docs/tools/consent.md) — the AiConsent facade, append-only records, guests, re-consent
 
 ### Recipes
 
 - [Customizing policies](docs/recipes/customizing-policies.md) — publish and edit the shipped markdown
 - [Translating policies](docs/recipes/translating-policies.md) — add locales and track re-translation work
+- [Gating features by consent](docs/recipes/gating-features-by-consent.md) — allows() and the ai.consent middleware
 
 ## Contributing & security
 

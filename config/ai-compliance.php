@@ -174,11 +174,34 @@ return [
     | Subjects
     |--------------------------------------------------------------------------
     |
-    | 'user_model' defaults to the app's auth provider model. 'morph_map'
-    | adds host-defined aliases to the enforced morph map.
+    | 'user_model' defaults to the app's auth provider model; the package
+    | registers it under the short 'user' morph alias so stored *_type
+    | columns stay stable if the host renames classes. 'morph_map' adds
+    | host-defined aliases. 'guest' controls the pseudonymous cookie issued
+    | to unauthenticated subjects when they record a consent.
     |
     */
     'user_model' => null,
     'morph_map' => [],
+
+    'guest' => [
+        'cookie' => 'laranail_ai_compliance_guest',
+        'lifetime_days' => 365,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Features
+    |--------------------------------------------------------------------------
+    |
+    | Feature gating for AiConsent::allows(): each feature lists the consent
+    | types that must all be granted before it may run for a subject.
+    | Unlisted features are denied by default. Admin feature toggles and the
+    | pennant bridge arrive with the checklist milestone.
+    |
+    | 'smart_summaries' => ['ai_training'],
+    |
+    */
+    'features' => [],
 
 ];

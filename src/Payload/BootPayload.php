@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Payload;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Database\Eloquent\Model;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
@@ -27,6 +30,7 @@ final readonly class BootPayload
         private PolicyRepository $policies,
         private PolicyCompiler $compiler,
         private PlaceholderRegistry $placeholders,
+        private ConsentManager $consent,
         private ConfigRepository $config,
         private Translator $translator,
         private UrlGenerator $url,
@@ -35,9 +39,13 @@ final readonly class BootPayload
     /**
      * @return array<string, mixed>
      */
-    public function toArray(?string $locale = null): array
-    {
+    public function toArray(
+        ?string $locale = null,
+        Model|Authenticatable|null $user = null,
+        ?string $guestKey = null,
+    ): array {
         $locale ??= $this->appLocale();
+        $subject = $user ?? $guestKey;
 
         return [
             'contract' => self::CONTRACT,
@@ -45,14 +53,14 @@ final readonly class BootPayload
             'fallback_locale' => $this->fallbackLocale(),
             'consent' => [
                 'types' => $this->consentTypes($locale),
-                'state' => $this->defaultState(),
-                'reconsent' => [],
+                'state' => $subject !== null ? $this->consent->stateFor($subject) : $this->defaultState(),
+                'reconsent' => $subject !== null ? $this->consent->reconsentFor($subject) : [],
             ],
             'disclosures' => $this->disclosures($locale),
             'documents' => $this->documents($locale),
             'strings' => $this->strings($locale),
             'endpoints' => $this->endpoints(),
-            'guest_key' => null,
+            'guest_key' => $guestKey,
         ];
     }
 
@@ -178,6 +186,7 @@ final readonly class BootPayload
         return [
             'boot' => $this->url->route('laranail.ai-compliance.boot'),
             'policy' => $this->url->route('laranail.ai-compliance.policy', ['slug' => '__slug__']),
+            'consents' => $this->url->route('laranail.ai-compliance.consents'),
         ];
     }
 

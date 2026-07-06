@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AiCompliance\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Simtabi\Laranail\AiCompliance\AiComplianceServiceProvider;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
 use Simtabi\Laranail\DatabaseTools\Providers\DatabaseToolsServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
@@ -31,5 +32,8 @@ abstract class TestCase extends OrchestraTestCase
         // admin gate tests exercise 403s directly; the auth middleware would
         // redirect guests to a login route the skeleton does not have
         $app['config']->set('laranail.ai-compliance.admin_routes.middleware', ['web']);
+
+        // the fixture user model gets the short 'user' morph alias
+        $app['config']->set('laranail.ai-compliance.user_model', User::class);
     }
 }

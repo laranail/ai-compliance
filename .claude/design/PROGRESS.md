@@ -13,7 +13,7 @@ recording the exact failing state and next step.
 |---|---|---|
 | M1 — skeleton + read-only policy pipeline | done | 2026-07-05 |
 | M2 — policy versioning + editing API | done | 2026-07-05 |
-| M3 — consent core | not started | |
+| M3 — consent core | done | 2026-07-05 |
 | M4 — Blade + Livewire | not started | |
 | M5 — JS core + React + Vue | not started | |
 | M6 — checklist + checks engine | not started | |
@@ -107,6 +107,45 @@ Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M3 acceptance criteria
+
+- [x] append-only enforced at model + policy layers — `ConsentRecordTest`
+      (update/delete throw LogicException, exactly-one-of subject/guest_key,
+      public_id ULID, short morph alias) + `ConsentRecordPolicy`
+      update/delete false, registered via Gate::policy
+- [x] current state = latest row per (subject, type) — `ConsentManagerTest`
+      ("treats the latest row as the current state and keeps full history",
+      "answers withdraw-then-query correctly", default-state fallback)
+- [x] policy_version_id stamped from the published version — "stamps new
+      consents with the published policy version…" (1.0 after sync; null on
+      never-published)
+- [x] re-consent flag on superseded consent-doc version — "flags re-consent
+      when the granted consent document version is superseded" (flag set,
+      cleared by re-grant under 2.0); boot payload carries it
+      (`ConsentEndpointTest`)
+- [x] guest merge idempotent — "merges guest state into a user idempotently,
+      preserving the version the guest saw" (source guest_merge, second merge
+      no-op, guest history intact)
+- [x] forgetSubject anonymizes + logs dsr_action — "forgets a subject…" +
+      guest variant (rows kept but stripped, dsr_action event, activity rows
+      de-identified)
+- [x] middleware 403s denied subjects — `ConsentMiddlewareTest` (guests
+      without key, users without grant, guest grant→withdraw round trip)
+- [x] POST /ai-compliance/consents — `ConsentEndpointTest` (guest cookie
+      minted/reused, user records, validation 422s)
+- [x] docs: tools/consent.md, recipes/gating-features-by-consent.md, README
+      index, CHANGELOG entry
+
+Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    104 passed (400 assertions)   Duration: 1.39s
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -133,8 +172,19 @@ Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
 | 2026-07-05 | Cache flush = generation bump (key prefix), not key enumeration | Store-agnostic (no tags needed); orphans age out. Verified by CompiledPolicyCacheTest |
 | 2026-07-05 | Spec §12.2 macro calls corrected to `configuredNullableMorphs('x')` | The `nullable:` named-arg form I wrote into the spec earlier does not exist in database-tools v1.0 (verified in source) |
 | 2026-07-05 | InstallCommand reports unresolved placeholders instead of prompting/writing .env | Writing env/config from a command is fragile; PLAN's "prompt for placeholders" adjusted — the report gives the operator the same worklist safely |
+| 2026-07-05 | `policy_version_id` on consent records is nullable (spec said required) | File-mode installs (policies never synced/published) must still record consent; the version columns are null then, honestly marking "file-served text". Once synced, every record stamps |
+| 2026-07-05 | Morph map registered non-enforcing (`Relation::morphMap`), not `enforceMorphMap` per spec | `enforceMorphMap` flips a GLOBAL requireMorphMap that would break unrelated host-app morphs; a package must not do that. Hosts wanting enforcement call it themselves |
+| 2026-07-05 | DSR forget runs raw query-builder updates past the model's append-only guards | The guards protect against application code; deliberate anonymization is maintenance. Documented on the model. Guest keys inside activity `context` are scrubbed at M7 (backlogged) |
+| 2026-07-05 | Guest merge appends new rows for the user instead of reassigning guest rows | Reassigning would mutate append-only history; the merge preserves the guest's policy_version and is idempotent by comparing current states |
+| 2026-07-05 | First-ever sync import publishes 1.0 directly (also noted at M2); consent stamps require it | Fresh installs record versioned consent immediately after `install` |
 
 ## Backlog
+
+- M7: scrub guest keys from activity-event `context` json during
+  `forgetSubject` (model-subject morphs are already nulled; json scrubbing
+  needs store-portable handling).
+- M7: add the `provider_id` FK constraint on `ai_activity_events` once the
+  providers table exists (column ships unconstrained since M3).
 
 - Consider `laranail/notifications` as an optional channel layer for M6 alert
   notifications (survey found it SSRF-guarded, standalone) — decide at M6.

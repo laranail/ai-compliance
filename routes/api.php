@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\BootController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\ConsentController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\PolicyController;
 
 if (! config('laranail.ai-compliance.routes.enabled', true)) {
@@ -23,4 +24,5 @@ Route::prefix(is_string($prefix) ? $prefix : 'ai-compliance')
     ->group(function (): void {
         Route::get('boot', BootController::class)->name('boot');
         Route::get('policies/{slug}', [PolicyController::class, 'show'])->name('policy');
+        Route::post('consents', [ConsentController::class, 'store'])->name('consents');
     });

@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
 use Simtabi\Laranail\AiCompliance\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature', 'Unit');
@@ -31,6 +34,23 @@ function overridePolicyDir(array $files): string
     app(PolicyFileLoader::class)->flush();
 
     return $dir;
+}
+
+/**
+ * Create the users table (idempotent) and one fixture user for consent
+ * tests.
+ */
+function makeUser(string $name = 'Test User'): User
+{
+    if (! Schema::hasTable('users')) {
+        Schema::create('users', function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+    }
+
+    return User::query()->create(['name' => $name]);
 }
 
 /**

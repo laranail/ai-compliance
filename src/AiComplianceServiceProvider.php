@@ -7,15 +7,29 @@ namespace Simtabi\Laranail\AiCompliance;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Gate;
 use Override;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
+use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyShowCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
+use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
+use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
 use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
 use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
+use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureConsent;
 use Simtabi\Laranail\AiCompliance\Listeners\FlushCompiledPolicyCache;
+use Simtabi\Laranail\AiCompliance\Listeners\RecordConsentActivity;
+use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
+use Simtabi\Laranail\AiCompliance\Policies\ConsentRecordPolicy;
 use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
@@ -77,6 +91,10 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         $this->app->singleton(PolicySync::class);
         $this->app->singleton(PolicyPublisher::class);
         $this->app->singleton(PolicyStaleness::class);
+        $this->app->singleton(ConsentTypes::class);
+        $this->app->singleton(GuestKeys::class);
+        $this->app->singleton(ActivityRecorder::class);
+        $this->app->singleton(ConsentManager::class);
         $this->app->singleton(BootPayload::class);
         $this->app->singleton(AiCompliance::class);
     }
@@ -88,6 +106,46 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
 
         $events->listen(PolicyPublished::class, FlushCompiledPolicyCache::class);
         $events->listen(PoliciesSynced::class, FlushCompiledPolicyCache::class);
+        $events->listen(ConsentRecorded::class, RecordConsentActivity::class);
+        $events->listen(ConsentWithdrawn::class, RecordConsentActivity::class);
+
+        $this->app->make(Router::class)->aliasMiddleware('ai.consent', EnsureConsent::class);
+
+        Gate::policy(ConsentRecord::class, ConsentRecordPolicy::class);
+
+        $this->registerMorphMap();
+    }
+
+    /**
+     * Register the short 'user' morph alias (non-enforcing: hosts opting
+     * into Relation::requireMorphMap() do so themselves — a package forcing
+     * it globally would break unrelated host morphs).
+     */
+    private function registerMorphMap(): void
+    {
+        $config = $this->app->make(ConfigRepository::class);
+
+        $userModel = $config->get('laranail.ai-compliance.user_model')
+            ?? $config->get('auth.providers.users.model');
+
+        /** @var array<string, class-string<Model>> $map */
+        $map = [];
+
+        if (is_string($userModel) && is_subclass_of($userModel, Model::class)) {
+            $map['user'] = $userModel;
+        }
+
+        $extra = $config->get('laranail.ai-compliance.morph_map', []);
+
+        foreach (is_array($extra) ? $extra : [] as $alias => $class) {
+            if (is_string($alias) && is_string($class) && is_subclass_of($class, Model::class)) {
+                $map[$alias] = $class;
+            }
+        }
+
+        if ($map !== []) {
+            Relation::morphMap($map);
+        }
     }
 
     private function defaultLocale(): string

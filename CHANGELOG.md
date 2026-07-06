@@ -9,6 +9,26 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Consent core** (`ai_consent_types`, `ai_consent_records`, minimal
+  `ai_activity_events`): append-only consent records with `public_id` ULIDs,
+  the exactly-one-of subject/guest-key invariant, and the policy version the
+  subject was shown (`policy_version_id` + readable string).
+- **`AiConsent` facade** (`grant` / `deny` / `withdraw` / `granted` / `allows` /
+  `stateFor` / `reconsentFor` / `mergeGuest` / `exportSubject` /
+  `forgetSubject`): current state = latest row per (subject, type) with
+  configured defaults; re-consent derives from superseded consent-document
+  versions; DSR export emits public ids only and erasure anonymizes in place.
+- **Guest identity**: opaque server-issued key in a long-lived http-only
+  cookie; `POST /ai-compliance/consents` records for user or guest (minting
+  the cookie), and login merges guest state idempotently (source
+  `guest_merge`).
+- **`ai.consent:{type}` middleware** and config-declared feature gating
+  (`AiConsent::allows`).
+- **Boot payload** now carries the subject's real consent state, the
+  re-consent list, the guest key, and the consents endpoint.
+- Consent changes and DSR actions mirror into the activity log; the short
+  `user` morph alias registers from config (non-enforcing).
+
 - **Policy versioning** (`ai_policy_documents` / `ai_policy_versions` /
   `ai_policy_translations`): every document carries a draft → published →
   superseded version stream with per-locale translations; at most one
