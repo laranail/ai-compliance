@@ -12,7 +12,7 @@ recording the exact failing state and next step.
 | Milestone | Status | Date |
 |---|---|---|
 | M1 — skeleton + read-only policy pipeline | done | 2026-07-05 |
-| M2 — policy versioning + editing API | not started | |
+| M2 — policy versioning + editing API | done | 2026-07-05 |
 | M3 — consent core | not started | |
 | M4 — Blade + Livewire | not started | |
 | M5 — JS core + React + Vue | not started | |
@@ -69,6 +69,44 @@ composer update --prefer-lowest --prefer-stable && vendor/bin/pest
   transitive deps, no failures)
 ```
 
+## M2 acceptance criteria
+
+- [x] publish supersedes atomically, ≤1 published invariant — tests
+      `PolicyPublisherTest`: "publishes a draft and supersedes the current
+      published version atomically", "keeps the single-published invariant
+      across repeated publish cycles", "refuses to publish anything that is
+      not a draft" (CannotPublishVersion)
+- [x] hand-edited doc survives a changed-file sync (flag, no overwrite) —
+      `PolicySyncTest`: "flags and never overwrites a hand-edited translation
+      when the file changes"
+- [x] untouched doc auto-drafts on file change (and reuses the open draft) —
+      `PolicySyncTest`: "drafts a new version when a file changes…", "updates
+      an existing draft in place instead of stacking drafts"
+- [x] preview compiles without saving — `AdminApiTest` editing-flow test
+      (substituted html + unresolved placeholders returned, nothing persisted)
+- [x] translation drift flagged via origin_checksum — `PolicyStalenessTest`:
+      "reports translation drift when the default-locale source changes after
+      a translation was made"; file drift + hand-edited variants covered too
+- [x] authorization matrix — `AdminApiTest`: guests 403 everywhere, auditors
+      read-only, managers full draft→edit→preview→publish flow
+- [x] DB-first resolution — `DatabaseResolutionTest`: published version wins
+      over files with its version string; deactivated documents serve nothing;
+      draft-only documents stay file-served; unmigrated installs keep working
+      (all M1 file-mode tests still pass without RefreshDatabase)
+- [x] docs shipped: docs/tools/policy-versioning.md,
+      docs/recipes/translating-policies.md, README index updated, CHANGELOG
+      entry
+
+Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    77 passed (313 assertions)   Duration: 1.24s
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -89,6 +127,12 @@ composer update --prefer-lowest --prefer-stable && vendor/bin/pest
 | 2026-07-05 | Umbrella policy publishes never force re-consent; only `consent.*` document publishes do | Re-consent = latest granted record references a superseded version of that consent doc; no diff machinery |
 | 2026-07-05 | No path repositories in composer.json; deps resolve from Packagist (`package-tools ^1.3`, `console ^1.0`) | Verified empirically: composer hard-fails when a path repo dir is missing, so committed path repos would break CI and every consumer install (license-kit carries this latent bug). All laranail deps are published; local sibling development can add a path repo ad hoc without committing it. Deviates from PLAN's original "path repos" detail — plan updated here |
 | 2026-07-05 | `laranail/package-tools` floor is `^1.3`, not `^1.0` | `publishDirectory()` and the translations alias arrived in 1.2/1.3; prefer-lowest CI leg must resolve a version that has them. Lowest set verified green locally |
+| 2026-07-05 | First-ever import of a document publishes 1.0 (sync + seeder); later file changes only draft | "Ready-to-use editable defaults": endpoints serve versioned content right after install, while every subsequent change stays a human publish decision |
+| 2026-07-05 | One open draft per document, addressed implicitly (`…/{slug}/draft`) | Removes draft-id bookkeeping from the api and makes sync + editor converge on the same draft; multiple parallel drafts had no use case |
+| 2026-07-05 | Published DB version never falls back to files for missing locales; it serves its own default-locale translation | A file could otherwise shadow operator-published text with outdated shipped content |
+| 2026-07-05 | Cache flush = generation bump (key prefix), not key enumeration | Store-agnostic (no tags needed); orphans age out. Verified by CompiledPolicyCacheTest |
+| 2026-07-05 | Spec §12.2 macro calls corrected to `configuredNullableMorphs('x')` | The `nullable:` named-arg form I wrote into the spec earlier does not exist in database-tools v1.0 (verified in source) |
+| 2026-07-05 | InstallCommand reports unresolved placeholders instead of prompting/writing .env | Writing env/config from a command is fragile; PLAN's "prompt for placeholders" adjusted — the report gives the operator the same worklist safely |
 
 ## Backlog
 

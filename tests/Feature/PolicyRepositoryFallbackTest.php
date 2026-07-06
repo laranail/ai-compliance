@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Cache;
+use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
@@ -58,7 +59,7 @@ it('serves compiled policies from the cache when the checksum matches', function
     expect($file)->not->toBeNull();
 
     Cache::forever(
-        sprintf('laranail.ai-compliance.policy.%s.%s.%s', $file->slug, $file->locale, $file->checksum),
+        $this->app->make(CompiledPolicyCache::class)->key($file),
         new CompiledPolicy('<p>SENTINEL_FROM_CACHE</p>', ['title' => 'Cached'], $file->checksum),
     );
 
@@ -73,7 +74,7 @@ it('recompiles when the cache is disabled', function (): void {
     $file = $this->app->make(PolicyFileLoader::class)->find('transparency', 'en');
 
     Cache::forever(
-        sprintf('laranail.ai-compliance.policy.%s.%s.%s', $file->slug, $file->locale, $file->checksum),
+        $this->app->make(CompiledPolicyCache::class)->key($file),
         new CompiledPolicy('<p>SENTINEL_FROM_CACHE</p>', [], $file->checksum),
     );
 
@@ -86,7 +87,7 @@ it('writes compiled policies to the cache on a miss', function (): void {
     config()->set('laranail.ai-compliance.policies.cache.enabled', true);
 
     $file = $this->app->make(PolicyFileLoader::class)->find('transparency', 'en');
-    $key = sprintf('laranail.ai-compliance.policy.%s.%s.%s', $file->slug, $file->locale, $file->checksum);
+    $key = $this->app->make(CompiledPolicyCache::class)->key($file);
 
     expect(Cache::has($key))->toBeFalse();
 

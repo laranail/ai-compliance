@@ -21,6 +21,8 @@ final readonly class CompiledPolicyCache
 {
     private const string PREFIX = 'laranail.ai-compliance.policy';
 
+    private const string GENERATION_KEY = 'laranail.ai-compliance.policy.generation';
+
     public function __construct(
         private CacheFactory $cache,
         private ConfigRepository $config,
@@ -35,7 +37,7 @@ final readonly class CompiledPolicyCache
             return $compile();
         }
 
-        $key = sprintf('%s.%s.%s.%s', self::PREFIX, $file->slug, $file->locale, $file->checksum);
+        $key = $this->key($file);
 
         $cached = $this->store()->get($key);
 
@@ -48,6 +50,28 @@ final readonly class CompiledPolicyCache
         $this->store()->forever($key, $compiled);
 
         return $compiled;
+    }
+
+    /**
+     * Invalidate every cached compiled policy by bumping the generation the
+     * keys embed. Store-agnostic (no tag support required); orphaned entries
+     * age out of stores with eviction.
+     */
+    public function flush(): void
+    {
+        $this->store()->forever(self::GENERATION_KEY, $this->generation() + 1);
+    }
+
+    public function key(PolicyFile $file): string
+    {
+        return sprintf('%s.g%d.%s.%s.%s', self::PREFIX, $this->generation(), $file->slug, $file->locale, $file->checksum);
+    }
+
+    private function generation(): int
+    {
+        $generation = $this->store()->get(self::GENERATION_KEY, 1);
+
+        return is_int($generation) ? $generation : 1;
     }
 
     private function enabled(): bool

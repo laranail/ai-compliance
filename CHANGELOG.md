@@ -9,6 +9,27 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Policy versioning** (`ai_policy_documents` / `ai_policy_versions` /
+  `ai_policy_translations`): every document carries a draft → published →
+  superseded version stream with per-locale translations; at most one
+  published version and one open draft per document, enforced transactionally
+  by `PolicyPublisher`.
+- **Policy file sync** (`laranail::ai-compliance.policy.sync`, wrapped by
+  `InitialPolicySeeder`): first import publishes 1.0; a changed file whose
+  database copy was never edited becomes a draft; a hand-edited copy is
+  flagged and never overwritten. Checksum-based staleness report (file drift +
+  translation drift) at `GET …/admin/policies/staleness`.
+- **Editing api** (`routes/admin.php`, gates `ai-compliance:manage` /
+  `ai-compliance:audit`): document list and version history, draft
+  create/edit/publish, and a compile-only preview endpoint.
+- **Database-first resolution**: a published version is authoritative for its
+  document (files never shadow it); deactivated documents serve nothing;
+  unmigrated installs keep working in pure file mode.
+- **Commands**: `laranail::ai-compliance.install` (publish + migrate + import +
+  unresolved-placeholder report) and `…policy.publish {slug}`.
+- `laranail/database-tools ^1.0` dependency for the configured-morphs schema
+  macros.
+
 - **Read-only policy pipeline** (`src/Policy/`): file loader with app-over-package
   precedence, CommonMark compiler with yaml frontmatter and escaped raw html,
   `[[shortcode]]` islands compiled to neutral `<ai-c>` elements, serve-time

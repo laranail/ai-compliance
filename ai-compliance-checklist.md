@@ -401,7 +401,7 @@ Schema::create('ai_consent_records', function (Blueprint $table) {
     $table->ulid('public_id')->unique();       // the only id exports and webhooks ever emit
     $table->string('tenant_id')->nullable()->index();
     $table->foreignId('consent_type_id')->constrained('ai_consent_types');
-    $table->configuredMorphs('subjectable', nullable: true); // database-tools macro; key type from config
+    $table->configuredNullableMorphs('subjectable'); // database-tools macro; key type from config
     $table->string('guest_key')->nullable();   // server-issued pseudonymous key
     $table->string('status');                  // granted, denied, withdrawn
     $table->string('source');                  // which form, api client, or import
@@ -439,8 +439,8 @@ Schema::create('ai_activity_events', function (Blueprint $table) {
     $table->ulid('public_id')->unique();       // same rule as consent records
     $table->string('tenant_id')->nullable()->index();
     $table->string('event_type')->index();     // ActivityType enum
-    $table->configuredMorphs('actorable', nullable: true);   // who acted; null for system/scheduler events, source goes in context
-    $table->configuredMorphs('subjectable', nullable: true); // who it was about
+    $table->configuredNullableMorphs('actorable');   // who acted; null for system/scheduler events, source goes in context
+    $table->configuredNullableMorphs('subjectable'); // who it was about
     $table->foreignId('provider_id')->nullable()->constrained('ai_providers');
     $table->json('context')->nullable();       // no raw prompts or sensitive content
     $table->string('hash_prev', 64)->nullable(); // tamper-evidence chain, optional tier
@@ -489,7 +489,7 @@ Schema::create('ai_policy_versions', function (Blueprint $table) {
     $table->foreignId('policy_document_id')->constrained('ai_policy_documents');
     $table->string('version');                 // '1.0', '1.1', auto-bumped
     $table->string('status')->default('draft'); // PolicyVersionStatus: draft, published, superseded
-    $table->configuredMorphs('authorable', nullable: true); // who created/published; null = seeder/sync
+    $table->configuredNullableMorphs('authorable'); // who created/published; null = seeder/sync
     $table->timestamp('effective_at')->nullable();
     $table->timestamp('published_at')->nullable();
     $table->timestamp('superseded_at')->nullable();

@@ -31,10 +31,12 @@ Full documentation lives at
 ### Reference
 
 - [Policy pipeline](docs/tools/policy-pipeline.md) — files, frontmatter, shortcodes, placeholders, fallback, cache
+- [Policy versioning](docs/tools/policy-versioning.md) — documents, versions, draft/publish, sync, staleness, the editing api
 
 ### Recipes
 
 - [Customizing policies](docs/recipes/customizing-policies.md) — publish and edit the shipped markdown
+- [Translating policies](docs/recipes/translating-policies.md) — add locales and track re-translation work
 
 ## Contributing & security
 

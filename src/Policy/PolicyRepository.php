@@ -5,15 +5,22 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Policy;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
+use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
- * Resolves policy documents for serving. Resolution order per (slug,
- * locale): a published database version (from the versioning milestone),
- * then each locale in the fallback chain against the file loader. The
+ * Resolves policy documents for serving. A published database version is
+ * authoritative: its translations resolve through the locale fallback chain
+ * and files are never consulted for that document (a file could otherwise
+ * shadow the operator's published text). Documents with no published version
+ * — and installs that never ran the migrations — resolve from files through
+ * the same chain. Deactivated documents resolve to nothing at all. The
  * returned content reports the locale actually served so UIs can flag
  * fallbacks, and the placeholders that remained unresolved.
  */
@@ -31,6 +38,16 @@ final readonly class PolicyRepository
     {
         $requested = $locale ?? $this->appLocale();
 
+        $fromDatabase = $this->fromDatabase($slug, $requested);
+
+        if ($fromDatabase === false) {
+            return null; // document exists but is deactivated
+        }
+
+        if ($fromDatabase instanceof PolicyContent) {
+            return $fromDatabase;
+        }
+
         foreach ($this->fallbackChain($requested) as $candidate) {
             $file = $this->files->find($slug, $candidate);
 
@@ -43,8 +60,8 @@ final readonly class PolicyRepository
     }
 
     /**
-     * All documents visible in a locale, resolved slug by slug through the
-     * fallback chain.
+     * All documents visible in a locale: database-published documents first,
+     * then shipped files filling the gaps (skipping deactivated documents).
      *
      * @return list<PolicyContent>
      */
@@ -52,10 +69,27 @@ final readonly class PolicyRepository
     {
         $requested = $locale ?? $this->appLocale();
         $resolved = [];
+        $suppressed = [];
+
+        foreach ($this->databaseDocuments() as $document) {
+            if (! $document->active) {
+                $suppressed[] = $document->slug;
+
+                continue;
+            }
+
+            $content = $this->serveDocument($document, $requested);
+
+            // a document row with nothing published yet stays file-served,
+            // so it is neither resolved nor suppressed here
+            if ($content instanceof PolicyContent) {
+                $resolved[$content->slug] = $content;
+            }
+        }
 
         foreach ($this->fallbackChain($requested) as $candidate) {
             foreach ($this->files->all($candidate) as $file) {
-                if (! isset($resolved[$file->slug])) {
+                if (! isset($resolved[$file->slug]) && ! in_array($file->slug, $suppressed, true)) {
                     $resolved[$file->slug] = $this->serve($file, $requested);
                 }
             }
@@ -93,6 +127,95 @@ final readonly class PolicyRepository
         $chain[] = is_string($default) ? $default : 'en';
 
         return array_values(array_unique($chain));
+    }
+
+    /**
+     * Resolve from the database. Returns PolicyContent when a published
+     * translation was found, false when the document exists but is
+     * deactivated (nothing should be served at all), and null to fall
+     * through to files.
+     */
+    private function fromDatabase(string $slug, string $requested): PolicyContent|false|null
+    {
+        try {
+            /** @var PolicyDocument|null $document */
+            $document = PolicyDocument::query()
+                ->whereNull('tenant_id')
+                ->where('slug', $slug)
+                ->first();
+        } catch (QueryException) {
+            return null; // schema not migrated: pure file mode
+        }
+
+        if ($document === null) {
+            return null;
+        }
+
+        if (! $document->active) {
+            return false;
+        }
+
+        return $this->serveDocument($document, $requested);
+    }
+
+    /**
+     * @return list<PolicyDocument>
+     */
+    private function databaseDocuments(): array
+    {
+        try {
+            return array_values(PolicyDocument::query()
+                ->whereNull('tenant_id')
+                ->with('publishedVersion.translations')
+                ->get()
+                ->all());
+        } catch (QueryException) {
+            return [];
+        }
+    }
+
+    private function serveDocument(PolicyDocument $document, string $requested): ?PolicyContent
+    {
+        /** @var PolicyVersion|null $published */
+        $published = $document->publishedVersion;
+
+        if ($published === null) {
+            return null;
+        }
+
+        $translations = $published->translations->keyBy('locale');
+
+        foreach ([...$this->fallbackChain($requested), $document->default_locale] as $candidate) {
+            $translation = $translations->get($candidate);
+
+            if ($translation instanceof PolicyTranslation) {
+                return $this->serveTranslation($document, $published, $translation, $requested);
+            }
+        }
+
+        return null;
+    }
+
+    private function serveTranslation(
+        PolicyDocument $document,
+        PolicyVersion $published,
+        PolicyTranslation $translation,
+        string $requestedLocale,
+    ): PolicyContent {
+        $html = $this->placeholders->substitute($translation->compiled_html);
+        $title = $this->placeholders->substitute($translation->title);
+
+        return new PolicyContent(
+            slug: $document->slug,
+            type: $document->type,
+            locale: $translation->locale,
+            requestedLocale: $requestedLocale,
+            title: $title->text,
+            html: $html->text,
+            meta: $translation->meta ?? [],
+            version: $published->version,
+            unresolvedPlaceholders: array_values(array_unique([...$html->unresolved, ...$title->unresolved])),
+        );
     }
 
     private function serve(PolicyFile $file, string $requestedLocale): PolicyContent

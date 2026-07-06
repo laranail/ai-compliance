@@ -84,12 +84,23 @@ return [
     |--------------------------------------------------------------------------
     | Routes
     |--------------------------------------------------------------------------
+    |
+    | 'routes' are the consumer endpoints (boot, policies). 'admin_routes'
+    | are the editing api, guarded by the three gates the host app defines:
+    | ai-compliance:manage, ai-compliance:audit, ai-compliance:export.
+    |
     */
     'routes' => [
         'enabled' => true,
         'prefix' => 'ai-compliance',
         'middleware' => ['web'],
         'rate_limit' => '60,1',
+    ],
+
+    'admin_routes' => [
+        'enabled' => true,
+        'prefix' => 'ai-compliance/admin',
+        'middleware' => ['web', 'auth'],
     ],
 
     /*

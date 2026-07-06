@@ -42,6 +42,34 @@ final class PolicyFileLoader
     }
 
     /**
+     * Every locale that has at least one policy directory, across the app
+     * and package roots.
+     *
+     * @return list<string>
+     */
+    public function locales(): array
+    {
+        $locales = [];
+
+        foreach ([$this->packagePath, $this->overridePath()] as $root) {
+            if (! is_dir($root)) {
+                continue;
+            }
+
+            foreach (new FilesystemIterator($root, FilesystemIterator::SKIP_DOTS) as $entry) {
+                if ($entry instanceof SplFileInfo && $entry->isDir()) {
+                    $locales[] = $entry->getFilename();
+                }
+            }
+        }
+
+        $locales = array_values(array_unique($locales));
+        sort($locales);
+
+        return $locales;
+    }
+
+    /**
      * Forget the in-memory index (used by tests and the sync command after
      * files change mid-process).
      */
