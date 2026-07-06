@@ -35,6 +35,9 @@ Full documentation lives at
 - [Consent](docs/tools/consent.md) — the AiConsent facade, append-only records, guests, re-consent
 - [Blade components](docs/tools/blade-components.md) — disclosure, gate, policy, preferences, server-side islands
 - [Livewire](docs/tools/livewire.md) — the interactive preferences panel and re-consent prompt
+- [JS SDK](docs/tools/js-sdk.md) — @laranail/ai-compliance: boot client, consent api, island hydrator
+- [React](docs/tools/react.md) — @laranail/ai-compliance-react bindings
+- [Vue](docs/tools/vue.md) — @laranail/ai-compliance-vue bindings
 
 ### Recipes
 

@@ -7,3 +7,5 @@ composer.lock
 .DS_Store
 node_modules/
 .claude/settings.local.json
+packages/*/dist/
+*.tsbuildinfo

@@ -15,7 +15,7 @@ recording the exact failing state and next step.
 | M2 — policy versioning + editing API | done | 2026-07-05 |
 | M3 — consent core | done | 2026-07-05 |
 | M4 — Blade + Livewire | done | 2026-07-05 |
-| M5 — JS core + React + Vue | not started | |
+| M5 — JS core + React + Vue | done | 2026-07-05 |
 | M6 — checklist + checks engine | not started | |
 | M7 — activity log + provider enforcement | not started | |
 | M8 — Filament plugin | not started | |
@@ -179,6 +179,45 @@ Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M5 acceptance criteria
+
+- [x] core has zero runtime framework deps — packages/core has no
+      `dependencies` at all; react/vue are peer deps of their bindings only
+- [x] contract fixture pins `contract: 1` — `boot.json` recorded by the Pest
+      suite (`AI_COMPLIANCE_EXPORT_FIXTURE=1` regenerates); vitest "pins
+      contract 1 and the payload shape the pest suite serves" walks types,
+      state, disclosures, documents, features, strings, endpoints
+- [x] hydrator mounts into `<ai-c>` — hydrate tests: registered mounts get
+      decoded props, unregistered keep fallback text, cleanups run, malformed
+      props tolerated
+- [x] re-consent prompt driven by boot flag — React + Vue
+      `AiReconsentPrompt` tests (renders nothing without the flag, prompts
+      with it)
+- [x] client behavior — boot (same-origin credentials, locale, contract
+      mismatch, not-booted guard), granted/allows/require, set (XSRF cookie /
+      explicit token, server-authoritative state, onChange, failure leaves
+      state untouched)
+- [x] React and Vue bindings — provider/plugin boot, gate flips on consent
+      change, preferences posts and re-renders, all 23 vitest tests green
+- [x] `js.yml` CI + lockstep npm publish job in `release.yml` (tag stamped
+      on every workspace, provenance publish; requires NPM_TOKEN — added to
+      the release D-list)
+- [x] docs: tools/js-sdk.md, tools/react.md, tools/vue.md, README index,
+      CHANGELOG entry
+
+Evidence (run 2026-07-05, PHP 8.5.3 / Node 24.17, prefer-stable):
+
+```
+== pest ==     Tests:    1 skipped, 126 passed (461 assertions)
+               (skip = the env-gated fixture exporter)
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== vitest ==   Test Files 4 passed · Tests 23 passed
+== tsc ==      npm run build clean across the 3 workspaces
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -215,8 +254,15 @@ Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
 | 2026-07-05 | Targeted phpstan ignore for larastan's view-string rule on src/Livewire | Larastan validates view literals against a skeleton app that never registers the package's view namespace — a known false positive; every view is rendered by the pest suite |
 | 2026-07-05 | Lang `strings` restructured to nested groups; BootPayload flattens with Arr::dot | Views need `__('…strings.policy.version')` nested lookups while the JS contract wants flat keys; nested + flatten serves both without duplication |
 | 2026-07-05 | livewire/livewire ^4 as require-dev + suggest (registration guarded on class_exists + container binding) | ^4 is the Laravel-13-compatible major (verified on Packagist); the binding check keeps boot safe when livewire exists in vendor but its provider is not registered |
+| 2026-07-05 | Boot payload gains a `features` map (additive; contract stays 1) | JS gates client-side without a round trip; matches the server's allows() semantics exactly |
+| 2026-07-05 | Contract fixture recorded BY the Pest suite (env-gated test), pinned by vitest | One artifact both sides test against; regeneration is a documented one-liner, drift is a red build |
+| 2026-07-05 | JS packages: ESM-only, plain tsc builds, render-function Vue components, npm workspaces + committed package-lock | No bundler/SFC toolchain to maintain; consumers' bundlers handle the rest; npm ci needs the lockfile |
+| 2026-07-05 | npm publish versions stamped from the tag at release time (`0.0.0` in-repo) | Lockstep with the composer tag without version-bump commits; bindings pin the core at the same version during publish |
 
 ## Backlog
+
+- Release D-list addition: create the `NPM_TOKEN` secret (or npm trusted
+  publishing) before the first tag — the lockstep npm job needs it.
 
 - M7: scrub guest keys from activity-event `context` json during
   `forgetSubject` (model-subject morphs are already nulled; json scrubbing

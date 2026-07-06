@@ -59,10 +59,35 @@ final readonly class BootPayload
             ],
             'disclosures' => $this->disclosures($locale),
             'documents' => $this->documents($locale),
+            'features' => $this->features(),
             'strings' => $this->strings($locale),
             'endpoints' => $this->endpoints(),
             'guest_key' => $guestKey,
         ];
+    }
+
+    /**
+     * The feature-gating map (feature => required consent slugs), so js
+     * surfaces can gate without a round trip. Additive to the contract.
+     *
+     * @return array<string, list<string>>
+     */
+    private function features(): array
+    {
+        $configured = $this->config->get('laranail.ai-compliance.features', []);
+        $features = [];
+
+        foreach (is_array($configured) ? $configured : [] as $feature => $required) {
+            if (! is_string($feature)) {
+                continue;
+            }
+            if (! is_array($required)) {
+                continue;
+            }
+            $features[$feature] = array_values(array_filter($required, is_string(...)));
+        }
+
+        return $features;
     }
 
     /**

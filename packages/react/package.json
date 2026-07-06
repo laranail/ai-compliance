@@ -1,0 +1,36 @@
+{
+    "name": "@laranail/ai-compliance-react",
+    "version": "0.0.0",
+    "description": "React bindings for @laranail/ai-compliance: provider, useAiConsent hook, AiGate, AiDisclosure, AiPreferences, and AiReconsentPrompt.",
+    "license": "MIT",
+    "homepage": "https://opensource.simtabi.com/documentation/laranail/ai-compliance/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/laranail/ai-compliance.git",
+        "directory": "packages/react"
+    },
+    "bugs": { "url": "https://github.com/laranail/ai-compliance/issues" },
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": ["dist"],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "@laranail/ai-compliance": "0.0.0"
+    },
+    "peerDependencies": {
+        "react": ">=18"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

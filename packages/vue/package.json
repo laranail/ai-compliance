@@ -1,0 +1,36 @@
+{
+    "name": "@laranail/ai-compliance-vue",
+    "version": "0.0.0",
+    "description": "Vue bindings for @laranail/ai-compliance: plugin, useAiConsent composable, AiGate, AiDisclosure, AiPreferences, and AiReconsentPrompt.",
+    "license": "MIT",
+    "homepage": "https://opensource.simtabi.com/documentation/laranail/ai-compliance/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/laranail/ai-compliance.git",
+        "directory": "packages/vue"
+    },
+    "bugs": { "url": "https://github.com/laranail/ai-compliance/issues" },
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": ["dist"],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "@laranail/ai-compliance": "0.0.0"
+    },
+    "peerDependencies": {
+        "vue": ">=3.4"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

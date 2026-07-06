@@ -9,6 +9,24 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **`@laranail/ai-compliance`** (npm workspace, zero runtime deps): typed
+  boot client over the shared contract — `boot` / `granted` / `allows` /
+  `set` / `require` / `onChange`, same-origin credentials, automatic CSRF
+  (XSRF cookie, meta tag, or explicit token), server-authoritative state,
+  and a `ContractMismatchError` when the payload contract differs — plus the
+  `<ai-c>` island hydrator (unregistered islands keep their fallback).
+- **`@laranail/ai-compliance-react`** and **`@laranail/ai-compliance-vue`**:
+  provider/plugin, `useAiConsent`, `AiGate`, `AiDisclosure`, `AiPreferences`,
+  and `AiReconsentPrompt` over the same client; react/vue are peers only.
+- **Boot payload `features` map** (additive): the feature-gating config so JS
+  surfaces gate without a round trip.
+- **Contract fixture**: the Pest suite records `boot.json`
+  (`AI_COMPLIANCE_EXPORT_FIXTURE=1`) and vitest pins its shape, so the PHP
+  serializer and the TypeScript types cannot drift silently.
+- **CI/release**: `js.yml` (typecheck + build + vitest) and a lockstep npm
+  publish job in `release.yml` (tag version stamped on every workspace,
+  `npm publish --provenance`).
+
 - **Blade components** under the `ai-compliance` namespace: `disclosure`
   (the versioned, translated ai-disclosure line per surface), `gate`
   (slot gated on a feature's consents or one consent type), `policy` (full

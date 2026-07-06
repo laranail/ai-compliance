@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Illuminate\Support\Facades\File;
 
 it('serves the contract-1 boot payload', function (): void {
     $response = $this->getJson('/ai-compliance/boot');
@@ -19,10 +20,18 @@ it('serves the contract-1 boot payload', function (): void {
             'consent' => ['types', 'state', 'reconsent'],
             'disclosures' => ['chat', 'content', 'decision'],
             'documents',
+            'features',
             'strings',
-            'endpoints' => ['boot', 'policy'],
+            'endpoints' => ['boot', 'policy', 'consents'],
             'guest_key',
         ]);
+});
+
+it('exposes the feature-gating map', function (): void {
+    config()->set('laranail.ai-compliance.features', ['smart_summaries' => ['ai_training']]);
+
+    $this->getJson('/ai-compliance/boot')
+        ->assertJsonPath('features.smart_summaries', ['ai_training']);
 });
 
 it('describes every consent type with label, basis, state, and short text', function (): void {
@@ -74,6 +83,21 @@ it('serves translatable component strings', function (): void {
     expect($strings)->toHaveKey('preferences.save')
         ->and($strings['preferences.save'])->toBe('Save choices');
 });
+
+it('exports the boot contract fixture consumed by the js packages', function (): void {
+    config()->set('laranail.ai-compliance.features', ['smart_summaries' => ['ai_training']]);
+
+    $payload = $this->getJson('/ai-compliance/boot')->json();
+
+    $path = __DIR__ . '/../../packages/core/tests/fixtures/boot.json';
+    File::ensureDirectoryExists(dirname($path));
+    File::put($path, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+
+    expect($payload['contract'])->toBe(1);
+})->skip(
+    fn (): bool => env('AI_COMPLIANCE_EXPORT_FIXTURE') !== '1',
+    'set AI_COMPLIANCE_EXPORT_FIXTURE=1 to regenerate packages/core/tests/fixtures/boot.json',
+);
 
 it('honours an explicit locale request', function (): void {
     $response = $this->getJson('/ai-compliance/boot?locale=de');

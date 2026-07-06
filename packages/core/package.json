@@ -1,0 +1,30 @@
+{
+    "name": "@laranail/ai-compliance",
+    "version": "0.0.0",
+    "description": "Framework-agnostic client for the laranail/ai-compliance boot contract: consent state, policy documents, disclosures, and the <ai-c> island hydrator.",
+    "license": "MIT",
+    "homepage": "https://opensource.simtabi.com/documentation/laranail/ai-compliance/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/laranail/ai-compliance.git",
+        "directory": "packages/core"
+    },
+    "bugs": { "url": "https://github.com/laranail/ai-compliance/issues" },
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": ["dist"],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsc -p tsconfig.json"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
