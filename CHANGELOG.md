@@ -9,6 +9,21 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Log exports** (FR-5): `GET …/admin/exports/{consents,activity}` behind
+  the dedicated `ai-compliance:export` gate — csv/json, scoped by date and
+  type, public ids only, subjects pseudonymized with a stable keyed hash
+  (guest keys inside activity context included); every export logs an
+  `export` event. The console `export` command adds `--identified` for
+  statutory requests; the Filament consent log gains the same CSV action.
+- **Compliance report** (FR-7): `GET …/admin/report` and the `report`
+  command — print-ready self-contained html with dashboard statistics,
+  classification answers, the full checklist with evidence, the provider
+  registry, and every document's published version.
+- **Re-consent notifications**: `laranail::ai-compliance.notify-reconsent`
+  (+ `--dry-run`) sends `ReconsentRequested` (configurable channels) to
+  exactly the users whose current granted consent references a superseded
+  version; guests are prompted by the boot payload instead.
+
 - **Filament plugin** (`AiCompliancePlugin`, suggest dependency
   filament/filament ^5): policy documents with a markdown editor that stores
   drafts byte-for-byte through the shared `PolicyDrafts` service and

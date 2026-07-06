@@ -5,19 +5,23 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources;
 
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Override;
+use Simtabi\Laranail\AiCompliance\Exports\LogExports;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecords\Pages\ListConsentRecords;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * The consent log, strictly read-only: append-only rows are history, and
- * the table emits public ids only. The csv export action ships with the
- * exports milestone.
+ * the table emits public ids only. The csv export runs through the same
+ * pseudonymizing LogExports service as the http endpoint and requires the
+ * dedicated export gate.
  *
  * @extends resource<ConsentRecord>
  */
@@ -47,6 +51,19 @@ final class ConsentRecordResource extends Resource
                     'denied' => 'denied',
                     'withdrawn' => 'withdrawn',
                 ]),
+            ])
+            ->headerActions([
+                Action::make('export_csv')
+                    ->label('Export CSV')
+                    ->visible(fn (): bool => auth()->user()?->can('ai-compliance:export') ?? false)
+                    ->action(fn (): StreamedResponse => response()->streamDownload(
+                        function (): void {
+                            echo app(LogExports::class)
+                                ->toCsv(app(LogExports::class)->consentRows());
+                        },
+                        'consent-log.csv',
+                        ['Content-Type' => 'text/csv'],
+                    )),
             ])
             ->defaultSort('recorded_at', 'desc');
     }

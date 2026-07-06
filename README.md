@@ -42,6 +42,7 @@ Full documentation lives at
 - [Checks](docs/tools/checks.md) — the automated checks, scheduling, and alerting
 - [Activity log](docs/tools/activity-log.md) — event coverage, hash chain, retention, read auditing
 - [Filament](docs/tools/filament.md) — the admin plugin: policy editor, registry, consent log, checklist
+- [Exports and reports](docs/tools/exports-and-reports.md) — pseudonymized log exports, the auditor report, re-consent
 
 ### Recipes
 
@@ -50,6 +51,7 @@ Full documentation lives at
 - [Gating features by consent](docs/recipes/gating-features-by-consent.md) — allows() and the ai.consent middleware
 - [Writing custom checks](docs/recipes/writing-custom-checks.md) — automate your own checklist items
 - [Do-not-train enforcement](docs/recipes/do-not-train-enforcement.md) — consent-aware provider calls
+- [Auditor handover](docs/recipes/auditor-handover.md) — the evidence bundle in four commands
 
 ## Contributing & security
 

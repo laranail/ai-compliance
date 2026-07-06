@@ -19,7 +19,7 @@ recording the exact failing state and next step.
 | M6 — checklist + checks engine | done | 2026-07-06 |
 | M7 — activity log + provider enforcement | done | 2026-07-06 |
 | M8 — Filament plugin | done | 2026-07-06 |
-| M9 — exports, reports, re-consent notifications | not started | |
+| M9 — exports, reports, re-consent notifications | done | 2026-07-06 |
 
 ## M1 acceptance criteria
 
@@ -316,6 +316,40 @@ Evidence (run 2026-07-06, PHP 8.5.3, filament v5.6, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M9 acceptance criteria
+
+- [x] spec acceptance test 5 (export matches screen, pseudonymized, public
+      ids only) — `ExportsTest`: row set equals the table's public_id set,
+      every subject is a stable `sub_` pseudonym (raw user refs and guest
+      keys never appear), the same subject lines up across rows, csv carries
+      the same header + rows
+- [x] scoping + authorization — type/status/date filters; the dedicated
+      export gate 403s audit-only users; every export logged as an `export`
+      event with filters
+- [x] identified exports exist only on the console command (`--identified`)
+- [x] report contains checklist + registry + consent stats + policy versions
+      + classification — `ComplianceReportTest` (endpoint + command + export
+      event)
+- [x] notify-reconsent targets exactly the affected users —
+      `NotifyReconsentTest`: affected user notified with the right types;
+      different-document granters, deniers, and guests not mailed; dry run
+      sends nothing; re-granting ends the reminders
+- [x] Filament consent-log export action (deferred from M8) via the same
+      LogExports service, gated on export
+- [x] docs: tools/exports-and-reports.md, recipes/auditor-handover.md,
+      README index, CHANGELOG entry
+
+Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    1 skipped, 184 passed (723 assertions)
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== vitest ==   Tests 23 passed
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -371,6 +405,10 @@ Evidence (run 2026-07-06, PHP 8.5.3, filament v5.6, prefer-stable):
 | 2026-07-06 | PolicyDrafts + DashboardStats extracted as services | The filament editor and the http api must share one write path (byte-identical storage, single-draft rule) and one set of dashboard numbers |
 | 2026-07-06 | Filament tests via $enablesPackageDiscoveries = true + a fixture panel provider | Filament registers a dozen providers; discovery mirrors a real app. Gotcha for the future: testbench caches bootstrap/cache/packages.php — delete it after adding a dev dependency with providers |
 | 2026-07-06 | Filament consent log relies on ConsentRecordPolicy, not resource-level flags alone | One authorization source; the host's gates apply identically over http and in the panel |
+| 2026-07-06 | Export pseudonyms are keyed hashes (hmac with app.key), stable per installation | Analysis-friendly (same subject lines up) without identity; unkeyed hashes would be re-computable by anyone with the id space |
+| 2026-07-06 | Identified exports console-only; http always pseudonymizes | The web surface is the broad one; statutory identified pulls are a deliberate operator act, and the export event records pseudonymized=false |
+| 2026-07-06 | Report ships print-ready html, no pdf dependency | Browsers and html-to-pdf tools do this better than a bundled dompdf; PLAN's 'pdf via suggest dep' resolved as not needed |
+| 2026-07-06 | notify-reconsent confirms currency per subject via reconsentFor before mailing | The candidate query over superseded versions alone would mail people who already re-granted |
 
 ## Backlog
 
@@ -380,7 +418,6 @@ Evidence (run 2026-07-06, PHP 8.5.3, filament v5.6, prefer-stable):
 
 - Consider `laranail/notifications` as an optional channel layer for M6 alert
   notifications (survey found it SSRF-guarded, standalone) — decide at M6.
-- PDF engine for M9 reports (suggest dep dompdf vs browsershot) — decide at M9.
 - Demo seeder (`--demo`) reproducing the plugin-screenshot state — spec'd, slot into
   M6 with the checklist seeder.
 - Docsmith site: verify ai-compliance is picked up by `docsmith discover` once the

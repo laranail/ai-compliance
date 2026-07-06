@@ -53,6 +53,7 @@ return [
         'log_silent_subject' => 'The AI activity log has gone silent',
         'log_silent_hint' => 'Every other compliance claim relies on the log receiving events; investigate the logging pipeline.',
         'due_diligence_subject' => 'AI provider due diligence needs review',
+        'reconsent_subject' => 'A policy you agreed to has changed',
     ],
 
 ];

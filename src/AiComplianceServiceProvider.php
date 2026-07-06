@@ -32,17 +32,21 @@ use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
 use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Simtabi\Laranail\AiCompliance\Console\Commands\AuditCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\ExportCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\NotifyReconsentCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyShowCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PruneCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\ReportCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\VerifyChainCommand;
 use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
 use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
 use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
 use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
+use Simtabi\Laranail\AiCompliance\Exports\LogExports;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureConsent;
 use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureFeature;
@@ -63,6 +67,8 @@ use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\AiCompliance\Providers\ProviderCalls;
+use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
+use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
 use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
@@ -97,6 +103,9 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 PolicyPublishCommand::class,
                 PruneCommand::class,
                 VerifyChainCommand::class,
+                ExportCommand::class,
+                ReportCommand::class,
+                NotifyReconsentCommand::class,
             ])
             ->hasAboutSection('AI Compliance', fn (): array => [
                 'Contract' => (string) BootPayload::CONTRACT,
@@ -126,6 +135,9 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         $this->app->singleton(ActivityChain::class);
         $this->app->singleton(ActivityRecorder::class);
         $this->app->singleton(ProviderCalls::class);
+        $this->app->singleton(LogExports::class);
+        $this->app->singleton(ComplianceReport::class);
+        $this->app->singleton(DashboardStats::class);
         $this->app->singleton(FeatureGate::class);
         $this->app->singleton(ConsentManager::class);
         $this->app->singleton(Classification::class);

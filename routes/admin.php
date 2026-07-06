@@ -7,12 +7,14 @@ use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ActivityController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ChecklistController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ClassificationController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\DashboardController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ExportController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\FeatureController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyDocumentController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyDraftController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyPreviewController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyStalenessController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ProviderController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ReportController;
 
 if (! config('laranail.ai-compliance.admin_routes.enabled', true)) {
     return;
@@ -36,6 +38,13 @@ Route::prefix(is_string($prefix) ? $prefix : 'ai-compliance/admin')
             Route::get('features', [FeatureController::class, 'index'])->name('features.index');
             Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
             Route::get('activity/chain', [ActivityController::class, 'chain'])->name('activity.chain');
+            Route::get('report', ReportController::class)->name('report');
+        });
+
+        // log exports are the sensitive ability and carry their own gate
+        Route::middleware('can:ai-compliance:export')->group(function (): void {
+            Route::get('exports/consents', [ExportController::class, 'consents'])->name('exports.consents');
+            Route::get('exports/activity', [ExportController::class, 'activity'])->name('exports.activity');
         });
 
         Route::middleware('can:ai-compliance:manage')->group(function (): void {

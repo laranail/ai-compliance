@@ -270,6 +270,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Re-consent
+    |--------------------------------------------------------------------------
+    |
+    | Channels for the ReconsentRequested notification sent by
+    | laranail::ai-compliance.notify-reconsent. The 'database' channel needs
+    | the host's notifications table.
+    |
+    */
+    'reconsent' => [
+        'channels' => ['mail'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Provider calls
     |--------------------------------------------------------------------------
     |
