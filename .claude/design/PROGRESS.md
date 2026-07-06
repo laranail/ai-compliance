@@ -440,6 +440,8 @@ docs/, then cut v0.1.0.
 | 2026-07-06 | Identified exports console-only; http always pseudonymizes | The web surface is the broad one; statutory identified pulls are a deliberate operator act, and the export event records pseudonymized=false |
 | 2026-07-06 | Report ships print-ready html, no pdf dependency | Browsers and html-to-pdf tools do this better than a bundled dompdf; PLAN's 'pdf via suggest dep' resolved as not needed |
 | 2026-07-06 | notify-reconsent confirms currency per subject via reconsentFor before mailing | The candidate query over superseded versions alone would mail people who already re-granted |
+| 2026-07-06 | Plain Laravel notifications suffice; laranail/notifications not adopted (backlog decision closed) | Alerts fire events regardless of channel; hosts wanting slack/discord/sms listen to CheckFailed etc. and use whatever channel layer they run — no extra dependency for a mail default |
+| 2026-07-06 | DemoSeeder ships per spec 12.3 (backlog closed): 8 consent rows over two moments, 2 granted / 6 denied, zero providers | Local-dev reproduction of the reference dashboard; never run by install |
 
 ## Backlog
 
@@ -447,9 +449,5 @@ docs/, then cut v0.1.0.
   publishing) before the first tag — the lockstep npm job needs it.
 
 
-- Consider `laranail/notifications` as an optional channel layer for M6 alert
-  notifications (survey found it SSRF-guarded, standalone) — decide at M6.
-- Demo seeder (`--demo`) reproducing the plugin-screenshot state — spec'd, slot into
-  M6 with the checklist seeder.
 - Docsmith site: verify ai-compliance is picked up by `docsmith discover` once the
   repo is on GitHub with a docs/ dir (no action needed if org scan covers it).
