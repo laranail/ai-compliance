@@ -1,10 +1,10 @@
 # AI Policy Templates
 
-Ready-to-fill policy documents for any project running the AI compliance checklist, and the source the package's `InitialPolicySeeder` loads as policy version 1.0. Replace every `{{placeholder}}`, delete sections your classification answers switch off, and have counsel review before publishing. These are working templates written by engineers, not legal advice.
+Ready-to-fill policy documents for any project running the AI compliance checklist, and the source of the markdown files the package ships under `resources/policies/en/` (which `InitialPolicySeeder` imports and publishes as version 1.0 of each document — see section 9). Replace every `{{placeholder}}`, delete sections your classification answers switch off, and have counsel review before publishing. These are working templates written by engineers, not legal advice.
 
 Placeholders used throughout: `{{company}}`, `{{product}}`, `{{contact_email}}`, `{{privacy_url}}`, `{{jurisdiction}}`, `{{dpo_or_contact_name}}`.
 
-Document control applies to every policy here: each carries a version and an effective date, changes go through the package's `policy publish` flow so the diff decides who needs re-consent, and superseded versions stay retrievable because consent records reference the version they were given against.
+Document control applies to every policy here: each is its own document with a version and an effective date, changes go through the package's draft → publish flow (publishing supersedes only that document's prior version, which is what decides who needs re-consent), and superseded versions stay retrievable because consent records reference the exact document version they were given against.
 
 ---
 
@@ -38,7 +38,7 @@ Publish this at `{{privacy_url}}/ai` or as a section of the privacy policy. It's
 
 ## 2. Consent notice texts (the four consent types)
 
-Each type gets a short text (rendered next to the toggle) and a long text (the expandable detail). These are what the seeder loads into `consent_texts` keyed by consent-type slug and locale.
+Each type gets a short text (rendered next to the toggle, the `short:` frontmatter line of its file) and a long text (the expandable detail, the file's markdown body). Each ships as its own document file — see the mapping in section 9.
 
 ### 2.1 `ai_training` (AI training permissions)
 
@@ -157,30 +157,29 @@ Internal procedure (keep with the runbook, not published):
 
 ---
 
-## 9. Seeder mapping
+## 9. File mapping
 
-What `InitialPolicySeeder` loads from this file into `ai_compliance_policies` as version 1.0:
+The sections of this document ship as per-locale markdown files under the package's `resources/policies/en/` (publishable into the app, where edits survive package updates). Each file carries YAML frontmatter (`title`, `type`, and for consent texts a `short:` line rendered next to the toggle); the body is the long text. `{{placeholders}}` stay intact so the install command can prompt for company name and contact.
 
-```json
-{
-    "version": "1.0",
-    "status": "published",
-    "consent_texts": {
-        "en": {
-            "ai_training":        { "short": "<section 2.1 short>", "long": "<section 2.1 long>" },
-            "ai_chatbot":         { "short": "<section 2.2 short>", "long": "<section 2.2 long>" },
-            "ai_recommendations": { "short": "<section 2.3 short>", "long": "<section 2.3 long>" },
-            "ai_personalization": { "short": "<section 2.4 short>", "long": "<section 2.4 long>" }
-        }
-    },
-    "disclosure_texts": {
-        "en": {
-            "chat":     "You're chatting with an AI assistant, not a person. It can make mistakes.",
-            "content":  "Generated with AI by {{product}}.",
-            "decision": "This outcome was informed by an automated tool. You can request human review at {{contact_email}}."
-        }
-    }
-}
-```
+| Section | File | Document slug | Type |
+|---|---|---|---|
+| 1 AI transparency and use policy | `transparency.md` | `transparency` | `policy` |
+| 2.1 AI training permissions | `consent/ai_training.md` | `consent.ai_training` | `consent_text` |
+| 2.2 AI chatbot interactions | `consent/ai_chatbot.md` | `consent.ai_chatbot` | `consent_text` |
+| 2.3 AI recommendation engines | `consent/ai_recommendations.md` | `consent.ai_recommendations` | `consent_text` |
+| 2.4 AI personalization | `consent/ai_personalization.md` | `consent.ai_personalization` | `consent_text` |
+| 3 Training data and crawler policy | `training-data.md` | `training-data` | `policy` |
+| 4 Automated decisions and human review | `automated-decisions.md` | `automated-decisions` | `policy` |
+| 5 AI data protection addendum | `data-protection.md` | `data-protection` | `policy` |
+| 6 Internal acceptable AI use | `acceptable-use.md` | `acceptable-use` | `policy` |
+| 7 AI incident response | `incident-response.md` | `incident-response` | `policy` |
+| 8 AI vendor policy | `vendor.md` | `vendor` | `policy` |
+| — disclosure lines (below) | `disclosures/{chat,content,decision}.md` | `disclosure.{chat,content,decision}` | `disclosure` |
 
-Policies 1 and 3 through 8 aren't seeded into the database; they're published documents and internal procedures. The seeder only owns what the consent UI and disclosure components render, so the texts users actually saw are versioned in the same table their consents reference.
+The three disclosure texts:
+
+- `chat`: "You're chatting with an AI assistant, not a person. It can make mistakes."
+- `content`: "Generated with AI by {{product}}."
+- `decision`: "This outcome was informed by an automated tool. You can request human review at {{contact_email}}."
+
+`InitialPolicySeeder` is a thin wrapper over the policy file sync: every file becomes an `ai_policy_documents` row with a published version 1.0 whose translation stores the file's markdown, compiled HTML, and checksums. All fourteen documents are seeded — the consent and disclosure texts because the consent UI and disclosure components render them, and the long-form policies because the same versioning, editing, and staleness machinery serves them at `GET /ai-compliance/policies/{slug}`. Sections 6 and 7 are internal procedures; they seed as `active = false` so they version and render in the admin without appearing on any public surface unless the operator switches them on.

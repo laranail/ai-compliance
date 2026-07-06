@@ -198,8 +198,8 @@ Append-only: a change writes a new row, never updates the old one. Current state
 **classification_answers**
 `project_id, question_key, answer, answered_by, answered_at` (the section 2 intake, stored so N/A statuses are explainable)
 
-**policies**
-`version, consent_texts (json per consent_type), disclosure_texts, published_at` (what `policy_version` on consent rows points to)
+**policy documents / versions / translations**
+Every user-facing text (long-form policy page, consent short/long text, disclosure line) is a markdown-authored *document* with a draft/published/superseded *version* stream and per-locale *translations* (source markdown, compiled html, checksums for staleness). What `policy_version` on consent rows points to is a specific published version of a specific document.
 
 ### 11.2 Functional requirements
 
@@ -238,8 +238,8 @@ Why a package and not a SaaS: the consent log and activity log are exactly the d
 Built on the Laranail house toolchain, verified against Packagist on 2026-07-05:
 
 - `laranail/package-tools` (v1.3.0): the service provider base. Its open API surface (`hasConfigFile()`, `hasViews()`, lifecycle hooks) is documented as intentionally compatible with spatie/laravel-package-tools, so the provider code below works as written. On top of that it adds attribute-driven discovery, `package-tools.*` artisan commands including `package-tools.doctor`, abstract HTTP controllers useful for the consumer/admin endpoints in this spec, a testing harness, and a consolidated fluent builder (config/views/components/assets/routes/middleware/events/commands/seeders) with array-batch forms plus `publishFile()`/`publishDirectory()`.
-- `laranail/console` (v0.2.x): command UX. `Console\Tools` for output (formatter, spinners, progress, the enhanced Artisan command base this package's commands should extend) and `Console\Prompter` (fluent laravel/prompts wrapper with a form builder and 25 validators) for the install command's interactive steps.
-- `laranail/database-tools` (v0.2.x, independent): worth adopting for the schema layer. Its `auditColumns()` and `configuredMorphs()` schema macros, audit observer, and soft-delete restore history overlap directly with the morph columns and audit logging specified below; prefer these macros over hand-rolled column definitions where they fit.
+- `laranail/console` (v1.x): command UX. `Console\Tools` for output (formatter, spinners, progress, the enhanced Artisan command base this package's commands should extend) and `Console\Prompter` (fluent laravel/prompts wrapper with a form builder and 25 validators) for the install command's interactive steps. Note: `laranail/package-tools` already requires it, and re-exports the command base as `Simtabi\Laranail\Package\Tools\Commands\Command` with the `SupportsNamespacedNames` trait that makes `laranail::ai-compliance.*` names pass Symfony's validator.
+- `laranail/database-tools` (v1.0, independent): worth adopting for the schema layer. Its `auditColumns()` and `configuredMorphs()` schema macros, audit observer, and soft-delete restore history overlap directly with the morph columns and audit logging specified below; prefer these macros over hand-rolled column definitions where they fit.
 
 Toolchain consequence, stated plainly: `laranail/package-tools` requires PHP ^8.4.1 and Laravel 13 (illuminate ^13.0). Building on the house toolchain therefore sets this package's floor at **PHP 8.4.1+ / Laravel 13**, replacing the earlier PHP 8.2 / Laravel 11-13 target. Supporting older Laravel would mean the spatie fallback, which contradicts the house rule; take the newer floor. Tests on orchestra/testbench ^11 + Pest, Pint and PHPStan (larastan) in CI, matching the toolchain's own dev dependencies.
 
@@ -253,13 +253,20 @@ Toolchain consequence, stated plainly: `laranail/package-tools` requires PHP ^8.
         "illuminate/contracts": "^13.0",
         "laranail/package-tools": "^1.3",
         "laranail/console": "^1.0",
-        "laranail/database-tools": "^0.2"
+        "laranail/database-tools": "^1.0",
+        "league/commonmark": "^2.7",
+        "symfony/yaml": "^7.0 || ^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0|^10.0|^11.0",
-        "pestphp/pest": "^3.0|^4.0",
-        "laravel/pint": "^1.13",
-        "phpstan/phpstan": "^2.0"
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "phpstan/phpstan": "^2.0",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": { "Simtabi\\Laranail\\AiCompliance\\": "src/" }
@@ -277,12 +284,20 @@ Toolchain consequence, stated plainly: `laranail/package-tools` requires PHP ^8.
 laranail/ai-compliance
 ├── config/ai-compliance.php
 ├── database/
-│   ├── migrations/            # one stub per table, publishable
+│   ├── migrations/            # plain dated anonymous-class migrations, discovered + run
 │   ├── factories/
 │   └── seeders/
+├── packages/                  # npm workspaces, released in lockstep with the composer package
+│   ├── core/                  # @laranail/ai-compliance (framework-agnostic)
+│   ├── react/                 # @laranail/ai-compliance-react
+│   └── vue/                   # @laranail/ai-compliance-vue
 ├── resources/
 │   ├── lang/en/ai-compliance.php
-│   └── views/components/      # disclosure, gate, preferences shell
+│   ├── policies/en/           # the shipped, editable policy markdown (per-locale dirs)
+│   │   ├── consent/           # ai_training.md, ai_chatbot.md, ai_recommendations.md, ai_personalization.md
+│   │   ├── disclosures/       # chat.md, content.md, decision.md
+│   │   └── *.md               # transparency.md, training-data.md, automated-decisions.md, ...
+│   └── views/components/      # disclosure, gate, policy, preferences shell
 ├── routes/
 │   ├── api.php                # consumer endpoints for the js sdk
 │   └── admin.php              # admin json endpoints
@@ -290,14 +305,17 @@ laranail/ai-compliance
 │   ├── AiComplianceServiceProvider.php
 │   ├── AiCompliance.php       # manager bound to the container
 │   ├── Facades/AiConsent.php
-│   ├── Enums/                 # ConsentStatus, CheckStatus, LegalBasis, ActivityType, PolicyStatus
+│   ├── Enums/                 # ConsentStatus, CheckStatus, LegalBasis, ActivityType, PolicyType, PolicyVersionStatus
 │   ├── Models/
 │   ├── Policies/              # laravel authorization policies for the admin api
+│   ├── Policy/                # the markdown pipeline: loader, compiler, shortcodes, placeholders, repository, cache
 │   ├── Http/{Controllers,Middleware,Resources,Requests}/
 │   ├── Checks/                # Check contract + built-in checks
 │   ├── Providers/             # ai provider client wrappers (openai, anthropic, custom)
+│   ├── Filament/              # optional filament plugin module, no-ops unless filament is installed
+│   ├── Livewire/              # optional livewire components, gated the same way
 │   ├── Events/  Listeners/  Notifications/  Console/
-│   └── Support/               # SubjectResolver, GuestKey, PolicyDiff
+│   └── Support/               # SubjectResolver, GuestKey
 └── tests/
 ```
 
@@ -306,36 +324,29 @@ The service provider registers everything through package tools and adds the pie
 ```php
 namespace Simtabi\Laranail\AiCompliance;
 
-// laranail/package-tools documents its surface as spatie-compatible, so this
-// provider shape is valid; the exact class namespace follows the laranail
-// convention (verify the import path against the package on first use)
-use Simtabi\Laranail\PackageTools\Package;
-use Simtabi\Laranail\PackageTools\PackageServiceProvider;
+use Simtabi\Laranail\Package\Tools\Package;
+use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
 class AiComplianceServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('ai-compliance')
+            ->name('laranail/ai-compliance')
+            ->setPublishTagId('ai-compliance')
             ->hasConfigFile()
-            ->hasViews()
+            ->hasViews('ai-compliance')
             ->hasTranslations()
-            ->hasRoutes(['api', 'admin'])
-            ->hasMigrations([
-                'create_ai_consent_types_table',
-                'create_ai_consent_records_table',
-                'create_ai_providers_table',
-                'create_ai_activity_events_table',
-                'create_ai_checklist_items_table',
-                'create_ai_compliance_policies_table',
-                'create_ai_classification_answers_table',
-                'create_ai_feature_states_table',
-            ])
+            ->hasRoutes('api', 'admin')
+            ->discoversMigrations()
+            ->runsMigrations()
+            ->publishDirectory('resources/policies', 'resources/policies/ai-compliance')
             ->hasCommands([
-                Console\InstallCommand::class,      // publish + migrate + seed defaults
+                Console\InstallCommand::class,      // publish + migrate + sync + seed defaults
                 Console\AuditCommand::class,        // run all checks now
                 Console\FeatureCommand::class,      // enable/disable features per org
+                Console\PolicyShowCommand::class,   // render a compiled policy in the terminal
+                Console\PolicySyncCommand::class,   // import shipped/edited md into document rows
                 Console\PolicyPublishCommand::class,
                 Console\NotifyReconsentCommand::class,
                 Console\ExportCommand::class,
@@ -343,9 +354,10 @@ class AiComplianceServiceProvider extends PackageServiceProvider
             ]);
     }
 
+    #[\Override]
     public function packageBooted(): void
     {
-        $this->registerAuthorizationPolicies();  // Gate::policy() per model, works on every supported laravel
+        $this->registerAuthorizationPolicies();  // Gate::policy() per model
         $this->registerMorphMap();
         $this->registerMiddlewareAliases();      // ai.feature, ai.consent
         $this->registerScheduledChecks();
@@ -357,20 +369,24 @@ class AiComplianceServiceProvider extends PackageServiceProvider
         // stored *_type morph values stay short and stable even if the host renames classes.
         // enforceMorphMap makes unmapped classes throw instead of silently writing fqcns.
         Relation::enforceMorphMap([
-            'user'  => config('ai-compliance.user_model', config('auth.providers.users.model')),
+            'user'  => config('laranail.ai-compliance.user_model', config('auth.providers.users.model')),
             'guest' => Support\GuestSubject::class,
-        ] + config('ai-compliance.morph_map', []));
+        ] + config('laranail.ai-compliance.morph_map', []));
     }
 }
 ```
 
+Config keys resolve under the vendor-namespaced `laranail.ai-compliance.*` (package-tools'
+config namespacing), and migrations are discovered from `database/migrations` rather than
+listed one by one — the table set is the ten tables in 12.2.
+
 ### 12.2 Database layer
 
-Every table carries a nullable `tenant_id` (configurable column name and resolver, so it fits single-tenant apps and the multi-tenant setups from the integration guide without forcing either). ULIDs as primary keys so exports and webhooks never leak sequence information. Consent records are append-only by design: no `updated_at`, no updates, current state is the latest row per (subject, type).
+Every table carries a nullable `tenant_id` (configurable column name and resolver, so it fits single-tenant apps and the multi-tenant setups from the integration guide without forcing either). Primary keys are house-standard auto-increment `id()`; the two externally-exposed append-only tables (`ai_consent_records`, `ai_activity_events`) additionally carry a unique `public_id` ULID, and exports, webhooks, and API resources emit only `public_id`, so sequence information never leaks where it matters while joins stay cheap. Morph column pairs use database-tools' `configuredMorphs()` schema macro, which reads the configured key type (int/ulid/uuid) instead of hand-rolled `nullableMorphs()` switches. Consent records are append-only by design: no `updated_at`, no updates, current state is the latest row per (subject, type).
 
 ```php
 Schema::create('ai_consent_types', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
     $table->string('slug')->unique();
     $table->string('label');
     $table->text('description')->nullable();
@@ -381,14 +397,16 @@ Schema::create('ai_consent_types', function (Blueprint $table) {
 });
 
 Schema::create('ai_consent_records', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
+    $table->ulid('public_id')->unique();       // the only id exports and webhooks ever emit
     $table->string('tenant_id')->nullable()->index();
-    $table->foreignUlid('consent_type_id')->constrained('ai_consent_types');
-    $table->nullableMorphs('subjectable');     // subjectable_type + subjectable_id; stub switches to nullableUlidMorphs()/nullableUuidMorphs() per config('ai-compliance.morph_key_type')
+    $table->foreignId('consent_type_id')->constrained('ai_consent_types');
+    $table->configuredMorphs('subjectable', nullable: true); // database-tools macro; key type from config
     $table->string('guest_key')->nullable();   // server-issued pseudonymous key
     $table->string('status');                  // granted, denied, withdrawn
     $table->string('source');                  // which form, api client, or import
-    $table->string('policy_version');
+    $table->foreignId('policy_version_id')->constrained('ai_policy_versions');
+    $table->string('policy_version');          // denormalized for export readability ("Policy 1.0")
     $table->string('ip_hash')->nullable();     // sha256 with app-level salt, jurisdiction dependent
     $table->timestamp('recorded_at')->index(); // utc
     $table->index(['subjectable_type', 'subjectable_id', 'consent_type_id', 'recorded_at']);
@@ -396,7 +414,7 @@ Schema::create('ai_consent_records', function (Blueprint $table) {
 });
 
 Schema::create('ai_providers', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
     $table->string('tenant_id')->nullable()->index();
     $table->string('name');
     $table->string('vendor');
@@ -417,19 +435,20 @@ Schema::create('ai_providers', function (Blueprint $table) {
 });
 
 Schema::create('ai_activity_events', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
+    $table->ulid('public_id')->unique();       // same rule as consent records
     $table->string('tenant_id')->nullable()->index();
     $table->string('event_type')->index();     // ActivityType enum
-    $table->nullableMorphs('actorable');       // who acted; null for system/scheduler events, source goes in context
-    $table->nullableMorphs('subjectable');     // who it was about; same key-type switch as consent records
-    $table->foreignUlid('provider_id')->nullable()->constrained('ai_providers');
+    $table->configuredMorphs('actorable', nullable: true);   // who acted; null for system/scheduler events, source goes in context
+    $table->configuredMorphs('subjectable', nullable: true); // who it was about
+    $table->foreignId('provider_id')->nullable()->constrained('ai_providers');
     $table->json('context')->nullable();       // no raw prompts or sensitive content
     $table->string('hash_prev', 64)->nullable(); // tamper-evidence chain, optional tier
     $table->timestamp('recorded_at')->index();
 });
 
 Schema::create('ai_checklist_items', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
     $table->string('tenant_id')->nullable()->index();
     $table->string('key')->index();            // unique per tenant
     $table->string('section');
@@ -446,23 +465,61 @@ Schema::create('ai_checklist_items', function (Blueprint $table) {
     $table->unique(['tenant_id', 'key']);
 });
 
-Schema::create('ai_compliance_policies', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+// the policy subsystem is three tables, not one json blob: every user-facing text
+// (long-form policy, consent short/long text, disclosure line) is a *document* authored
+// as markdown, with its own draft/published/superseded version stream and per-locale
+// translations. a consent record points at the exact version of the exact document it
+// was shown, so "who needs re-consent" is a query, not a diff.
+Schema::create('ai_policy_documents', function (Blueprint $table) {
+    $table->id();
     $table->string('tenant_id')->nullable()->index();
-    $table->string('version');
-    $table->string('status')->default('draft'); // PolicyStatus: draft, published, superseded
-    $table->json('consent_texts');               // per locale, per consent type slug
-    $table->json('disclosure_texts');            // per locale, per surface
-    $table->json('changed_types')->nullable();   // slugs whose text materially changed vs prior version
-    $table->timestamp('effective_at')->nullable();
-    $table->string('published_by')->nullable();
-    $table->timestamp('published_at')->nullable();
+    $table->string('slug');                    // 'transparency', 'consent.ai_training', 'disclosure.chat', ...
+    $table->string('type');                    // PolicyType enum: policy, consent_text, disclosure
+    $table->string('surface')->nullable();     // disclosure docs: chat, content, decision
+    $table->string('consent_type_slug')->nullable(); // links consent_text docs to ai_consent_types.slug
+    $table->string('source_path')->nullable(); // relative path of the shipped md file it was imported from
+    $table->string('default_locale');
+    $table->boolean('active')->default(true);
     $table->timestamps();
-    $table->unique(['tenant_id', 'version']);
+    $table->unique(['tenant_id', 'slug']);
 });
 
+Schema::create('ai_policy_versions', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('policy_document_id')->constrained('ai_policy_documents');
+    $table->string('version');                 // '1.0', '1.1', auto-bumped
+    $table->string('status')->default('draft'); // PolicyVersionStatus: draft, published, superseded
+    $table->configuredMorphs('authorable', nullable: true); // who created/published; null = seeder/sync
+    $table->timestamp('effective_at')->nullable();
+    $table->timestamp('published_at')->nullable();
+    $table->timestamp('superseded_at')->nullable();
+    $table->timestamps();
+    $table->unique(['policy_document_id', 'version']);
+});
+// invariant enforced by the PolicyPublisher service: at most one published version per
+// document; publishing marks the prior one superseded in the same transaction.
+
+Schema::create('ai_policy_translations', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('policy_version_id')->constrained('ai_policy_versions');
+    $table->string('locale');
+    $table->string('title');
+    $table->longText('source_markdown');       // raw markdown as authored (frontmatter body)
+    $table->longText('compiled_html');         // commonmark output, shortcodes compiled, {{placeholders}} left intact
+    $table->json('meta')->nullable();          // parsed frontmatter: short text for consent docs, summary, ...
+    $table->char('checksum', 64);              // sha256 of source_markdown
+    $table->char('file_checksum', 64)->nullable();   // sha256 of the shipped file at import (file-drift anchor)
+    $table->char('origin_checksum', 64)->nullable(); // checksum of the default-locale source this translation was made from
+    $table->timestamps();
+    $table->unique(['policy_version_id', 'locale']);
+});
+// two staleness signals, both cheap checksum comparisons: the shipped file changed after
+// import (file_checksum drift; sync auto-drafts only when the db copy was never hand-edited,
+// otherwise it flags and never overwrites), and the default-locale source changed after a
+// translation was made (origin_checksum drift; that locale needs re-translation).
+
 Schema::create('ai_classification_answers', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
     $table->string('tenant_id')->nullable()->index();
     $table->string('question_key');
     $table->string('answer');
@@ -472,7 +529,7 @@ Schema::create('ai_classification_answers', function (Blueprint $table) {
 });
 
 Schema::create('ai_feature_states', function (Blueprint $table) {
-    $table->ulid('id')->primary();
+    $table->id();
     $table->string('tenant_id')->nullable()->index();
     $table->string('feature');                 // key from config features map
     $table->boolean('enabled')->default(false);
@@ -482,12 +539,11 @@ Schema::create('ai_feature_states', function (Blueprint $table) {
 });
 ```
 
-Models live in `Simtabi\Laranail\AiCompliance\Models`, use `HasUlids`, declare casts through the `casts()` method (the Laravel 11+ style that carries through 13), and are swappable through config (`'models' => [ConsentRecord::class => ...]`) the way spatie packages do it. `ActivityEvent` uses `MassPrunable` against the configured retention; `ConsentRecord` deliberately does not (retention is a legal decision, so pruning it requires the explicit `ai-compliance:prune --consents` flag with a config'd policy).
+Models live in `Simtabi\Laranail\AiCompliance\Models`, declare casts through the `casts()` method (the Laravel 11+ style that carries through 13), and are swappable through config (`'models' => [ConsentRecord::class => ...]`) the way spatie packages do it. The two `public_id` tables generate their ULID in a `creating` hook (database-tools ships the trait). Table names come from `config('laranail.ai-compliance.tables.*')` the way package-management's migration does it. `ActivityEvent` uses `MassPrunable` against the configured retention; `ConsentRecord` deliberately does not (retention is a legal decision, so pruning it requires the explicit `prune --consents` flag with a config'd policy).
 
 ```php
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentRecordFactory;
@@ -495,8 +551,6 @@ use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 
 class ConsentRecord extends Model
 {
-    use HasUlids;
-
     public const UPDATED_AT = null;                 // append-only: no updated_at column exists
 
     protected $guarded = [];
@@ -573,13 +627,14 @@ One honest caveat on the actor change: old rows may hold `actor_type = 'system'`
 ```php
 namespace Simtabi\Laranail\AiCompliance\Enums;
 
-enum ConsentStatus: string { case Granted = 'granted'; case Denied = 'denied'; case Withdrawn = 'withdrawn'; }
-enum CheckStatus: string   { case Ok = 'ok'; case Review = 'review'; case Fail = 'fail'; case NotApplicable = 'na'; }
-enum LegalBasis: string    { case Consent = 'consent'; case LegitimateInterest = 'legitimate_interest'; case Contract = 'contract'; }
-enum PolicyStatus: string  { case Draft = 'draft'; case Published = 'published'; case Superseded = 'superseded'; }
-enum ActivityType: string  { case Inference = 'inference'; case ConsentChange = 'consent_change'; case ProviderChange = 'provider_change';
-                             case SettingChange = 'setting_change'; case Decision = 'decision'; case Override = 'override';
-                             case DsrAction = 'dsr_action'; case Export = 'export'; case Incident = 'incident'; }
+enum ConsentStatus: string       { case Granted = 'granted'; case Denied = 'denied'; case Withdrawn = 'withdrawn'; }
+enum CheckStatus: string         { case Ok = 'ok'; case Review = 'review'; case Fail = 'fail'; case NotApplicable = 'na'; }
+enum LegalBasis: string          { case Consent = 'consent'; case LegitimateInterest = 'legitimate_interest'; case Contract = 'contract'; }
+enum PolicyType: string          { case Policy = 'policy'; case ConsentText = 'consent_text'; case Disclosure = 'disclosure'; }
+enum PolicyVersionStatus: string { case Draft = 'draft'; case Published = 'published'; case Superseded = 'superseded'; }
+enum ActivityType: string        { case Inference = 'inference'; case ConsentChange = 'consent_change'; case ProviderChange = 'provider_change';
+                                   case SettingChange = 'setting_change'; case Decision = 'decision'; case Override = 'override';
+                                   case DsrAction = 'dsr_action'; case Export = 'export'; case Incident = 'incident'; }
 ```
 
 Factories ship for every model and carry the states the tests and demos need:
@@ -606,15 +661,15 @@ public function forUser(Model $user): static
 }
 ```
 
-`ProviderFactory` has `dueDiligenceComplete()` and `trainsOnData()` states; `ChecklistItemFactory` has `ok()`, `fail()`, `stale()`; `ActivityEventFactory` has a state per `ActivityType`; `CompliancePolicyFactory` has `published()`.
+`ProviderFactory` has `dueDiligenceComplete()` and `trainsOnData()` states; `ChecklistItemFactory` has `ok()`, `fail()`, `stale()`; `ActivityEventFactory` has a state per `ActivityType`; `PolicyDocumentFactory`/`PolicyVersionFactory`/`PolicyTranslationFactory` have `published()`, `superseded()`, and `stale()` states.
 
-Three seeders, split by intent. `ConsentTypeSeeder` inserts the four defaults from the config (training, chatbot, recommendations, personalization) idempotently by slug. `ChecklistSeeder` inserts every automatable and manual item from sections 4 through 10 of this document, keyed (`transparency.first_contact_disclosure`, `consent.crawler_signals`, `logging.activity_log_alive`, and so on), with `applies_when` rules wired to the section 2 classification keys, so a fresh install's dashboard is the full checklist with everything at Review. `InitialPolicySeeder` publishes version 1.0 of the compliance policy from the template set in the companion document (ai-policy-templates.md): the short and long consent texts per type and the disclosure texts per surface land in `ai_compliance_policies.consent_texts` and `disclosure_texts`, with placeholders left intact so the install command can prompt for company name and contact. `DemoSeeder` (never run by `install`, only on demand) reproduces the screenshot state for local dev: eight consent rows across two timestamps, two granted, six denied, zero providers so the dashboard shows the Review flag, and a couple of activity events. `php artisan ai-compliance:install` runs migrations plus the first three; `--demo` adds the fourth.
+Three seeders, split by intent. `ConsentTypeSeeder` inserts the four defaults from the config (training, chatbot, recommendations, personalization) idempotently by slug. `ChecklistSeeder` inserts every automatable and manual item from sections 4 through 10 of this document, keyed (`transparency.first_contact_disclosure`, `consent.crawler_signals`, `logging.activity_log_alive`, and so on), with `applies_when` rules wired to the section 2 classification keys, so a fresh install's dashboard is the full checklist with everything at Review. `InitialPolicySeeder` is a thin wrapper over the policy file sync: the template set from the companion document (ai-policy-templates.md) ships as markdown files under `resources/policies/en/`, and the seeder imports each file as a document row with a published version 1.0 whose translations carry the file's content verbatim — placeholders left intact so the install command can prompt for company name and contact. `DemoSeeder` (never run by `install`, only on demand) reproduces the screenshot state for local dev: eight consent rows across two timestamps, two granted, six denied, zero providers so the dashboard shows the Review flag, and a couple of activity events. `php artisan laranail::ai-compliance.install` runs migrations plus the first three; `--demo` adds the fourth.
 
 ### 12.4 Authorization policies and the consent policy model
 
 Two different things called "policy," both improved here.
 
-Laravel authorization policies guard the admin API. Every model gets one (`ConsentRecordPolicy`, `ProviderPolicy`, `ChecklistItemPolicy`, `CompliancePolicyPolicy`, `FeatureStatePolicy`), registered with `Gate::policy()` in the provider, and they all delegate to three gates the host app defines. `viewAny`/`view` map to the audit gate, mutations map to the manage gate, and `export` is its own gate because log exports are the sensitive ability. Consent records have no `update` or `delete` abilities at all. The class is short enough to show whole:
+Laravel authorization policies guard the admin API. Every model gets one (`ConsentRecordPolicy`, `ProviderPolicy`, `ChecklistItemPolicy`, `PolicyDocumentPolicy`, `FeatureStatePolicy`), registered with `Gate::policy()` in the provider, and they all delegate to three gates the host app defines. `viewAny`/`view` map to the audit gate, mutations map to the manage gate, and `export` is its own gate because log exports are the sensitive ability. Consent records have no `update` or `delete` abilities at all. The class is short enough to show whole:
 
 ```php
 namespace Simtabi\Laranail\AiCompliance\Policies;
@@ -664,15 +719,15 @@ Gate::define('ai-compliance:audit',  fn ($user) => $user->hasRole('auditor') || 
 Gate::define('ai-compliance:export', fn ($user) => $user->hasRole('compliance-admin'));
 ```
 
-The consent policy model (the `ai_compliance_policies` table) got the real upgrade from the section 11 sketch: publishing a new version diffs its `consent_texts` against the previous published version per consent type and records only the materially changed slugs in `changed_types`. Re-consent then targets exactly the affected people instead of everyone:
+The consent policy model got the real upgrade from the section 11 sketch: every text is its own document with its own version stream (12.2), so publishing a new version of one consent text supersedes only that document's prior version. Re-consent targets exactly the affected people with no diffing machinery — a subject needs re-consent when their latest granted record for a type references a superseded version of that type's document. Umbrella documents (the transparency page) never force re-consent by themselves; the operator forces it by publishing a new version of the relevant `consent.*` document:
 
 ```php
-php artisan ai-compliance:policy publish 2.0
-# diffs against 1.x, marks changed_types = ["ai_training"], supersedes 1.x
+php artisan laranail::ai-compliance.policy.publish consent.ai_training
+# publishes the current draft as 2.0, supersedes 1.x of this document only
 
-php artisan ai-compliance:notify-reconsent
-# queues notifications only to subjects whose latest granted consent for a changed
-# type references a superseded version; everyone else's consent stands
+php artisan laranail::ai-compliance.notify-reconsent
+# queues notifications only to subjects whose latest granted consent references a
+# superseded version of the consent document; everyone else's consent stands
 ```
 
 Notifications are plain Laravel notification classes (`ReconsentRequested` to users over mail and database channels, `CheckFailed`, `ProviderDueDiligenceLapsed`, `ActivityLogSilent` to admins over the configured channels), all overridable via config the standard way.
@@ -711,7 +766,7 @@ Route middleware `ai.feature:chat_assistant` and `ai.consent:ai_chatbot` guard e
 $response = AiConsent::provider('openai')->forSubject($user)->chat($messages);
 ```
 
-The consumer routes (`routes/api.php`, prefix and middleware configurable, rate-limited by default) serve the JS SDK: `GET /ai-compliance/boot` (types, texts in locale, policy version, subject state, reconsent flag), `POST /ai-compliance/consents`, and nothing else. Admin routes expose the dashboard numbers, checklist, feature toggles, policy publishing, and exports as JSON behind the authorization policies above, so Filament, Nova, or a customer's own UI are equal citizens; the optional `laranail/ai-compliance-filament` panel is just a consumer of them.
+The consumer routes (`routes/api.php`, prefix and middleware configurable, rate-limited by default) serve the JS SDK: `GET /ai-compliance/boot` (types, texts in locale, policy version, subject state, reconsent flag), `POST /ai-compliance/consents`, and nothing else. Admin routes expose the dashboard numbers, checklist, feature toggles, policy publishing, and exports as JSON behind the authorization policies above, so Filament, Nova, or a customer's own UI are equal citizens; the optional Filament plugin shipped in `src/Filament/` (active only when filament is installed) is just a consumer of them.
 
 Checks stay one-method classes (`Simtabi\Laranail\AiCompliance\Checks\Check` contract, `run(): CheckResult`); the package ships the automatable ones from section 11 and host apps register more by tagging. Everything material fires an event (`ConsentRecorded`, `ConsentWithdrawn`, `FeatureToggled`, `PolicyPublished`, `CheckFailed`, `InferenceLogged`), which is also the hook for the webhook fan-out from the integration guide.
 
@@ -719,8 +774,11 @@ Checks stay one-method classes (`Simtabi\Laranail\AiCompliance\Checks\Check` con
 
 ```bash
 npm install @laranail/ai-compliance          # framework-agnostic core
-npm install @laranail/ai-compliance-react    # react bindings, vue planned
+npm install @laranail/ai-compliance-react    # react bindings
+npm install @laranail/ai-compliance-vue      # vue bindings
 ```
+
+All three live in this repo as npm workspaces under `packages/` and release in lockstep with the composer package from the same `vX.Y.Z` tag; the boot payload carries a `contract` integer the core checks at boot. Blade, Livewire, and the Filament plugin render the same payload server-side, so all five UI stacks sit on one contract.
 
 Same design as before under the new scope: boots from the host app's `/ai-compliance/boot` endpoint (same origin, CSRF-protected, no third-party calls), exposes `granted()`, `set()`, `onChange()`, `require()`, ships the preferences panel rendered from server config, the first-contact disclosure badge, a content label, and a re-consent prompt driven by the boot response's flag. Guest identity is the server-issued signed cookie; the JS never mints identity, and login merges guest rows into the user server-side with source `guest_merge`.
 
@@ -740,9 +798,9 @@ function Chat() {
 
 ### 12.7 Testing and build order
 
-The package's own Pest suite (on testbench) implements the section 11.3 acceptance tests as feature tests, plus: append-only enforcement on consent records, policy diff targeting only changed types for re-consent, guest merge idempotency, tenancy isolation on every admin endpoint, and prune jobs respecting the consent-retention flag. Factories make all of these cheap to write, which is most of the reason they exist.
+The package's own Pest suite (on testbench) implements the section 11.3 acceptance tests as feature tests, plus: append-only enforcement on consent records, re-consent targeting only subjects on superseded consent-document versions, locale fallback and both staleness signals in the policy pipeline, guest merge idempotency, tenancy isolation on every admin endpoint, and prune jobs respecting the consent-retention flag. Factories make all of these cheap to write, which is most of the reason they exist.
 
-Build order holds from before: v0.1 consent core (migrations, models, factories, seeders, facade, consumer API, guest merge) plus the JS preferences panel and disclosure components; v0.2 checklist engine, checks, dashboard endpoints, admin alerts; v0.3 feature gating with the Pennant bridge, policy versioning with the diff-targeted re-consent, notifications; v1.0 provider wrapper with do-not-train enforcement and inference logging, exports and reports, the Filament panel, and webhook events wired to the integration surface.
+Build order (the working plan in `.claude/design/PLAN.md` breaks these into PR-sized milestones): v0.1 the policy pipeline (file loading, compile, locale fallback, boot/policy endpoints) then policy versioning and the editing API; v0.2 consent core plus the Blade/Livewire and JS/React/Vue surfaces; v0.3 checklist engine, checks, dashboard endpoints, feature gating with the Pennant bridge, notifications; v1.0 provider wrapper with do-not-train enforcement and inference logging, exports and reports, the Filament plugin, and webhook events wired to the integration surface.
 
 ---
 
