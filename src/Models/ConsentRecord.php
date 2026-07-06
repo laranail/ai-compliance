@@ -15,6 +15,7 @@ use LogicException;
 use Override;
 use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentRecordFactory;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
+use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
  * One consent event, append-only by design: a change writes a new row,
@@ -25,7 +26,7 @@ use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
  *
  * @property int $id
  * @property string $public_id
- * @property string|null $tenant_id
+ * @property string $tenant_id
  * @property int $consent_type_id
  * @property string|null $subjectable_type
  * @property int|string|null $subjectable_id
@@ -39,6 +40,8 @@ use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
  */
 class ConsentRecord extends Model
 {
+    use BelongsToTenant;
+
     /** @use HasFactory<ConsentRecordFactory> */
     use HasFactory;
 

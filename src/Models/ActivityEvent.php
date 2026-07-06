@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Override;
 use Simtabi\Laranail\AiCompliance\Database\Factories\ActivityEventFactory;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
  * One entry in the ai activity log. This milestone records consent changes
@@ -22,7 +23,7 @@ use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
  *
  * @property int $id
  * @property string $public_id
- * @property string|null $tenant_id
+ * @property string $tenant_id
  * @property ActivityType $event_type
  * @property string|null $actorable_type
  * @property int|string|null $actorable_id
@@ -35,6 +36,8 @@ use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
  */
 class ActivityEvent extends Model
 {
+    use BelongsToTenant;
+
     /** @use HasFactory<ActivityEventFactory> */
     use HasFactory;
 

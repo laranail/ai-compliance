@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simtabi\Laranail\AiCompliance;
+namespace Simtabi\Laranail\AiCompliance\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -17,6 +17,7 @@ use Livewire\Livewire;
 use Override;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\AiCompliance;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\ActivityLogAliveCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\ConsentUiReachableCheck;
@@ -41,6 +42,8 @@ use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PruneCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\ReportCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\VerifyChainCommand;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\InitialPolicySeeder;
 use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
 use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
@@ -66,12 +69,12 @@ use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
-use Simtabi\Laranail\AiCompliance\Providers\ProviderCalls;
 use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
 use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
 use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
+use Simtabi\Laranail\Package\Tools\Services\Database\SeederManager;
 
 /**
  * Entry point for laranail/ai-compliance. configurePackage() declares the
@@ -118,9 +121,11 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
     #[Override]
     public function packageRegistered(): void
     {
+        $shippedPolicies = $this->package->basePath('/resources/policies');
+
         $this->app->singleton(PolicyFileLoader::class, static fn (Application $app): PolicyFileLoader => new PolicyFileLoader(
             $app->make(ConfigRepository::class),
-            dirname(__DIR__) . '/resources/policies',
+            $shippedPolicies,
         ));
 
         $this->app->singleton(PolicyCompiler::class);
@@ -182,6 +187,26 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         $this->registerMorphMap();
         $this->registerBladeComponents();
         $this->registerLivewireComponents();
+        $this->registerPackageSeeders();
+    }
+
+    /**
+     * Hook the package's idempotent seeders into the host's `db:seed` via
+     * the package-tools seeder registry: they run once when the app's
+     * DatabaseSeeder resolves, no host-side wiring needed. DemoSeeder is
+     * deliberately absent — demo data is on demand only.
+     */
+    private function registerPackageSeeders(): void
+    {
+        if (! (bool) $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.seeders.auto', true)) {
+            return;
+        }
+
+        $this->app->make(SeederManager::class)->autoSeed(
+            'laranail/ai-compliance',
+            [ChecklistSeeder::class, InitialPolicySeeder::class],
+            'Simtabi\\Laranail\\AiCompliance\\Database\\Seeders',
+        );
     }
 
     /**

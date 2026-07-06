@@ -140,7 +140,7 @@ final readonly class PolicyRepository
         try {
             /** @var PolicyDocument|null $document */
             $document = PolicyDocument::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->where('slug', $slug)
                 ->first();
         } catch (QueryException) {
@@ -165,7 +165,7 @@ final readonly class PolicyRepository
     {
         try {
             return array_values(PolicyDocument::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->with('publishedVersion.translations')
                 ->get()
                 ->all());

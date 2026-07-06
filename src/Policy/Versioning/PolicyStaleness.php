@@ -34,7 +34,7 @@ final readonly class PolicyStaleness
         $entries = [];
 
         $documents = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->with('latestVersion.translations')
             ->get();
 

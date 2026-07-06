@@ -31,7 +31,7 @@ final class PolicyPublishCommand extends Command
         }
 
         $document = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('slug', $slug)
             ->first();
 
