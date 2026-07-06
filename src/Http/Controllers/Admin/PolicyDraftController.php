@@ -84,7 +84,7 @@ final readonly class PolicyDraftController
     private function documentOrFail(string $slug): PolicyDocument
     {
         $document = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('slug', $slug)
             ->first();
 

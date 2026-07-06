@@ -431,6 +431,27 @@ npm); submit the package to Packagist + confirm the auto-update hook;
 verify docsmith discovery picks up docs/; review the day-one dependabot
 PRs (vitest 3->4 is a major); then move [Unreleased] to v0.1.0 and tag.
 
+## Post-release-prep refactor (2026-07-06)
+
+- Migrations merged into one file (pre-1.0, nothing released, so no
+  upgrade path needed). Review findings fixed in the merge: the nullable
+  tenant_id unique-index bug (empty-string sentinel + BelongsToTenant
+  scope over ~28 call sites), the provider_id fk that file ordering had
+  made impossible, config-derived index names, the (event_type,
+  recorded_at) composite.
+- Provider moved to src/Providers: package-tools strips a trailing
+  /Providers when reflecting the base path, so paths held — except the
+  loader's dirname(__DIR__), now $this->package->basePath('/resources/
+  policies') (laranail's basePath() is the package ROOT, unlike spatie's
+  src-relative idiom — do not write '/../'). Also caught: the root-
+  namespace AiCompliance manager class needed an explicit import after
+  the move (phpstan flagged it; tests had masked it via the facade).
+- Seeders: SeederManager::autoSeed (package-tools) hooks ChecklistSeeder
+  + InitialPolicySeeder into the host's db:seed; both idempotent;
+  DemoSeeder deliberately excluded; config seeders.auto opt-out. The
+  hook fires on any Seeder resolution, which the suite now exercises for
+  real (PackageSeedersTest).
+
 ## Decision log
 
 | Date | Decision | Why |

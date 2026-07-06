@@ -23,7 +23,7 @@ final class Classification
     {
         foreach ($answers as $questionKey => $answer) {
             $existing = ClassificationAnswer::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->where('question_key', $questionKey)
                 ->first();
 
@@ -37,7 +37,7 @@ final class Classification
                 $existing->update($attributes);
             } else {
                 ClassificationAnswer::query()->create([
-                    'tenant_id' => null,
+                    'tenant_id' => '',
                     'question_key' => $questionKey,
                     ...$attributes,
                 ]);
@@ -54,7 +54,7 @@ final class Classification
     {
         $answers = [];
 
-        foreach (ClassificationAnswer::query()->whereNull('tenant_id')->get() as $answer) {
+        foreach (ClassificationAnswer::query()->forDefaultTenant()->get() as $answer) {
             $answers[$answer->question_key] = $answer->answer;
         }
 
@@ -71,7 +71,7 @@ final class Classification
         $answers = $this->answers();
 
         $items = ChecklistItem::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->whereNotNull('applies_when')
             ->get();
 

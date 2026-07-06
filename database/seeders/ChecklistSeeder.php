@@ -22,7 +22,7 @@ final class ChecklistSeeder extends Seeder
     {
         foreach (ChecklistDefinitions::all() as $definition) {
             $existing = ChecklistItem::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->where('key', $definition['key'])
                 ->first();
 
@@ -42,7 +42,7 @@ final class ChecklistSeeder extends Seeder
             }
 
             ChecklistItem::query()->create([
-                'tenant_id' => null,
+                'tenant_id' => '',
                 'key' => $definition['key'],
                 'status' => 'review',
                 ...$attributes,

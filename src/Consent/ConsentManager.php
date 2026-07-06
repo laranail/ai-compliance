@@ -381,7 +381,7 @@ final readonly class ConsentManager
     private function publishedPolicyVersionFor(string $type): array
     {
         $document = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('slug', 'consent.' . $type)
             ->where('active', true)
             ->first();
