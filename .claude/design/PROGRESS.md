@@ -350,6 +350,37 @@ Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## Production-ready gate review (2026-07-06 — all nine milestones done)
+
+Checked against the original brief's definition of production-ready:
+
+- [x] Pest suite on testbench covering the policy pipeline, locale fallback,
+      version snapshots, and one rendering test per UI stack — 184 tests /
+      723 assertions (Blade: BladeComponentsTest; Livewire:
+      LivewireComponentsTest; Filament: FilamentPluginTest; React + Vue: 23
+      vitest tests over the recorded contract fixture)
+- [x] PHPStan level 6+ clean — level 8 with larastan, zero errors; Pint
+      clean; CI committed (tests matrix, static-analysis, security, js,
+      release with lockstep npm publish)
+- [x] Publishable config, migrations, views, translations — all via the
+      package-tools tags (`laranail::ai-compliance-{config,policies,
+      translations,views}`); migrations discovered + run, table names
+      config-driven; no hardcoded user-facing strings (lang files +
+      placeholders + policy documents)
+- [x] Semver-ready — the boot payload carries `contract: 1`; config keys
+      only gain entries; the 3-table policy schema replaced the spec's JSON
+      table before any release, so no shipped schema changes shape in 1.x
+- [x] Docs complete per CONVENTIONS.md — 5 concern pages, 13 tools
+      references, 6 recipes, slim README, CHANGELOG entries per milestone
+- [x] This file shows every milestone's acceptance criteria checked with
+      same-session evidence
+
+Release D-list before the first tag (from /opensource/shipping-checklist.md
+plus package specifics): create the GitHub repo + push, make public, npm
+NPM_TOKEN secret (or trusted publishing) for the lockstep job, Packagist
+hook, `gh repo edit` homepage/description/topics, verify docsmith picks up
+docs/, then cut v0.1.0.
+
 ## Decision log
 
 | Date | Decision | Why |
