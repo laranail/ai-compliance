@@ -428,7 +428,7 @@ Release-time actions still open (need the owner's accounts): confirm the
 @laranail npm org exists + configure OIDC trusted publishing for the three
 packages (repo laranail/ai-compliance, workflow release.yml, environment
 npm); submit the package to Packagist + confirm the auto-update hook;
-verify docsmith discovery picks up docs/; review the day-one dependabot
+docs-site onboarding done (laranail/documentation PR #4: sync entry + nav/sidebar + directory family; the site is sync-docs.mjs-driven today, docsmith migration is the site repo's own concern); review the day-one dependabot
 PRs (vitest 3->4 is a major); then move [Unreleased] to v0.1.0 and tag.
 
 ## Post-release-prep refactor (2026-07-06)
