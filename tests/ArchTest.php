@@ -23,3 +23,8 @@ arch('http controllers are final')
     ->expect('Simtabi\Laranail\AiCompliance\Http')
     ->classes()
     ->toBeFinal();
+
+arch('only the filament module touches filament, so the package boots without it')
+    ->expect('Simtabi\Laranail\AiCompliance')
+    ->not->toUse('Filament')
+    ->ignoring('Simtabi\Laranail\AiCompliance\Filament');

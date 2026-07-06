@@ -41,6 +41,7 @@ Full documentation lives at
 - [Checklist](docs/tools/checklist.md) — the seeded items, classification, evidence, staleness, dashboard
 - [Checks](docs/tools/checks.md) — the automated checks, scheduling, and alerting
 - [Activity log](docs/tools/activity-log.md) — event coverage, hash chain, retention, read auditing
+- [Filament](docs/tools/filament.md) — the admin plugin: policy editor, registry, consent log, checklist
 
 ### Recipes
 

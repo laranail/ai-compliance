@@ -7,17 +7,25 @@ namespace Simtabi\Laranail\AiCompliance\Tests;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Simtabi\Laranail\AiCompliance\AiComplianceServiceProvider;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
 use Simtabi\Laranail\DatabaseTools\Providers\DatabaseToolsServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
+    /**
+     * Filament registers a dozen providers of its own; discovery pulls them
+     * (and everything else in vendor) the way a real app would.
+     */
+    protected $enablesPackageDiscoveries = true;
+
     protected function getPackageProviders($app): array
     {
         return [
             DatabaseToolsServiceProvider::class, // registers the configuredMorphs schema macros
             LivewireServiceProvider::class,
             AiComplianceServiceProvider::class,
+            AdminPanelProvider::class,
         ];
     }
 

@@ -18,7 +18,7 @@ recording the exact failing state and next step.
 | M5 — JS core + React + Vue | done | 2026-07-05 |
 | M6 — checklist + checks engine | done | 2026-07-06 |
 | M7 — activity log + provider enforcement | done | 2026-07-06 |
-| M8 — Filament plugin | not started | |
+| M8 — Filament plugin | done | 2026-07-06 |
 | M9 — exports, reports, re-consent notifications | not started | |
 
 ## M1 acceptance criteria
@@ -286,6 +286,36 @@ Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M8 acceptance criteria
+
+- [x] package boots + suite green without filament — architecture test:
+      nothing outside Simtabi\...\Filament uses the Filament namespace, so
+      the module is dead code until a panel loads the plugin; the whole
+      pre-M8 suite runs unchanged
+- [x] editor round-trips markdown byte-identically — `FilamentPluginTest`:
+      trailing spaces/tabs preserved exactly, checksum = sha256(source),
+      no-op save keeps the checksum and creates no second draft
+- [x] publish from the UI supersedes + flushes cache — header action test:
+      1.1 published, 1.0 superseded, repository serves the new body, cache
+      generation key bumped
+- [x] resources: providers CRUD, consent log read-only (ConsentRecordPolicy
+      enforced INSIDE filament — the 403 during development proved it),
+      checklist with evidence + run-checks actions, policy list
+- [x] classification page re-derives the checklist; ComplianceStats widget
+      renders the shared DashboardStats service
+- [x] docs: tools/filament.md, README index, CHANGELOG entry
+
+Evidence (run 2026-07-06, PHP 8.5.3, filament v5.6, prefer-stable):
+
+```
+== pest ==     Tests:    1 skipped, 174 passed (674 assertions)
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== vitest ==   Tests 23 passed
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -337,6 +367,10 @@ Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
 | 2026-07-06 | DSR erasure and pruning may break the hash chain by design | Erasure outranks tamper evidence; the broken link itself documents that history was lawfully altered. Documented in code and docs |
 | 2026-07-06 | provider_id on activity events gets an index, not a foreign key | SQLite cannot add an FK to an existing table, and soft-deleted providers must stay referenceable; app-level integrity suffices (M3 backlog item closed) |
 | 2026-07-06 | Consent pruning removes only superseded history, never the current state per (subject, type) | The current record is what the operator relies on; its age is irrelevant to retention of history |
+| 2026-07-06 | Filament v5 (not the planned ^4): current major, supports illuminate ^13 + livewire ^4 | Verified on Packagist; PLAN's ^4 assumption was stale by release time |
+| 2026-07-06 | PolicyDrafts + DashboardStats extracted as services | The filament editor and the http api must share one write path (byte-identical storage, single-draft rule) and one set of dashboard numbers |
+| 2026-07-06 | Filament tests via $enablesPackageDiscoveries = true + a fixture panel provider | Filament registers a dozen providers; discovery mirrors a real app. Gotcha for the future: testbench caches bootstrap/cache/packages.php — delete it after adding a dev dependency with providers |
+| 2026-07-06 | Filament consent log relies on ConsentRecordPolicy, not resource-level flags alone | One authorization source; the host's gates apply identically over http and in the panel |
 
 ## Backlog
 
@@ -346,8 +380,6 @@ Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
 
 - Consider `laranail/notifications` as an optional channel layer for M6 alert
   notifications (survey found it SSRF-guarded, standalone) — decide at M6.
-- Filament major version pin (^4 assumed) — confirm against filament release state
-  at M8.
 - PDF engine for M9 reports (suggest dep dompdf vs browsershot) — decide at M9.
 - Demo seeder (`--demo`) reproducing the plugin-screenshot state — spec'd, slot into
   M6 with the checklist seeder.

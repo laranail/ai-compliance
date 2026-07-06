@@ -9,6 +9,18 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Filament plugin** (`AiCompliancePlugin`, suggest dependency
+  filament/filament ^5): policy documents with a markdown editor that stores
+  drafts byte-for-byte through the shared `PolicyDrafts` service and
+  publishes atomically from a header action; provider registry CRUD; a
+  strictly read-only consent log (model policy enforced inside Filament);
+  the checklist with evidence and run-checks actions; the classification
+  intake page; and the FR-1 stats widget. An architecture test guarantees
+  nothing outside `src/Filament` references Filament, so the package boots
+  identically without it.
+- `PolicyDrafts` and `DashboardStats` services extracted so the http api and
+  Filament share one write path and one set of numbers.
+
 - **Consent-aware provider calls** (`AiConsent::provider(...)->forSubject(...)`):
   the vendor's configurable do-not-train flag (header and/or body key) is
   injected whenever the subject has not granted `ai_training`; every send —

@@ -4,48 +4,35 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
-use Simtabi\Laranail\AiCompliance\Events\PolicyDraftCreated;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
 use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyDrafts;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\VersionNumber;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Write side of the policy editing api. A document has at most one open
- * draft; store() creates or returns it, updateTranslation() edits one
- * locale's markdown (recompiling on save), publish() promotes it and
- * supersedes the current published version atomically.
+ * Write side of the policy editing api, a thin http layer over the
+ * PolicyDrafts service the filament editor shares: one open draft per
+ * document, edits recompiled on save, publishing atomic.
  */
 final readonly class PolicyDraftController
 {
     public function __construct(
-        private PolicyCompiler $compiler,
+        private PolicyDrafts $drafts,
         private PolicyPublisher $publisher,
-        private Dispatcher $events,
     ) {}
 
     public function store(string $slug): JsonResponse
     {
         $document = $this->documentOrFail($slug);
 
-        $existing = $document->draftVersion()->first();
+        $existed = $document->draftVersion()->exists();
+        $draft = $this->drafts->openDraft($document);
 
-        if ($existing instanceof PolicyVersion) {
-            return new JsonResponse(['data' => $this->presentVersion($existing)]);
-        }
-
-        $draft = $this->createDraft($document);
-
-        return new JsonResponse(['data' => $this->presentVersion($draft)], 201);
+        return new JsonResponse(['data' => $this->presentVersion($draft)], $existed ? 200 : 201);
     }
 
     public function updateTranslation(Request $request, string $slug, string $locale): JsonResponse
@@ -58,38 +45,7 @@ final readonly class PolicyDraftController
             'source_markdown' => ['required', 'string'],
         ]);
 
-        $markdown = $validated['source_markdown'];
-
-        $compiled = $this->compiler->compile(new PolicyFile(
-            slug: $document->slug,
-            locale: $locale,
-            type: $document->type,
-            relativePath: (string) $document->source_path,
-            absolutePath: '',
-            contents: $markdown,
-            checksum: hash('sha256', $markdown),
-        ));
-
-        $originChecksum = null;
-
-        if ($locale !== $document->default_locale) {
-            /** @var PolicyTranslation|null $defaultTranslation */
-            $defaultTranslation = $draft->translations()->where('locale', $document->default_locale)->first();
-            $originChecksum = $defaultTranslation?->checksum;
-        }
-
-        /** @var PolicyTranslation $translation */
-        $translation = $draft->translations()->updateOrCreate(
-            ['locale' => $locale],
-            array_filter([
-                'title' => $compiled->title(),
-                'source_markdown' => $markdown,
-                'compiled_html' => $compiled->html,
-                'meta' => $compiled->meta,
-                'checksum' => hash('sha256', $markdown),
-                'origin_checksum' => $originChecksum,
-            ], static fn (mixed $value): bool => $value !== null),
-        );
+        $translation = $this->drafts->updateTranslation($draft, $locale, $validated['source_markdown']);
 
         return new JsonResponse([
             'data' => [
@@ -110,36 +66,6 @@ final readonly class PolicyDraftController
         $published = $this->publisher->publish($draft, $request->user());
 
         return new JsonResponse(['data' => $this->presentVersion($published)]);
-    }
-
-    private function createDraft(PolicyDocument $document): PolicyVersion
-    {
-        $latest = $document->versions()->latest('id')->first();
-
-        /** @var PolicyVersion $draft */
-        $draft = $document->versions()->create([
-            'version' => $latest instanceof PolicyVersion ? VersionNumber::next($latest->version) : VersionNumber::first(),
-            'status' => PolicyVersionStatus::Draft,
-        ]);
-
-        if ($latest instanceof PolicyVersion) {
-            foreach ($latest->translations as $translation) {
-                $draft->translations()->create([
-                    'locale' => $translation->locale,
-                    'title' => $translation->title,
-                    'source_markdown' => $translation->source_markdown,
-                    'compiled_html' => $translation->compiled_html,
-                    'meta' => $translation->meta,
-                    'checksum' => $translation->checksum,
-                    'file_checksum' => $translation->file_checksum,
-                    'origin_checksum' => $translation->origin_checksum,
-                ]);
-            }
-        }
-
-        $this->events->dispatch(new PolicyDraftCreated($draft));
-
-        return $draft;
     }
 
     /**

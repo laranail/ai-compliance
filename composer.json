@@ -48,6 +48,7 @@
         "symfony/yaml": "^7.0 || ^8.0"
     },
     "require-dev": {
+        "filament/filament": "^5.6",
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.18",
         "livewire/livewire": "^4.0",
@@ -108,6 +109,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "suggest": {
-        "livewire/livewire": "Enables the ConsentPreferences and ReconsentPrompt Livewire components (^4.0)."
+        "livewire/livewire": "Enables the ConsentPreferences and ReconsentPrompt Livewire components (^4.0).",
+        "filament/filament": "Enables the Filament admin plugin (panel resources, policy editor, dashboard widgets) (^5.0)."
     }
 }
