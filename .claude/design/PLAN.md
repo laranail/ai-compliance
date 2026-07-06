@@ -13,7 +13,8 @@ end (loader → frontmatter → shortcodes → placeholders → cache → boot/p
 endpoints); the 14 policy md files (en) authored from `ai-policy-templates.md`; all
 enums; CI; docs. No database.
 
-Ships: composer.json (path repos), pint/phpstan/rector/phpunit configs, root
+Ships: composer.json (Packagist deps only — no path repos, see PROGRESS decision
+log), pint/phpstan/rector/phpunit configs, root
 hygiene files, 4 workflows, `config/ai-compliance.php`,
 `resources/policies/en/**` (14 files), `resources/lang/en/ai-compliance.php`,
 `routes/api.php`, service provider, `AiCompliance` manager + facade, 6 enums,
@@ -22,7 +23,7 @@ repository, cache, 3 VOs), `Payload/BootPayload`, Boot/Policy controllers,
 `laranail::ai-compliance.policy.show` command, test suite, docs.
 
 Acceptance criteria:
-- [ ] `composer install` resolves via path repos; Pest green on testbench ^11;
+- [ ] `composer install` resolves (Packagist); Pest green on testbench ^11;
       PHPStan level 8, Pint, Rector clean; 4 workflows committed.
 - [ ] `GET /ai-compliance/boot` returns the contract-1 payload (consent types from
       config defaults, empty state, version from files = null).

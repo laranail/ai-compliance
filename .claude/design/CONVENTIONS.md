@@ -16,7 +16,7 @@ re-deriving.
 | Schema layer | `laranail/database-tools ^1.0` — `configuredMorphs()`, `auditColumns()` schema macros, audit observer (adopted from M2 when the first migration lands) |
 | PHP | `^8.4.1 \|\| ^8.5` |
 | Laravel | `illuminate/* ^13.0` only |
-| Local dev | composer `repositories` path entries: `../package/tools`, `../tools/console`, `../database-tools` |
+| Local dev | deps resolve from Packagist; NO committed path repositories (composer hard-fails on a missing path-repo dir, breaking CI and consumer installs — verified 2026-07-05). To develop against a sibling checkout, add a path repo locally without committing it |
 | Markdown | `league/commonmark ^2.7` + `symfony/yaml ^7.0 \|\| ^8.0` (frontmatter), explicit requires |
 
 ## Naming

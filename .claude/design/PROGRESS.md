@@ -11,7 +11,7 @@ recording the exact failing state and next step.
 
 | Milestone | Status | Date |
 |---|---|---|
-| M1 — skeleton + read-only policy pipeline | in progress | 2026-07-05 |
+| M1 — skeleton + read-only policy pipeline | done | 2026-07-05 |
 | M2 — policy versioning + editing API | not started | |
 | M3 — consent core | not started | |
 | M4 — Blade + Livewire | not started | |
@@ -23,19 +23,51 @@ recording the exact failing state and next step.
 
 ## M1 acceptance criteria
 
-- [ ] composer install resolves via path repos; Pest green; PHPStan level 8, Pint,
-      Rector clean; 4 workflows committed
-- [ ] GET /ai-compliance/boot returns the contract-1 payload
-- [ ] GET /ai-compliance/policies/transparency returns compiled HTML (placeholders
-      substituted, shortcodes → `<ai-c>`, frontmatter meta)
-- [ ] locale `de` request falls back to `en` and reports served locale
-- [ ] app-published policies dir overrides package files
-- [ ] `policy.show` renders a compiled doc in the terminal
-- [ ] docs pages shipped (installation, getting-started, configuration,
-      architecture, release, tools/policy-pipeline, recipes/customizing-policies) +
-      slim README + CHANGELOG entry
+- [x] dependencies resolve (from Packagist — see decision log on path repos);
+      Pest green; PHPStan level 8, Pint, Rector clean; 4 workflows committed
+      (`tests.yml`, `static-analysis.yml`, `security.yml`, `release.yml`)
+- [x] GET /ai-compliance/boot returns the contract-1 payload — tests
+      `BootEndpointTest`: "serves the contract-1 boot payload", "describes every
+      consent type…", "defaults every consent state…", "serves substituted
+      disclosure texts per surface", "indexes the long-form policy documents…",
+      "serves translatable component strings", "honours an explicit locale request"
+- [x] GET /ai-compliance/policies/transparency returns compiled HTML — tests
+      `PolicyEndpointTest`: "serves a compiled policy document" (placeholders
+      substituted: title "How Acme App uses AI", html contains `<ai-c
+      data-component=`, no `{{company}}` remains), "serves consent texts and
+      disclosures as documents too", "returns 404 for unknown documents"
+- [x] locale `de` falls back to `en` and reports served locale — tests
+      `PolicyRepositoryFallbackTest` ("falls back to the default locale…", "walks
+      the configured fallback chain for regional locales" [de-CH → de → en]) and
+      `PolicyEndpointTest` ("reports the fallback when the requested locale is
+      not translated")
+- [x] app-published policies dir overrides package files — test
+      `PolicyFileLoaderTest`: "prefers app-published files over the shipped
+      defaults"
+- [x] `policy.show` renders in the terminal — tests `PolicyShowCommandTest`
+      (render, --locale fallback report, unknown-slug failure)
+- [x] docs shipped: docs/installation.md, getting-started.md, configuration.md,
+      architecture.md, release.md, tools/policy-pipeline.md,
+      recipes/customizing-policies.md, slim README (house spine + 4 badges),
+      CHANGELOG `## [Unreleased]` entry
 
-Evidence: (pending — pasted when the M1 verification run is green)
+Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    46 passed (201 assertions)   Duration: 0.72s
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== audit ==    No security vulnerability advisories found.
+```
+
+prefer-lowest leg also verified locally (mirrors the CI matrix):
+
+```
+composer update --prefer-lowest --prefer-stable && vendor/bin/pest
+  Tests:    2 deprecated, 44 passed (201 assertions)   (deprecations from lowest
+  transitive deps, no failures)
+```
 
 ## Decision log
 
@@ -55,6 +87,8 @@ Evidence: (pending — pasted when the M1 verification run is green)
 | 2026-07-05 | Placeholders substituted at serve time, never stored | Config changes don't require republish; stored versions stay faithful to authored text |
 | 2026-07-05 | Git history starts with the spec-docs baseline, then `docs(spec)` fixes; the M1 implementation commit is `Initial release` | Repo pre-existed with content; a reviewable fix diff beats a squashed genesis commit. Org "first commit = Initial release" rule read as applying to fresh-from-zero projects |
 | 2026-07-05 | Umbrella policy publishes never force re-consent; only `consent.*` document publishes do | Re-consent = latest granted record references a superseded version of that consent doc; no diff machinery |
+| 2026-07-05 | No path repositories in composer.json; deps resolve from Packagist (`package-tools ^1.3`, `console ^1.0`) | Verified empirically: composer hard-fails when a path repo dir is missing, so committed path repos would break CI and every consumer install (license-kit carries this latent bug). All laranail deps are published; local sibling development can add a path repo ad hoc without committing it. Deviates from PLAN's original "path repos" detail — plan updated here |
+| 2026-07-05 | `laranail/package-tools` floor is `^1.3`, not `^1.0` | `publishDirectory()` and the translations alias arrived in 1.2/1.3; prefer-lowest CI leg must resolve a version that has them. Lowest set verified green locally |
 
 ## Backlog
 
