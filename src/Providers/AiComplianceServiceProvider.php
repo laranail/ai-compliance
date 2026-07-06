@@ -4,16 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Providers;
 
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Gate;
-use Livewire\Livewire;
 use Override;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
@@ -73,16 +66,18 @@ use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
 use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
 use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
+use Simtabi\Laranail\Package\Tools\Enums\Cadence;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
-use Simtabi\Laranail\Package\Tools\Services\Database\SeederManager;
+use Simtabi\Laranail\Package\Tools\Support\Definitions\AutoSeederDefinition;
+use Simtabi\Laranail\Package\Tools\Support\Definitions\ScheduledCommandDefinition;
 
 /**
- * Entry point for laranail/ai-compliance. configurePackage() declares the
- * package surface (namespaced config, views, translations, routes, the
- * publishable policy markdown, commands); packageRegistered() wires the
- * service singletons; packageBooted() adds listeners, middleware aliases,
- * the morph map, blade components, and the optional livewire module.
+ * Entry point for laranail/ai-compliance. The whole package surface is
+ * declared fluently in configurePackage() — resources, commands, event
+ * listeners, middleware aliases, the consent-record policy, the morph
+ * map, scheduled commands, blade and livewire components, and the
+ * db:seed-time seeders. packageRegistered() wires the service singletons.
  */
 final class AiComplianceServiceProvider extends PackageServiceProvider
 {
@@ -117,7 +112,46 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 'Policy documents (default locale)' => (string) count(
                     $this->app->make(PolicyFileLoader::class)->all($this->defaultLocale()),
                 ),
-            ]);
+            ])
+            ->registerEventListeners([
+                PolicyPublished::class => FlushCompiledPolicyCache::class,
+                PoliciesSynced::class => FlushCompiledPolicyCache::class,
+                ConsentRecorded::class => RecordConsentActivity::class,
+                ConsentWithdrawn::class => RecordConsentActivity::class,
+                CheckFailed::class => SendCheckAlerts::class,
+            ])
+            ->registerRouteMiddlewares([
+                'ai.consent' => EnsureConsent::class,
+                'ai.feature' => EnsureFeature::class,
+            ])
+            ->registerPolicies([ConsentRecord::class => ConsentRecordPolicy::class])
+            // non-enforcing 'user' alias so stored *_type columns survive a
+            // host renaming its user class; morph_map adds host aliases
+            ->registerMorphMapFromConfig('laranail.ai-compliance.morph_map', 'laranail.ai-compliance.user_model')
+            ->registerScheduledCommands([
+                // cadence from config: any Cadence value, frequency string, or
+                // raw cron; missing key falls back to daily, explicit null = off
+                ScheduledCommandDefinition::make('laranail::ai-compliance.audit')
+                    ->cadenceFromConfig('laranail.ai-compliance.checks.schedule', Cadence::Daily),
+                // exact contract: retention configured (not null) => prune runs
+                ScheduledCommandDefinition::make('laranail::ai-compliance.prune')
+                    ->cadenceFromConfig('laranail.ai-compliance.checks.schedule', Cadence::Daily)
+                    ->whenConfigNotNull('laranail.ai-compliance.retention.activity_events'),
+            ])
+            ->hasBladeComponentNamespace('Simtabi\\Laranail\\AiCompliance\\View\\Components', 'ai-compliance')
+            // spec-shaped alias: <x-ai-compliance::gate> next to consent-gate
+            ->hasBladeComponentAlias('ai-compliance::gate', ConsentGate::class)
+            ->withoutLivewireNamespacePrefix()
+            ->hasLivewireComponents([
+                'ai-compliance.consent-preferences' => ConsentPreferences::class,
+                'ai-compliance.reconsent-prompt' => ReconsentPrompt::class,
+            ], whenConfig: 'laranail.ai-compliance.livewire.enabled')
+            ->hasPackageSeeders(
+                AutoSeederDefinition::make('laranail/ai-compliance')
+                    ->seeders([ChecklistSeeder::class, InitialPolicySeeder::class])
+                    ->inNamespace('Simtabi\\Laranail\\AiCompliance\\Database\\Seeders')
+                    ->whenConfig('laranail.ai-compliance.seeders.auto'),
+            );
     }
 
     #[Override]
@@ -166,126 +200,6 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 PolicyVersioningCheck::class,
             ],
         ));
-    }
-
-    #[Override]
-    public function packageBooted(): void
-    {
-        $events = $this->app->make(Dispatcher::class);
-
-        $events->listen(PolicyPublished::class, FlushCompiledPolicyCache::class);
-        $events->listen(PoliciesSynced::class, FlushCompiledPolicyCache::class);
-        $events->listen(ConsentRecorded::class, RecordConsentActivity::class);
-        $events->listen(ConsentWithdrawn::class, RecordConsentActivity::class);
-        $events->listen(CheckFailed::class, SendCheckAlerts::class);
-
-        $this->app->make(Router::class)->aliasMiddleware('ai.consent', EnsureConsent::class);
-        $this->app->make(Router::class)->aliasMiddleware('ai.feature', EnsureFeature::class);
-
-        $this->registerScheduledChecks();
-
-        Gate::policy(ConsentRecord::class, ConsentRecordPolicy::class);
-
-        $this->registerMorphMap();
-        $this->registerBladeComponents();
-        $this->registerLivewireComponents();
-        $this->registerPackageSeeders();
-    }
-
-    /**
-     * Hook the package's idempotent seeders into the host's `db:seed` via
-     * the package-tools seeder registry: they run once when the app's
-     * DatabaseSeeder resolves, no host-side wiring needed. DemoSeeder is
-     * deliberately absent — demo data is on demand only.
-     */
-    private function registerPackageSeeders(): void
-    {
-        if (! (bool) $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.seeders.auto', true)) {
-            return;
-        }
-
-        $this->app->make(SeederManager::class)->autoSeed(
-            'laranail/ai-compliance',
-            [ChecklistSeeder::class, InitialPolicySeeder::class],
-            'Simtabi\\Laranail\\AiCompliance\\Database\\Seeders',
-        );
-    }
-
-    /**
-     * The automated checks run daily by default; set
-     * laranail.ai-compliance.checks.schedule to null to opt out.
-     */
-    private function registerScheduledChecks(): void
-    {
-        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
-            $cadence = $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.checks.schedule', 'daily');
-
-            if ($cadence === 'daily') {
-                $schedule->command('laranail::ai-compliance.audit')->daily();
-
-                if ($this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.retention.activity_events') !== null) {
-                    $schedule->command('laranail::ai-compliance.prune')->daily();
-                }
-            }
-        });
-    }
-
-    private function registerBladeComponents(): void
-    {
-        Blade::componentNamespace('Simtabi\\Laranail\\AiCompliance\\View\\Components', 'ai-compliance');
-
-        // spec-shaped alias: <x-ai-compliance::gate> next to <x-ai-compliance::consent-gate>
-        Blade::component('ai-compliance::gate', ConsentGate::class);
-    }
-
-    /**
-     * The livewire components exist only when the host installed livewire
-     * (a suggest dependency); the package boots cleanly without it.
-     */
-    private function registerLivewireComponents(): void
-    {
-        if (! class_exists(Livewire::class) || ! $this->app->bound('livewire')) {
-            return;
-        }
-
-        if (! (bool) $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.livewire.enabled', true)) {
-            return;
-        }
-
-        Livewire::component('ai-compliance.consent-preferences', ConsentPreferences::class);
-        Livewire::component('ai-compliance.reconsent-prompt', ReconsentPrompt::class);
-    }
-
-    /**
-     * Register the short 'user' morph alias (non-enforcing: hosts opting
-     * into Relation::requireMorphMap() do so themselves — a package forcing
-     * it globally would break unrelated host morphs).
-     */
-    private function registerMorphMap(): void
-    {
-        $config = $this->app->make(ConfigRepository::class);
-
-        $userModel = $config->get('laranail.ai-compliance.user_model')
-            ?? $config->get('auth.providers.users.model');
-
-        /** @var array<string, class-string<Model>> $map */
-        $map = [];
-
-        if (is_string($userModel) && is_subclass_of($userModel, Model::class)) {
-            $map['user'] = $userModel;
-        }
-
-        $extra = $config->get('laranail.ai-compliance.morph_map', []);
-
-        foreach (is_array($extra) ? $extra : [] as $alias => $class) {
-            if (is_string($alias) && is_string($class) && is_subclass_of($class, Model::class)) {
-                $map[$alias] = $class;
-            }
-        }
-
-        if ($map !== []) {
-            Relation::morphMap($map);
-        }
     }
 
     private function defaultLocale(): string

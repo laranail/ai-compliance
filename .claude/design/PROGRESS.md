@@ -478,6 +478,20 @@ With the gaps closed and the remaining scope decisions recorded below, the
 two spec documents were deleted from the repo (content fully realized;
 history keeps them at commit 258196f and earlier).
 
+## package-tools 2.0 migration (2026-07-06)
+
+package-tools 2.0.0 was designed and shipped in this effort (fluent
+declarative registrations: schedules with CronBuilder/Cadence enums,
+policies, morph maps, rate limiters, observers, conditional routes, blade
+aliases/namespaces, gated livewire, db:seed-time seeder definitions with
+discovery + ignore + priority; plus the componentNamespace and
+seeder-options-bleed bug fixes and the removal of boot-time seeder
+execution). This provider was the reference consumer: its whole
+packageBooted() hand-rolled block is now declared in configurePackage().
+ScheduledCommandsTest closes the schedule-coverage hole; the stale
+phpstan ignoreErrors entry for the livewire view-string false positive
+was removed (no longer reported under the updated toolchain).
+
 ## Decision log
 
 | Date | Decision | Why |

@@ -9,6 +9,15 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Changed
 
+- Provider migrated to the laranail/package-tools 2.0 declarative surface
+  (floor `^2.0`): event listeners, middleware aliases, the consent-record
+  policy, the morph map, scheduled commands, blade/livewire components,
+  and the db:seed-time seeders are all declared fluently in
+  `configurePackage()`; the hand-rolled `packageBooted()` wiring is gone.
+  Config keys unchanged. One behavior improvement: `checks.schedule` now
+  accepts any scheduler cadence string (`'hourly'`, `'dailyAt:02:30'`, or
+  a raw cron expression), not only the literal `'daily'`.
+
 - Spec-conformance audit fixes: `privacy.dpia` applies when personal data
   OR consequential decisions is yes (classification rules gained an
   `any_of` form); `transparency.sector_disclosures` and
