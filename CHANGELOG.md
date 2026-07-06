@@ -9,6 +9,26 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Consent-aware provider calls** (`AiConsent::provider(...)->forSubject(...)`):
+  the vendor's configurable do-not-train flag (header and/or body key) is
+  injected whenever the subject has not granted `ai_training`; every send —
+  or `record()` for host SDKs — logs an inference event (provider reference,
+  purpose, `do_not_train`, never raw prompts) and fires `InferenceLogged`.
+- **Hash-chain tamper tier** (`activity.hash_chain`): events link to their
+  predecessor; `laranail::ai-compliance.verify-chain` and
+  `GET …/admin/activity/chain` recompute the chain and name the first broken
+  link. Pruning chained events and DSR erasure break it by design.
+- **Retention + `laranail::ai-compliance.prune`**: activity events prune per
+  config (model is `MassPrunable`); consent history only behind the explicit
+  `--consents` flag with a configured policy, and only superseded rows — the
+  current state always survives. Pruning logs its own event (FR-9).
+- **Activity read surface** (`GET …/admin/activity`): filterable, paginated,
+  public ids only; every read is logged as the new `log_read` activity type
+  with the reader attributed (FR-10).
+- **DSR completeness**: `forgetSubject` now also scrubs guest keys out of
+  activity-event context (both M3 backlog items resolved; `provider_id`
+  gained an index).
+
 - **Compliance checklist** (`ai_checklist_items`): forty-plus items extracted
   from spec sections 4–10, seeded at `review` by `ChecklistSeeder` (wired
   into `install`); statuses ok/review/fail/na with evidence, verifier, and

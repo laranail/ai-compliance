@@ -21,6 +21,8 @@ use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Providers\PendingProviderCall;
+use Simtabi\Laranail\AiCompliance\Providers\ProviderCalls;
 
 /**
  * The consent api application code talks to instead of reading rows.
@@ -245,6 +247,9 @@ final readonly class ConsentManager
      * events, keeping the anonymous history for statistics, and log the dsr
      * action. Runs through the query builder deliberately — the eloquent
      * append-only guards protect against application code, not maintenance.
+     * Scrubbing guest keys out of event context mutates chained events, so
+     * the hash chain breaks at that point by design: erasure outranks tamper
+     * evidence, and the break itself documents that an erasure happened.
      */
     public function forgetSubject(Model|Authenticatable|string $subject): void
     {
@@ -254,12 +259,31 @@ final readonly class ConsentManager
             'guest_key' => null,
         ]);
 
-        $this->activityQuery($subject)->toBase()->update([
-            'subjectable_type' => null,
-            'subjectable_id' => null,
-        ]);
+        if (is_string($subject)) {
+            foreach ($this->activityQuery($subject)->get() as $event) {
+                $context = $event->context ?? [];
+                unset($context['guest_key']);
+                $event->update(['context' => $context]);
+            }
+        } else {
+            $this->activityQuery($subject)->toBase()->update([
+                'subjectable_type' => null,
+                'subjectable_id' => null,
+            ]);
+        }
 
         $this->activity->record(ActivityType::DsrAction, context: ['action' => 'forget']);
+    }
+
+    /**
+     * A consent-aware outbound call to a registered provider: the vendor's
+     * do-not-train flag is injected from the subject's ai_training state and
+     * the inference is logged in the same motion.
+     */
+    public function provider(string $name): PendingProviderCall
+    {
+        // resolved from the container to avoid a constructor cycle
+        return app(ProviderCalls::class)->provider($name);
     }
 
     /**

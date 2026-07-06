@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ActivityController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ChecklistController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ClassificationController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\DashboardController;
@@ -33,6 +34,8 @@ Route::prefix(is_string($prefix) ? $prefix : 'ai-compliance/admin')
             Route::get('classification', [ClassificationController::class, 'index'])->name('classification.index');
             Route::get('providers', [ProviderController::class, 'index'])->name('providers.index');
             Route::get('features', [FeatureController::class, 'index'])->name('features.index');
+            Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
+            Route::get('activity/chain', [ActivityController::class, 'chain'])->name('activity.chain');
         });
 
         Route::middleware('can:ai-compliance:manage')->group(function (): void {

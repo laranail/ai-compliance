@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Override;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\ActivityLogAliveCheck;
@@ -35,6 +36,8 @@ use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyShowCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\PruneCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\VerifyChainCommand;
 use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
 use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
@@ -59,6 +62,7 @@ use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Providers\ProviderCalls;
 use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
@@ -91,6 +95,8 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 PolicyShowCommand::class,
                 PolicySyncCommand::class,
                 PolicyPublishCommand::class,
+                PruneCommand::class,
+                VerifyChainCommand::class,
             ])
             ->hasAboutSection('AI Compliance', fn (): array => [
                 'Contract' => (string) BootPayload::CONTRACT,
@@ -117,7 +123,9 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         $this->app->singleton(PolicyStaleness::class);
         $this->app->singleton(ConsentTypes::class);
         $this->app->singleton(GuestKeys::class);
+        $this->app->singleton(ActivityChain::class);
         $this->app->singleton(ActivityRecorder::class);
+        $this->app->singleton(ProviderCalls::class);
         $this->app->singleton(FeatureGate::class);
         $this->app->singleton(ConsentManager::class);
         $this->app->singleton(Classification::class);

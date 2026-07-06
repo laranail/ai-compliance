@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Models;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
@@ -36,6 +38,8 @@ class ActivityEvent extends Model
     /** @use HasFactory<ActivityEventFactory> */
     use HasFactory;
 
+    use MassPrunable;
+
     public $timestamps = false;
 
     protected $guarded = [];
@@ -64,6 +68,25 @@ class ActivityEvent extends Model
             $event->public_id ??= (string) Str::ulid();
             $event->recorded_at ??= now()->toImmutable();
         });
+    }
+
+    /**
+     * Events older than the configured retention (days) are prunable; a null
+     * retention keeps everything. Note the hash chain breaks by design when
+     * chained events are pruned — retention and tamper evidence are both
+     * policies, and the operator picks their balance.
+     *
+     * @return Builder<static>
+     */
+    public function prunable(): Builder
+    {
+        $days = config('laranail.ai-compliance.retention.activity_events');
+
+        if (! is_int($days) || $days <= 0) {
+            return static::query()->whereRaw('1 = 0');
+        }
+
+        return static::query()->where('recorded_at', '<', now()->subDays($days));
     }
 
     /**

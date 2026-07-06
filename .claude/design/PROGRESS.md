@@ -17,7 +17,7 @@ recording the exact failing state and next step.
 | M4 — Blade + Livewire | done | 2026-07-05 |
 | M5 — JS core + React + Vue | done | 2026-07-05 |
 | M6 — checklist + checks engine | done | 2026-07-06 |
-| M7 — activity log + provider enforcement | not started | |
+| M7 — activity log + provider enforcement | done | 2026-07-06 |
 | M8 — Filament plugin | not started | |
 | M9 — exports, reports, re-consent notifications | not started | |
 
@@ -253,6 +253,39 @@ Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M7 acceptance criteria
+
+- [x] spec acceptance test 1 (consent flip -> do-not-train flag observed) —
+      `ProviderCallsTest`: denied subject carries the configured header/body
+      flag; granted omits it; withdrawal re-applies it on the very next call;
+      subjectless calls always flag
+- [x] spec acceptance test 2 (DSR erasure + logged event) —
+      `DsrCompletenessTest`: nothing points at the user after forget, history
+      stays anonymous, export returns empty, dsr_action logged; guest keys
+      scrubbed out of event context (M3 backlog item resolved)
+- [x] hash chain verifies — `ActivityChainTest`: intact chain verifies,
+      forged middle row detected (command exits non-zero naming the break),
+      enabling on an existing log starts a fresh chain, disabled leaves
+      hash_prev null
+- [x] pruning logs a pruning event — `PruneCommandTest`; consent pruning
+      refuses without flag+config and never removes the current state
+- [x] inference logging with provider reference and no raw prompts, via
+      send() and the record()-only path for host SDKs; InferenceLogged fires
+- [x] activity read surface with filters/pagination/public ids and FR-10
+      log_read attribution — `ActivityEndpointTest`
+- [x] docs: tools/activity-log.md, recipes/do-not-train-enforcement.md,
+      README index, CHANGELOG entry
+
+Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    1 skipped, 164 passed (627 assertions)
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -299,22 +332,20 @@ Evidence (run 2026-07-06, PHP 8.5.3, prefer-stable):
 | 2026-07-06 | Dashboard consent tiles count CURRENT state per (subject, type), not rows | The append-only log is history; the dashboard is now. Anonymized rows carry no current state |
 | 2026-07-06 | Alerting = events always + mail notifications only when AI_COMPLIANCE_ALERT_MAIL is set | Hosts without a compliance inbox still get the events to listen on; no channel guessing |
 | 2026-07-06 | Pennant bridge consults only DEFINED pennant features, wrapped in a throw guard | An undefined pennant feature must never block; pennant-installed-but-unconfigured must never break the gate |
+| 2026-07-06 | ActivityType gains a LogRead case beyond the spec's nine | FR-10 requires log reads to be logged; none of the spec's types fit honestly. Additive string-backed case, pre-1.0 |
+| 2026-07-06 | Do-not-train is a configurable per-vendor mapping (header/body), injected when ai_training is NOT granted | Real vendor flags vary and mostly live in contracts; the mapping makes the enforcement testable and auditable (do_not_train recorded on every inference) without hardcoding vendor apis |
+| 2026-07-06 | DSR erasure and pruning may break the hash chain by design | Erasure outranks tamper evidence; the broken link itself documents that history was lawfully altered. Documented in code and docs |
+| 2026-07-06 | provider_id on activity events gets an index, not a foreign key | SQLite cannot add an FK to an existing table, and soft-deleted providers must stay referenceable; app-level integrity suffices (M3 backlog item closed) |
+| 2026-07-06 | Consent pruning removes only superseded history, never the current state per (subject, type) | The current record is what the operator relies on; its age is irrelevant to retention of history |
 
 ## Backlog
 
 - Release D-list addition: create the `NPM_TOKEN` secret (or npm trusted
   publishing) before the first tag — the lockstep npm job needs it.
 
-- M7: scrub guest keys from activity-event `context` json during
-  `forgetSubject` (model-subject morphs are already nulled; json scrubbing
-  needs store-portable handling).
-- M7: add the `provider_id` FK constraint on `ai_activity_events` once the
-  providers table exists (column ships unconstrained since M3).
 
 - Consider `laranail/notifications` as an optional channel layer for M6 alert
   notifications (survey found it SSRF-guarded, standalone) — decide at M6.
-- `laranail/toolkit` LLM module overlaps M7's provider wrappers — evaluate reuse vs
-  own thin wrappers at M7.
 - Filament major version pin (^4 assumed) — confirm against filament release state
   at M8.
 - PDF engine for M9 reports (suggest dep dompdf vs browsershot) — decide at M9.

@@ -15,4 +15,5 @@ enum ActivityType: string
     case DsrAction = 'dsr_action';
     case Export = 'export';
     case Incident = 'incident';
+    case LogRead = 'log_read';
 }

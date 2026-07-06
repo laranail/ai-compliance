@@ -250,6 +250,41 @@ return [
     */
     'retention' => [
         'activity_events' => null,
+        'consent_records' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity log
+    |--------------------------------------------------------------------------
+    |
+    | 'hash_chain' turns on the tamper-evidence tier: every event links to
+    | its predecessor and laranail::ai-compliance.verify-chain recomputes the
+    | chain. Note that pruning chained events and dsr erasure both break the
+    | chain by design.
+    |
+    */
+    'activity' => [
+        'hash_chain' => false,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Provider calls
+    |--------------------------------------------------------------------------
+    |
+    | Per-vendor do-not-train request adjustments (lowercase vendor key),
+    | injected whenever the subject has NOT granted ai_training. Vendors
+    | without a per-request flag (contract-level positions) map to an empty
+    | array — the inference event still records do_not_train so the position
+    | is auditable.
+    |
+    */
+    'providers' => [
+        'do_not_train' => [
+            'openai' => ['body' => 'store', 'body_value' => false],
+            'anthropic' => [],
+        ],
     ],
 
 ];

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Facade;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Providers\PendingProviderCall;
 
 /**
  * @method static ConsentRecord grant(Model|Authenticatable|string $subject, string $type, string $source = 'app')
@@ -24,6 +25,7 @@ use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
  * @method static void mergeGuest(string $guestKey, Model|Authenticatable $user)
  * @method static array{consents: list<array<string, mixed>>, activity: list<array<string, mixed>>} exportSubject(Model|Authenticatable|string $subject)
  * @method static void forgetSubject(Model|Authenticatable|string $subject)
+ * @method static PendingProviderCall provider(string $name)
  *
  * @see ConsentManager
  */

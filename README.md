@@ -40,6 +40,7 @@ Full documentation lives at
 - [Vue](docs/tools/vue.md) — @laranail/ai-compliance-vue bindings
 - [Checklist](docs/tools/checklist.md) — the seeded items, classification, evidence, staleness, dashboard
 - [Checks](docs/tools/checks.md) — the automated checks, scheduling, and alerting
+- [Activity log](docs/tools/activity-log.md) — event coverage, hash chain, retention, read auditing
 
 ### Recipes
 
@@ -47,6 +48,7 @@ Full documentation lives at
 - [Translating policies](docs/recipes/translating-policies.md) — add locales and track re-translation work
 - [Gating features by consent](docs/recipes/gating-features-by-consent.md) — allows() and the ai.consent middleware
 - [Writing custom checks](docs/recipes/writing-custom-checks.md) — automate your own checklist items
+- [Do-not-train enforcement](docs/recipes/do-not-train-enforcement.md) — consent-aware provider calls
 
 ## Contributing & security
 
