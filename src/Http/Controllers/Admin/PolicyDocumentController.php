@@ -19,7 +19,7 @@ final class PolicyDocumentController
     public function index(): JsonResponse
     {
         $documents = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->with(['publishedVersion', 'draftVersion'])
             ->orderBy('slug')
             ->get()
@@ -74,7 +74,7 @@ final class PolicyDocumentController
     private function documentOrFail(string $slug): PolicyDocument
     {
         $document = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('slug', $slug)
             ->first();
 

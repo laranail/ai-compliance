@@ -86,7 +86,7 @@ final class DashboardStats
 
         try {
             $counts = ChecklistItem::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->selectRaw('status, count(*) as total')
                 ->groupBy('status')
                 ->pluck('total', 'status');

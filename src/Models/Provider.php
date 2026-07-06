@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Override;
 use Simtabi\Laranail\AiCompliance\Database\Factories\ProviderFactory;
+use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
  * One row in the ai provider/vendor registry: which model, from whom, under
@@ -17,7 +18,7 @@ use Simtabi\Laranail\AiCompliance\Database\Factories\ProviderFactory;
  * deactivated vendors stay referenceable from the activity log.
  *
  * @property int $id
- * @property string|null $tenant_id
+ * @property string $tenant_id
  * @property string $name
  * @property string $vendor
  * @property string $model_name
@@ -35,6 +36,8 @@ use Simtabi\Laranail\AiCompliance\Database\Factories\ProviderFactory;
  */
 class Provider extends Model
 {
+    use BelongsToTenant;
+
     /** @use HasFactory<ProviderFactory> */
     use HasFactory;
 

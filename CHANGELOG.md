@@ -7,6 +7,26 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ## [Unreleased]
 
+### Changed
+
+- The ten table migrations merged into one dependency-ordered migration.
+  Review fixes shipped with the merge: `tenant_id` is now NOT NULL with an
+  empty-string single-tenant sentinel, because composite unique indexes
+  over a nullable column never fire (sql NULLs do not collide) — the
+  `(tenant_id, slug|key|feature|question_key)` constraints now actually
+  constrain; `ai_activity_events.provider_id` gained a real foreign key
+  with `nullOnDelete` (providers are created first now); the consent-log
+  index names derive from the configured table name; activity events
+  gained an `(event_type, recorded_at)` composite index matching the
+  admin read filters.
+- `AiComplianceServiceProvider` moved to
+  `Simtabi\Laranail\AiCompliance\Providers` (update the class name in
+  `dont-discover`/manual registration if you referenced it).
+- Package seeders (checklist items, initial policy import) register with
+  the package-tools seeder registry and run automatically with the host's
+  `php artisan db:seed`; disable with `seeders.auto => false`. The demo
+  seeder never auto-runs.
+
 ### Added
 
 - **Log exports** (FR-5): `GET …/admin/exports/{consents,activity}` behind

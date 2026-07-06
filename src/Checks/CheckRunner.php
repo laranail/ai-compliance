@@ -38,7 +38,7 @@ final readonly class CheckRunner
         foreach ($this->checks() as $check) {
             /** @var ChecklistItem|null $item */
             $item = ChecklistItem::query()
-                ->whereNull('tenant_id')
+                ->forDefaultTenant()
                 ->where('key', $check->key())
                 ->first();
             if ($item === null) {
@@ -83,7 +83,7 @@ final readonly class CheckRunner
         $degraded = [];
 
         $candidates = ChecklistItem::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('evidence_type', 'manual')
             ->where('status', CheckStatus::Ok->value)
             ->get();
