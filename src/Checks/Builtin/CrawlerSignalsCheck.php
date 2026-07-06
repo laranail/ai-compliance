@@ -34,7 +34,7 @@ final readonly class CrawlerSignalsCheck implements Check
         $base = rtrim((string) $this->config->get('app.url', ''), '/');
 
         try {
-            $robots = $this->http->get($base . '/robots.txt');
+            $robots = $this->http->connectTimeout(5)->timeout(10)->get($base . '/robots.txt');
         } catch (ConnectionException) {
             return CheckResult::fail('robots.txt is unreachable at ' . $base);
         }
@@ -51,7 +51,7 @@ final readonly class CrawlerSignalsCheck implements Check
         $llms = '';
 
         try {
-            $llmsResponse = $this->http->get($base . '/llms.txt');
+            $llmsResponse = $this->http->connectTimeout(5)->timeout(10)->get($base . '/llms.txt');
             $llms = $llmsResponse->successful() ? ' llms.txt is published.' : '';
         } catch (ConnectionException) {
             // optional file; unreachable is fine

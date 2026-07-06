@@ -75,10 +75,10 @@ use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
 /**
  * Entry point for laranail/ai-compliance. configurePackage() declares the
- * package surface (namespaced config, translations, routes, the publishable
- * policy markdown); packageRegistered() wires the policy pipeline
- * singletons. Database, consent, and check subsystems arrive in later
- * milestones per .claude/design/PLAN.md.
+ * package surface (namespaced config, views, translations, routes, the
+ * publishable policy markdown, commands); packageRegistered() wires the
+ * service singletons; packageBooted() adds listeners, middleware aliases,
+ * the morph map, blade components, and the optional livewire module.
  */
 final class AiComplianceServiceProvider extends PackageServiceProvider
 {

@@ -295,6 +295,7 @@ return [
     |
     */
     'providers' => [
+        'timeout' => 120, // seconds per outbound provider call (models stream slowly)
         'do_not_train' => [
             'openai' => ['body' => 'store', 'body_value' => false],
             'anthropic' => [],

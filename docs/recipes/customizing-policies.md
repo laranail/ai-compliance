@@ -8,7 +8,7 @@ Publish the files:
 php artisan vendor:publish --tag=laranail::ai-compliance-policies
 ```
 
-Edit any file under `resources/policies/ai-compliance/en/` — your copy shadows
+Edit any file under `resources/policies/ai-compliance/en/`. Your copy shadows
 the package copy file by file, so delete a published file to fall back to the
 shipped default. Keep the frontmatter (`title`, and `short:` on consent texts),
 keep `{{placeholders}}` for values that come from config, and check what still

@@ -71,18 +71,18 @@ shipped in the templates). Runs at serve time only.
 
 ## `PolicyRepository`
 
-`find(slug, ?locale): ?PolicyContent` and `all(?locale)`. Resolution per slug:
-each locale in `fallbackChain(locale)` — the requested locale, the configured
-chain (`locales.fallbacks`), the app fallback locale, the package default —
-against the loader. From the versioning milestone a published database version
+`find(slug, ?locale): ?PolicyContent` and `all(?locale)`. Resolution per slug
+tries each locale in `fallbackChain(locale)` against the loader: the requested
+locale, the configured chain (`locales.fallbacks`), the app fallback locale,
+then the package default. From the versioning milestone a published database version
 wins over files. `PolicyContent` reports the served locale (`isFallback()`), the
 version (null for file-only), and unresolved placeholders.
 
 ## `CompiledPolicyCache`
 
-Wraps the configured cache store with keys of the form
-`laranail.ai-compliance.policy.{slug}.{locale}.{checksum}` — content-addressed,
-so file edits are natural misses. Disable per environment with
+Wraps the configured cache store with content-addressed keys of the form
+`laranail.ai-compliance.policy.{slug}.{locale}.{checksum}`, so file edits are
+natural misses. Disable per environment with
 `AI_COMPLIANCE_POLICY_CACHE=false`.
 
 ## Endpoints and command

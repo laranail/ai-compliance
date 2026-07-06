@@ -9,7 +9,7 @@ GET /ai-compliance/admin/exports/consents?format=csv|json&type=&status=&from=&to
 GET /ai-compliance/admin/exports/activity?format=csv|json&type=&from=&to=
 ```
 
-Behind the **dedicated export gate** (`ai-compliance:export`) — log exports
+Behind the **dedicated export gate** (`ai-compliance:export`): log exports
 are the sensitive ability, so audit access alone is not enough. Rows emit
 public ids only, scoped by date and type, and subjects are pseudonymized: a
 stable keyed hash (`sub_…`), so the same subject lines up across exports
@@ -37,7 +37,7 @@ php artisan laranail::ai-compliance.report --path=report.html
 The point-in-time artifact an operator attaches to an audit: dashboard
 statistics with per-type consent counts, the classification answers, the full
 checklist with statuses and evidence, the provider registry, and every policy
-document's published version. Self-contained html — print to PDF with the
+document's published version. Self-contained html: print to PDF with the
 browser or any html-to-pdf tool. Generation logs an `export` event.
 
 ## Re-consent notifications
@@ -51,7 +51,7 @@ Run it after publishing a new version of a consent document. Exactly the
 users whose **current granted** consent references a superseded version get
 `ReconsentRequested` (channels via `reconsent.channels`, default mail, with
 the affected types and a link to the settings path); everyone else's consent
-stands. Guests are unreachable by mail — the boot payload's `reconsent` flag
+stands. Guests are unreachable by mail; the boot payload's `reconsent` flag
 prompts them on their next visit. Re-running notifies whoever is still
 affected, so re-granting ends the reminders.
 

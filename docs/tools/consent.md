@@ -13,8 +13,8 @@ version the subject was shown (`policy_version_id` + the readable
 `policy_version` string; null when the consent text has never been published
 to the database).
 
-Subjects are either eloquent users — stored under the short `user` morph alias
-the package registers from `config('laranail.ai-compliance.user_model')` — or
+Subjects are either eloquent users (stored under the short `user` morph alias
+the package registers from `config('laranail.ai-compliance.user_model')`) or
 guests, identified by an opaque server-issued key in a long-lived http-only
 cookie (`guest` config block).
 
@@ -60,7 +60,7 @@ the checklist milestone.
 ## The write endpoint
 
 `POST /ai-compliance/consents` with `{type, status}` (status `granted` /
-`denied` / `withdrawn`) records for the authenticated user, or for the guest —
+`denied` / `withdrawn`) records for the authenticated user, or for the guest,
 minting the guest cookie when absent. Responds `201` with the record's public
 id, the refreshed state map, and the re-consent list. The boot payload serves
 the same state (`consent.state`, `consent.reconsent`, `guest_key`).
@@ -68,7 +68,7 @@ the same state (`consent.state`, `consent.reconsent`, `guest_key`).
 ## Re-consent
 
 A subject needs re-consent for a type when their latest granted record
-references a superseded version of that type's consent document — publishing a
+references a superseded version of that type's consent document. Publishing a
 new version of `consent.{type}` is the only trigger; umbrella documents never
 force it. Re-granting stamps the new version and clears the flag.
 

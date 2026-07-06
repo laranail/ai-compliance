@@ -25,7 +25,7 @@ field), so UIs can show a not-yet-translated hint.
 
 When the default-locale text changes later, the staleness report
 (`GET …/admin/policies/staleness`) lists every locale whose `origin_checksum`
-no longer matches as `translation_drift` — that is your re-translation
+no longer matches as `translation_drift`; that is your re-translation
 worklist. See [Policy versioning](../tools/policy-versioning.md) for the full
 rules.
 

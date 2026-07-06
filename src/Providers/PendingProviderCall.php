@@ -99,6 +99,8 @@ final class PendingProviderCall
 
         $response = $this->http
             ->withHeaders($options['headers'])
+            ->connectTimeout(10)
+            ->timeout($this->timeoutSeconds())
             ->send($method, $url, ['json' => [...$payload, ...$options['body']]]);
 
         $this->record($purpose, ['status' => $response->status()]);
@@ -130,6 +132,13 @@ final class PendingProviderCall
         $this->events->dispatch(new InferenceLogged($event));
 
         return $event;
+    }
+
+    private function timeoutSeconds(): int
+    {
+        $seconds = $this->config->get('laranail.ai-compliance.providers.timeout', 120);
+
+        return is_int($seconds) && $seconds > 0 ? $seconds : 120;
     }
 
     /**

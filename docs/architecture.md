@@ -13,7 +13,7 @@ surfaces exist.
 
 ## Why markdown files and a database
 
-Policies ship as per-locale markdown files — git-friendly, reviewable, publishable
+Policies ship as per-locale markdown files: git-friendly, reviewable, publishable
 into the app, editable without touching a database. But consent records need a
 stable anchor that survives file edits and deployments, and in-app editing with
 draft/publish cannot depend on a writable filesystem. So storage is hybrid: files
@@ -25,14 +25,14 @@ silently overwriting either.
 ## Why plain markdown, not mdx
 
 Five UI stacks must render the same source: Blade, Livewire, Filament, React,
-Vue. MDX is executable JSX — it needs a JS compile step and cannot run in the
+Vue. MDX is executable JSX: it needs a JS compile step and cannot run in the
 three PHP stacks, and letting policy editors write executable content is a
 security hazard. Instead, dynamic islands use a closed shortcode vocabulary:
 `[[consent-toggle type="ai_training" fallback="…"]]` compiles to a neutral
 `<ai-c data-component data-props>` element. Server stacks replace those nodes
 while rendering; the JS core hydrates them in the browser; everything else shows
 the fallback text. Unknown shortcodes degrade to their fallback and log a
-warning — a typo can never blank a legal document.
+warning, so a typo can never blank a legal document.
 
 ## The pipeline
 
@@ -64,13 +64,19 @@ not trusted markup. `html_input => 'escape'` neutralizes pasted html; the
 shortcode vocabulary is the only interactive escape hatch, and it is a closed,
 registered list.
 
-## What arrives next
+## The subsystems around the pipeline
 
-The design documents in the repository (`.claude/design/`) plan the remaining
-milestones: policy versioning with draft/publish and checksum staleness, the
-consent core with append-only records referencing policy versions, the five UI
-stacks, the checklist and checks engine, the activity log with do-not-train
-enforcement, the Filament plugin, and exports/reports.
+Everything else consumes the pipeline or feeds evidence around it: policy
+versioning with draft/publish and checksum staleness
+([policy versioning](tools/policy-versioning.md)); the append-only consent
+core whose records reference the exact policy version shown
+([consent](tools/consent.md)); the five UI stacks over the one contract
+(Blade/Livewire server-side, React/Vue via the JS core, and the Filament
+plugin); the checklist and checks engine that keep the program verifiable
+([checks](tools/checks.md)); the activity log with tamper evidence, retention,
+and do-not-train enforcement ([activity log](tools/activity-log.md)); and the
+pseudonymized exports and auditor report
+([exports and reports](tools/exports-and-reports.md)).
 
 ## See also
 

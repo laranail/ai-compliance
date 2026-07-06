@@ -17,8 +17,8 @@ blade components keep working.
 ## `<livewire:ai-compliance.consent-preferences />`
 
 The interactive preferences panel. Every toggle calls
-`AiConsent::record(..., source: 'livewire')` — an append-only row, never a
-mutation — and re-renders from the fresh state, so the panel always shows
+`AiConsent::record(..., source: 'livewire')` (an append-only row, never a
+mutation) and re-renders from the fresh state, so the panel always shows
 exactly what the consent log says. Toggles for the current subject: the
 authenticated user, or the guest (minting the guest cookie on first use).
 
@@ -28,7 +28,7 @@ host components to react to.
 ## `<livewire:ai-compliance.reconsent-prompt />`
 
 Renders only when the subject's granted consents reference superseded policy
-versions — i.e. a new version of a consent document was published after they
+versions, i.e. a new version of a consent document was published after they
 agreed. Offers a one-click re-grant per affected type (source
 `reconsent_prompt`) and refreshes itself on `ai-compliance:consent-changed`.
 

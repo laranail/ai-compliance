@@ -30,7 +30,7 @@ php artisan vendor:publish --tag=laranail::ai-compliance-config
 ```
 
 Config resolves under `config('laranail.ai-compliance.*')`. At minimum, fill the
-`placeholders` block (company, product, contact email) — see
+`placeholders` block (company, product, contact email); see
 [Configuration](configuration.md).
 
 ## Publish the policy files

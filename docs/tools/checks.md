@@ -31,7 +31,7 @@ its checklist item (status, message as evidence, timestamp, verifier
 ## Alerting
 
 Failures fire `CheckFailed`; with `alerting.mail` configured
-(`AI_COMPLIANCE_ALERT_MAIL`) the listener routes it to a notification — log
+(`AI_COMPLIANCE_ALERT_MAIL`) the listener routes it to a notification: log
 silence gets `ActivityLogSilentNotification` (the alarm the spec singles
 out), due diligence gets `ProviderDueDiligenceLapsedNotification`, everything
 else `CheckFailedNotification`. Without an address the events still fire for
@@ -60,7 +60,7 @@ final class MarkingSurvivesPipelineCheck implements \Simtabi\Laranail\AiComplian
 $this->app->tag([MarkingSurvivesPipelineCheck::class], 'ai-compliance.checks');
 ```
 
-`key()` must name an existing checklist item — point it at one of the manual
+`key()` must name an existing checklist item. Point it at one of the manual
 items to automate it, or seed your own. See
 [Writing custom checks](../recipes/writing-custom-checks.md).
 

@@ -13,7 +13,37 @@ Requires PHP `^8.4.1 || ^8.5` and Laravel `^13.0`.
 
 ```bash
 composer require laranail/ai-compliance
+php artisan laranail::ai-compliance.install
 ```
+
+The npm bindings for React/Vue apps ship in lockstep:
+`npm install @laranail/ai-compliance-react` (or `-vue`, or the framework-agnostic core).
+
+## Quick start
+
+The install command publishes the editable policy markdown, migrates, seeds
+the checklist, and imports every policy as published version 1.0. From there:
+
+```blade
+<x-ai-compliance::disclosure surface="chat" />   {{-- before any model output --}}
+<x-ai-compliance::preferences />                 {{-- the consent panel --}}
+```
+
+```php
+use Simtabi\Laranail\AiCompliance\Facades\AiConsent;
+
+if (AiConsent::allows($user, 'smart_summaries')) {
+    $response = AiConsent::provider('support-assistant')
+        ->forSubject($user)
+        ->send('POST', $endpoint, $payload);     // do-not-train flag + inference log
+}
+```
+
+```bash
+php artisan laranail::ai-compliance.audit        # run the compliance checks
+```
+
+See [Getting started](docs/getting-started.md) for the full tour.
 
 ## <a name="documentation"></a>Documentation
 
@@ -52,6 +82,31 @@ Full documentation lives at
 - [Writing custom checks](docs/recipes/writing-custom-checks.md) — automate your own checklist items
 - [Do-not-train enforcement](docs/recipes/do-not-train-enforcement.md) — consent-aware provider calls
 - [Auditor handover](docs/recipes/auditor-handover.md) — the evidence bundle in four commands
+
+## Stability
+
+Pre-1.0: the API surface described in the docs is what 1.0 will ship; the boot
+payload carries a `contract` integer so the JS packages fail loudly on
+mismatch rather than misreading state. No breaking config or schema changes
+are planned inside 1.x.
+
+## Local development
+
+`composer install` resolves everything from Packagist; `composer test`,
+`composer lint`, `npm install && npx vitest run`. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Sister packages
+
+Part of the [laranail](https://github.com/laranail) family:
+[package-tools](https://github.com/laranail/package-tools) (the service
+provider base this package builds on),
+[console](https://github.com/laranail/console), and
+[database-tools](https://github.com/laranail/database-tools).
+
+## Community
+
+Questions and ideas: [GitHub Issues](https://github.com/laranail/ai-compliance/issues).
 
 ## Contributing & security
 

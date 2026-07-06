@@ -36,7 +36,7 @@ package default. Served content always reports the locale it actually resolved t
 | `policies.cache.enabled` | Cache compiled policies (`AI_COMPLIANCE_POLICY_CACHE`, default true) |
 | `policies.cache.store` | Cache store name (null = default store) |
 
-The cache is content-addressed by source checksum — editing a file is a natural
+The cache is content-addressed by source checksum: editing a file is a natural
 cache miss, no manual invalidation needed.
 
 ## Shortcodes
@@ -63,8 +63,8 @@ to `disclosures/{surface}.md`.
 
 ## Tables, user model, morph map
 
-`tables.*` names the database tables used from the versioning milestone onward —
-rename before running migrations, never after. `user_model` defaults to the app's
+`tables.*` names the database tables used from the versioning milestone onward.
+Rename before running migrations, never after. `user_model` defaults to the app's
 auth provider model; `morph_map` adds host aliases to the enforced morph map.
 
 ## See also

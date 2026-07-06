@@ -33,9 +33,9 @@ using three checksum rules:
 
 | Situation | What happens |
 |---|---|
-| Document never imported | Published version `1.0` created — the shipped default goes live |
+| Document never imported | Published version `1.0` created; the shipped default goes live |
 | File changed, database copy untouched (`checksum == file_checksum`) | A draft is created (or the open draft updated); publishing stays a human action |
-| File changed, database copy hand-edited | Flagged, never overwritten — the admin's text wins until a human reconciles |
+| File changed, database copy hand-edited | Flagged, never overwritten; the admin's text wins until a human reconciles |
 
 A locale arriving after first import lands in a draft with its
 `origin_checksum` anchored to the default-locale translation it was made from.
@@ -49,7 +49,7 @@ php artisan laranail::ai-compliance.policy.publish consent.ai_training
 
 `PolicyPublisher::publish($draft)` runs in one transaction: the currently
 published version becomes `superseded` (stamped `superseded_at`), the draft
-becomes `published`, and `PolicyPublished` fires — which flushes the compiled
+becomes `published`, and `PolicyPublished` fires, which flushes the compiled
 policy cache. Publishing anything that is not a draft throws
 `CannotPublishVersion`. From the consent milestone, subjects whose latest
 granted consent references a superseded version of a consent document are the

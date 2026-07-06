@@ -4,10 +4,14 @@ Contributions are welcome via pull requests.
 
 ## Development setup
 
-- `composer.json` uses path repositories pointing at `../package/tools`
-  (`laranail/package-tools`) and `../tools/console` (`laranail/console`), so a local
-  checkout of the laranail monorepo layout with those sibling directories is required.
-- Run `composer install`.
+- Run `composer install`; all dependencies (including the laranail toolchain)
+  resolve from Packagist.
+- The JS packages live under `packages/` as npm workspaces: `npm install`,
+  `npm run build`, `npx vitest run`.
+- To develop against a local sibling checkout of `laranail/package-tools` or
+  `laranail/console`, add a `path` repository to your local `composer.json`
+  without committing it (a committed path repository breaks every consumer
+  install).
 
 ## Process
 

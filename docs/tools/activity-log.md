@@ -26,7 +26,7 @@ php artisan laranail::ai-compliance.verify-chain   # non-zero when broken
 
 `GET /ai-compliance/admin/activity/chain` serves the same verification.
 Enabling the chain on an existing log starts a fresh chain; pruning chained
-events and DSR erasure both break it **by design** — erasure outranks tamper
+events and DSR erasure both break it **by design**: erasure outranks tamper
 evidence, and the break itself documents that an erasure happened.
 
 ## Retention and pruning
@@ -37,17 +37,17 @@ php artisan laranail::ai-compliance.prune --consents   # + superseded consent hi
 ```
 
 Activity events prune past `retention.activity_events` (days; null keeps
-everything — the model is also `MassPrunable` for hosts running
+everything; the model is also `MassPrunable` for hosts running
 `model:prune`). Consent records are a legal decision: pruning them requires
 the explicit flag AND `retention.consent_records` configured, and only
-superseded history is removed — the current state per (subject, type) always
+superseded history is removed; the current state per (subject, type) always
 survives, whatever its age. Every prune writes its own `setting_change`
 event (FR-9).
 
 ## Reading the log
 
 `GET /ai-compliance/admin/activity?type=&from=&to=` (audit gate): filterable,
-paginated, public ids only — and per FR-10 the read itself is logged as
+paginated, public ids only, and per FR-10 the read itself is logged as
 `log_read` with the reader attributed, once per request.
 
 ## DSR

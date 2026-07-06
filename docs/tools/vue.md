@@ -46,7 +46,7 @@ const { granted, set } = useAiConsent();
 | `AiPreferences` | the consent panel; toggles call `set()` and re-render from the server state |
 | `AiReconsentPrompt` | renders only when the boot payload flags superseded consents |
 
-The components are render-function based — no SFC compiler is required to
+The components are render-function based: no SFC compiler is required to
 consume the package, and all strings come from the payload.
 
 ## See also

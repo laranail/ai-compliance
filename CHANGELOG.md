@@ -10,13 +10,13 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 ### Added
 
 - **Log exports** (FR-5): `GET …/admin/exports/{consents,activity}` behind
-  the dedicated `ai-compliance:export` gate — csv/json, scoped by date and
+  the dedicated `ai-compliance:export` gate: csv/json, scoped by date and
   type, public ids only, subjects pseudonymized with a stable keyed hash
   (guest keys inside activity context included); every export logs an
   `export` event. The console `export` command adds `--identified` for
   statutory requests; the Filament consent log gains the same CSV action.
 - **Compliance report** (FR-7): `GET …/admin/report` and the `report`
-  command — print-ready self-contained html with dashboard statistics,
+  command: print-ready self-contained html with dashboard statistics,
   classification answers, the full checklist with evidence, the provider
   registry, and every document's published version.
 - **Re-consent notifications**: `laranail::ai-compliance.notify-reconsent`
@@ -38,8 +38,8 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 - **Consent-aware provider calls** (`AiConsent::provider(...)->forSubject(...)`):
   the vendor's configurable do-not-train flag (header and/or body key) is
-  injected whenever the subject has not granted `ai_training`; every send —
-  or `record()` for host SDKs — logs an inference event (provider reference,
+  injected whenever the subject has not granted `ai_training`; every send
+  (or `record()` for host SDKs) logs an inference event (provider reference,
   purpose, `do_not_train`, never raw prompts) and fires `InferenceLogged`.
 - **Hash-chain tamper tier** (`activity.hash_chain`): events link to their
   predecessor; `laranail::ai-compliance.verify-chain` and
@@ -47,7 +47,7 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
   link. Pruning chained events and DSR erasure break it by design.
 - **Retention + `laranail::ai-compliance.prune`**: activity events prune per
   config (model is `MassPrunable`); consent history only behind the explicit
-  `--consents` flag with a configured policy, and only superseded rows — the
+  `--consents` flag with a configured policy, and only superseded rows; the
   current state always survives. Pruning logs its own event (FR-9).
 - **Activity read surface** (`GET …/admin/activity`): filterable, paginated,
   public ids only; every read is logged as the new `log_read` activity type
@@ -71,8 +71,8 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
   manual verifications, the `laranail::ai-compliance.audit` command
   (non-zero exit on failures), and a daily schedule.
 - **Alerting**: `CheckFailed` / `ChecklistItemDegraded` events; with
-  `AI_COMPLIANCE_ALERT_MAIL` set, failures notify — log silence and lapsed
-  due diligence with their own notifications.
+  `AI_COMPLIANCE_ALERT_MAIL` set, failures notify (log silence and lapsed
+  due diligence have their own notifications).
 - **Provider registry** (`ai_providers`, soft deletes) with admin CRUD and
   `provider_change` activity logging.
 - **Feature kill switches** (`ai_feature_states`): default-on toggles honored
@@ -83,10 +83,10 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
   provider and event counts, checklist summary.
 
 - **`@laranail/ai-compliance`** (npm workspace, zero runtime deps): typed
-  boot client over the shared contract — `boot` / `granted` / `allows` /
+  boot client over the shared contract: `boot` / `granted` / `allows` /
   `set` / `require` / `onChange`, same-origin credentials, automatic CSRF
   (XSRF cookie, meta tag, or explicit token), server-authoritative state,
-  and a `ContractMismatchError` when the payload contract differs — plus the
+  and a `ContractMismatchError` when the payload contract differs, plus the
   `<ai-c>` island hydrator (unregistered islands keep their fallback).
 - **`@laranail/ai-compliance-react`** and **`@laranail/ai-compliance-vue`**:
   provider/plugin, `useAiConsent`, `AiGate`, `AiDisclosure`, `AiPreferences`,
@@ -104,14 +104,14 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
   (the versioned, translated ai-disclosure line per surface), `gate`
   (slot gated on a feature's consents or one consent type), `policy` (full
   document with server-rendered islands, fallback notice, version footer),
-  and `preferences` (the consent panel as plain forms — no javascript
+  and `preferences` (the consent panel as plain forms: no javascript
   required; the consents endpoint redirects back for form posts).
 - **Server-side islands**: `IslandRenderer` replaces the compiler's `<ai-c>`
   elements with publishable island views (consent-toggle, consent-panel,
   policy-link, disclosure); unknown islands keep their fallback text.
 - **Livewire components** (suggest dependency, auto-registered when
-  installed): `ai-compliance.consent-preferences` — every toggle appends a
-  consent record and re-renders from the log — and
+  installed): `ai-compliance.consent-preferences` (every toggle appends a
+  consent record and re-renders from the log) and
   `ai-compliance.reconsent-prompt` for superseded consent versions, wired
   together over the `ai-compliance:consent-changed` event.
 - `CurrentSubject` resolver (user, else guest cookie) shared by components
@@ -168,7 +168,7 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
   transparency policy, training-data statement, automated-decisions notice, data
   protection addendum, acceptable-use, incident-response and vendor policies,
   four consent texts (training, chatbot, recommendations, personalization), and
-  three disclosure lines (chat, content, decision) — publishable and editable via
+  three disclosure lines (chat, content, decision), all publishable and editable via
   `--tag=laranail::ai-compliance-policies`.
 - **Shared component contract** (`contract: 1`): `GET /ai-compliance/boot` and
   `GET /ai-compliance/policies/{slug}` serve the payload the Blade/Livewire/

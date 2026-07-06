@@ -11,7 +11,7 @@ The ai disclosure line for a surface, rendered before any model output:
 <x-ai-compliance::disclosure surface="content" locale="de" />
 ```
 
-The text is the `disclosure.{surface}` policy document — versioned, translated,
+The text is the `disclosure.{surface}` policy document: versioned, translated,
 and editable like every other document. Renders nothing for unknown surfaces;
 falls back per the locale chain.
 
@@ -38,9 +38,9 @@ types gate them out.
 
 ## `<x-ai-compliance::policy>`
 
-One compiled policy document — title, substituted body with its `<ai-c>`
-islands replaced server-side, a not-yet-translated notice on fallback, and the
-version footer once published:
+One compiled policy document (title, substituted body with its `<ai-c>`
+islands replaced server-side, a not-yet-translated notice on fallback, and
+the version footer once published):
 
 ```blade
 <x-ai-compliance::policy slug="transparency" />
@@ -50,7 +50,7 @@ version footer once published:
 ## `<x-ai-compliance::preferences>`
 
 The consent panel: one block per configured type with its translated label,
-short text, current state, and a plain form posting to the consents endpoint —
+short text, current state, and a plain form posting to the consents endpoint,
 a full-page flow that needs no javascript (the endpoint redirects back with an
 `ai-compliance.saved` flash for non-json requests). The livewire and js
 components render the same payload interactively.
@@ -68,7 +68,7 @@ with island views (`resources/views/islands/{name}.blade.php`, publishable):
 | `[[disclosure surface="…"]]` | the disclosure component |
 | `[[provider-list]]` | fallback text until the provider registry milestone |
 
-Islands without a view keep their fallback text — a policy document never
+Islands without a view keep their fallback text, so a policy document never
 ships an inert custom element from a blade surface.
 
 ## Strings

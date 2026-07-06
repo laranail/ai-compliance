@@ -375,11 +375,45 @@ Checked against the original brief's definition of production-ready:
 - [x] This file shows every milestone's acceptance criteria checked with
       same-session evidence
 
-Release D-list before the first tag (from /opensource/shipping-checklist.md
-plus package specifics): create the GitHub repo + push, make public, npm
-NPM_TOKEN secret (or trusted publishing) for the lockstep job, Packagist
-hook, `gh repo edit` homepage/description/topics, verify docsmith picks up
-docs/, then cut v0.1.0.
+## Shipping-checklist run (2026-07-06)
+
+The full org gate (_scratch-files/shipping-checklist.md) was run by audit
+agent + fixes applied in the pre-release commit:
+
+- Section 1 writing audit: clean of AI tells, curly quotes, banned phrases,
+  chatbot artifacts; em-dash density reduced 69 -> 4 (survivors are exempt
+  term-gloss list items); the two `.claude/design` references removed from
+  shipped artifacts (provider docblock + docs/architecture.md, whose stale
+  "what arrives next" section was rewritten)
+- Commits: no AI attribution anywhere; 6 over-length subjects + 1 em-dash
+  subject reworded via history rewrite (repo had no remote, so safe)
+- Security: gitleaks clean (tree + history); SECURITY.md gained a
+  supported-versions table; explicit HTTP timeouts added to the crawler
+  check and provider calls (config providers.timeout)
+- CI: timeout-minutes on every job; persist-credentials: false on all
+  checkouts; release.yml permissions moved to job level; npm switched from
+  NPM_TOKEN to OIDC trusted publishing + a protected `npm` environment;
+  dependabot npm block added; codeql.yml added (js/ts + actions; php is
+  phpstan's job)
+- Files: CONTRIBUTING's stale path-repositories claim fixed; README gained
+  the laranail spine sections (Quick start, Stability, Local development,
+  Sister packages, Community); npm workspace files + the two root spec
+  files export-ignored from the composer dist; docs/release.md now
+  describes js.yml and the npm publish job
+- Kept deliberately: pointer-style CODE_OF_CONDUCT (matches the sibling
+  reference impl), `.claude/design/` tracked (the task brief mandates these
+  design artifacts in-repo; they are export-ignored from the dist), the two
+  spec files at root (public domain reference, export-ignored), README
+  doc-index em dashes (org-mandated format)
+
+Release-time actions (need the owner's accounts): create laranail/
+ai-compliance on GitHub + push + confirm CI green; repo settings
+(description/homepage/topics/Issues); enable secret scanning + push
+protection, Dependabot alerts, code scanning; branch ruleset on main;
+confirm the @laranail npm org + configure OIDC trusted publishing for the
+three packages + create the protected `npm` environment; submit to
+Packagist; verify docsmith discovery; then move [Unreleased] to v0.1.0 and
+tag.
 
 ## Decision log
 

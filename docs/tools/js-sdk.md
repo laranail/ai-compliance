@@ -1,6 +1,6 @@
 # JS SDK
 
-Reference for `@laranail/ai-compliance` — the framework-agnostic client the React and Vue bindings sit on.
+Reference for `@laranail/ai-compliance`, the framework-agnostic client the React and Vue bindings sit on.
 
 ```bash
 npm install @laranail/ai-compliance
@@ -30,7 +30,7 @@ const unsubscribe = client.onChange((change, payload) => { /* re-render */ });
 
 Everything is same-origin: requests carry the session/guest cookies
 (`credentials: 'same-origin'`), no third party is ever contacted, and the
-client never mints identity — the guest key is issued by the server on the
+client never mints identity: the guest key is issued by the server on the
 first consent write. `set()` applies the server's authoritative state from the
 response; there are no optimistic writes. CSRF is automatic: the `XSRF-TOKEN`
 cookie (Laravel's default), the `csrf-token` meta tag, or an explicit
@@ -55,7 +55,7 @@ const unhydrate = hydrate(document.body, {
 ## The contract fixture
 
 `packages/core/tests/fixtures/boot.json` is recorded by the Pest suite
-(`AI_COMPLIANCE_EXPORT_FIXTURE=1`) and pinned by vitest — the PHP serializer
+(`AI_COMPLIANCE_EXPORT_FIXTURE=1`) and pinned by vitest, so the PHP serializer
 and the TypeScript types can never drift silently.
 
 ## See also

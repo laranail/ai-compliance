@@ -25,7 +25,7 @@ Policy texts contain `{{placeholders}}` substituted at serve time from config:
 ```
 
 Placeholders without a value stay visible in the output and are reported as
-unresolved — run the show command to see what still needs filling:
+unresolved. Run the show command to see what still needs filling:
 
 ```bash
 php artisan laranail::ai-compliance.policy.show transparency
@@ -46,7 +46,7 @@ $policy->isFallback();             // true when the requested locale had no file
 $policy->unresolvedPlaceholders;   // what the operator still needs to fill
 ```
 
-Or over http — the same content the JS core fetches:
+Or over http (the same content the JS core fetches):
 
 ```
 GET /ai-compliance/policies/transparency
