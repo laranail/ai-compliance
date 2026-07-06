@@ -73,6 +73,7 @@
         }
     },
     "scripts": {
+        "post-autoload-dump": "@php vendor/bin/testbench package:discover --ansi",
         "test": "vendor/bin/pest --colors=always",
         "test-coverage": "vendor/bin/pest --coverage",
         "lint": [
@@ -90,7 +91,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Simtabi\\Laranail\\AiCompliance\\AiComplianceServiceProvider"
+                "Simtabi\\Laranail\\AiCompliance\\Providers\\AiComplianceServiceProvider"
             ],
             "aliases": {
                 "AiCompliance": "Simtabi\\Laranail\\AiCompliance\\Facades\\AiCompliance"

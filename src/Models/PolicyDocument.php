@@ -12,6 +12,7 @@ use Override;
 use Simtabi\Laranail\AiCompliance\Database\Factories\PolicyDocumentFactory;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
  * One logical policy document per tenant: a transparency page, a consent
@@ -19,7 +20,7 @@ use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
  * row is the stable identity a slug resolves to.
  *
  * @property int $id
- * @property string|null $tenant_id
+ * @property string $tenant_id
  * @property string $slug
  * @property PolicyType $type
  * @property string|null $surface
@@ -30,6 +31,8 @@ use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
  */
 class PolicyDocument extends Model
 {
+    use BelongsToTenant;
+
     /** @use HasFactory<PolicyDocumentFactory> */
     use HasFactory;
 

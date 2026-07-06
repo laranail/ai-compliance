@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Override;
 use Simtabi\Laranail\AiCompliance\Database\Factories\ChecklistItemFactory;
 use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
+use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
  * One compliance checklist item. Auto items are kept honest by the check
@@ -17,7 +18,7 @@ use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
  * review once their verification goes stale.
  *
  * @property int $id
- * @property string|null $tenant_id
+ * @property string $tenant_id
  * @property string $key
  * @property string $section
  * @property string $label
@@ -32,6 +33,8 @@ use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
  */
 class ChecklistItem extends Model
 {
+    use BelongsToTenant;
+
     /** @use HasFactory<ChecklistItemFactory> */
     use HasFactory;
 

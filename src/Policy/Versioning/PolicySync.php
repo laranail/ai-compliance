@@ -117,7 +117,7 @@ final class PolicySync
     {
         /** @var PolicyDocument|null $document */
         $document = PolicyDocument::query()
-            ->whereNull('tenant_id')
+            ->forDefaultTenant()
             ->where('slug', $file->slug)
             ->first();
 
@@ -126,7 +126,7 @@ final class PolicySync
         }
 
         return PolicyDocument::query()->create([
-            'tenant_id' => null,
+            'tenant_id' => '',
             'slug' => $file->slug,
             'type' => $file->type,
             'surface' => Str::startsWith($file->slug, 'disclosure.') ? Str::after($file->slug, 'disclosure.') : null,

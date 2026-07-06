@@ -284,6 +284,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Seeders
+    |--------------------------------------------------------------------------
+    |
+    | With 'auto' on, the package's idempotent seeders (checklist items,
+    | initial policy import) run with the host's `php artisan db:seed` via
+    | the package-tools seeder registry. The demo seeder never auto-runs.
+    |
+    */
+    'seeders' => [
+        'auto' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Provider calls
     |--------------------------------------------------------------------------
     |

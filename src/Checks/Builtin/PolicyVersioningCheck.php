@@ -29,7 +29,7 @@ final readonly class PolicyVersioningCheck implements Check
 
     public function run(): CheckResult
     {
-        if (! PolicyDocument::query()->whereNull('tenant_id')->exists()) {
+        if (! PolicyDocument::query()->forDefaultTenant()->exists()) {
             return CheckResult::review('policy documents are not imported yet; run laranail::ai-compliance.policy.sync');
         }
 
