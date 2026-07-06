@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Tests;
 
+use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Simtabi\Laranail\AiCompliance\AiComplianceServiceProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
@@ -15,6 +16,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         return [
             DatabaseToolsServiceProvider::class, // registers the configuredMorphs schema macros
+            LivewireServiceProvider::class,
             AiComplianceServiceProvider::class,
         ];
     }

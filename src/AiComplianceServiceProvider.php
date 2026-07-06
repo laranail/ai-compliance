@@ -10,7 +10,9 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Livewire;
 use Override;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
@@ -27,6 +29,8 @@ use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
 use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureConsent;
 use Simtabi\Laranail\AiCompliance\Listeners\FlushCompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Listeners\RecordConsentActivity;
+use Simtabi\Laranail\AiCompliance\Livewire\ConsentPreferences;
+use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
 use Simtabi\Laranail\AiCompliance\Policies\ConsentRecordPolicy;
@@ -38,6 +42,7 @@ use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 
@@ -57,6 +62,7 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
             ->name('laranail/ai-compliance')
             ->setPublishTagId('ai-compliance')
             ->hasConfigFile()
+            ->hasViews('ai-compliance')
             ->hasTranslations('ai-compliance')
             ->hasRoutes('api', 'admin')
             ->discoversMigrations()
@@ -114,6 +120,34 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
         Gate::policy(ConsentRecord::class, ConsentRecordPolicy::class);
 
         $this->registerMorphMap();
+        $this->registerBladeComponents();
+        $this->registerLivewireComponents();
+    }
+
+    private function registerBladeComponents(): void
+    {
+        Blade::componentNamespace('Simtabi\\Laranail\\AiCompliance\\View\\Components', 'ai-compliance');
+
+        // spec-shaped alias: <x-ai-compliance::gate> next to <x-ai-compliance::consent-gate>
+        Blade::component('ai-compliance::gate', ConsentGate::class);
+    }
+
+    /**
+     * The livewire components exist only when the host installed livewire
+     * (a suggest dependency); the package boots cleanly without it.
+     */
+    private function registerLivewireComponents(): void
+    {
+        if (! class_exists(Livewire::class) || ! $this->app->bound('livewire')) {
+            return;
+        }
+
+        if (! (bool) $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.livewire.enabled', true)) {
+            return;
+        }
+
+        Livewire::component('ai-compliance.consent-preferences', ConsentPreferences::class);
+        Livewire::component('ai-compliance.reconsent-prompt', ReconsentPrompt::class);
     }
 
     /**

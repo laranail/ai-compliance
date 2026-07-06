@@ -9,6 +9,7 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
@@ -169,7 +170,7 @@ final readonly class BootPayload
 
         $flat = [];
 
-        foreach ($strings as $key => $value) {
+        foreach (Arr::dot($strings) as $key => $value) {
             if (is_string($key) && is_string($value)) {
                 $flat[$key] = $this->placeholders->substitute($value)->text;
             }

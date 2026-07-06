@@ -33,6 +33,8 @@ Full documentation lives at
 - [Policy pipeline](docs/tools/policy-pipeline.md) — files, frontmatter, shortcodes, placeholders, fallback, cache
 - [Policy versioning](docs/tools/policy-versioning.md) — documents, versions, draft/publish, sync, staleness, the editing api
 - [Consent](docs/tools/consent.md) — the AiConsent facade, append-only records, guests, re-consent
+- [Blade components](docs/tools/blade-components.md) — disclosure, gate, policy, preferences, server-side islands
+- [Livewire](docs/tools/livewire.md) — the interactive preferences panel and re-consent prompt
 
 ### Recipes
 

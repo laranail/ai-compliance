@@ -8,3 +8,12 @@ parameters:
     excludePaths:
         - vendor
     treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # larastan validates view-string literals against a skeleton app that
+        # never boots this package's provider, so the ai-compliance:: view
+        # namespace is invisible to it. every one of these views is rendered
+        # by the pest suite, which is the real existence check.
+        -
+            identifier: argument.type
+            message: '#Parameter \#1 \$view of function view expects view-string#'
+            path: src/Livewire/*

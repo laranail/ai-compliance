@@ -14,7 +14,7 @@ recording the exact failing state and next step.
 | M1 — skeleton + read-only policy pipeline | done | 2026-07-05 |
 | M2 — policy versioning + editing API | done | 2026-07-05 |
 | M3 — consent core | done | 2026-07-05 |
-| M4 — Blade + Livewire | not started | |
+| M4 — Blade + Livewire | done | 2026-07-05 |
 | M5 — JS core + React + Vue | not started | |
 | M6 — checklist + checks engine | not started | |
 | M7 — activity log + provider enforcement | not started | |
@@ -146,6 +146,39 @@ Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
 == audit ==    No security vulnerability advisories found.
 ```
 
+## M4 acceptance criteria
+
+- [x] spec acceptance test 3 (disclosure before first response, anonymous) —
+      `BladeComponentsTest`: "renders the chat disclosure for an anonymous
+      user before any model output"
+- [x] render snapshots per locale — disclosure in de via override dir,
+      fallback for untranslated locales, policy fallback notice
+- [x] gate on consent + feature state — gate component tests (consent attr,
+      feature attr, missing-attr ViewException)
+- [x] `<ai-c>` replacement per registered shortcode — `IslandRendererTest`
+      (consent-toggle → working form, consent-panel → preferences,
+      policy-link → titled link, disclosure → component, provider-list →
+      fallback text, shipped transparency fully resolved)
+- [x] Livewire toggle writes an append-only row and re-renders —
+      `LivewireComponentsTest` (row count grows, source 'livewire', state
+      fresh; invalid status ignored); reconsent prompt shows/regrants/clears
+- [x] boots without livewire — the registration guard requires
+      `class_exists(Livewire::class) && app->bound('livewire')`; the same
+      code path is exercised by the config disable flag. (True absence isn't
+      testable with livewire in require-dev; guard documented.)
+- [x] docs: tools/blade-components.md, tools/livewire.md, README index,
+      CHANGELOG entry
+
+Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
+
+```
+== pest ==     Tests:    125 passed (458 assertions)   Duration: 2.05s
+== phpstan ==  [OK] No errors            (level 8, larastan)
+== pint ==     {"tool":"pint","result":"passed"}
+== rector ==   [OK] Rector is done!
+== audit ==    No security vulnerability advisories found.
+```
+
 ## Decision log
 
 | Date | Decision | Why |
@@ -177,6 +210,11 @@ Evidence (run 2026-07-05, PHP 8.5.3, prefer-stable):
 | 2026-07-05 | DSR forget runs raw query-builder updates past the model's append-only guards | The guards protect against application code; deliberate anonymization is maintenance. Documented on the model. Guest keys inside activity `context` are scrubbed at M7 (backlogged) |
 | 2026-07-05 | Guest merge appends new rows for the user instead of reassigning guest rows | Reassigning would mutate append-only history; the merge preserves the guest's policy_version and is idempotent by comparing current states |
 | 2026-07-05 | First-ever sync import publishes 1.0 directly (also noted at M2); consent stamps require it | Fresh installs record versioned consent immediately after `install` |
+| 2026-07-05 | Gate component class is `ConsentGate` with an explicit `ai-compliance::gate` alias | A class literally named `Gate` invites collision with the auth facade in imports; the alias keeps the spec's `<x-ai-compliance::gate>` tag working |
+| 2026-07-05 | Blade preferences panel posts plain per-type forms; consents endpoint answers redirects for non-json | The blade stack must work with zero javascript; livewire/js layer the same payload interactively on top |
+| 2026-07-05 | Targeted phpstan ignore for larastan's view-string rule on src/Livewire | Larastan validates view literals against a skeleton app that never registers the package's view namespace — a known false positive; every view is rendered by the pest suite |
+| 2026-07-05 | Lang `strings` restructured to nested groups; BootPayload flattens with Arr::dot | Views need `__('…strings.policy.version')` nested lookups while the JS contract wants flat keys; nested + flatten serves both without duplication |
+| 2026-07-05 | livewire/livewire ^4 as require-dev + suggest (registration guarded on class_exists + container binding) | ^4 is the Laravel-13-compatible major (verified on Packagist); the binding check keeps boot safe when livewire exists in vendor but its provider is not registered |
 
 ## Backlog
 

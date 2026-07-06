@@ -191,6 +191,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Livewire
+    |--------------------------------------------------------------------------
+    |
+    | The ConsentPreferences and ReconsentPrompt components register only
+    | when livewire/livewire is installed (a suggest dependency) and this
+    | flag is on.
+    |
+    */
+    'livewire' => [
+        'enabled' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Features
     |--------------------------------------------------------------------------
     |

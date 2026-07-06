@@ -9,6 +9,24 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
 
 ### Added
 
+- **Blade components** under the `ai-compliance` namespace: `disclosure`
+  (the versioned, translated ai-disclosure line per surface), `gate`
+  (slot gated on a feature's consents or one consent type), `policy` (full
+  document with server-rendered islands, fallback notice, version footer),
+  and `preferences` (the consent panel as plain forms — no javascript
+  required; the consents endpoint redirects back for form posts).
+- **Server-side islands**: `IslandRenderer` replaces the compiler's `<ai-c>`
+  elements with publishable island views (consent-toggle, consent-panel,
+  policy-link, disclosure); unknown islands keep their fallback text.
+- **Livewire components** (suggest dependency, auto-registered when
+  installed): `ai-compliance.consent-preferences` — every toggle appends a
+  consent record and re-renders from the log — and
+  `ai-compliance.reconsent-prompt` for superseded consent versions, wired
+  together over the `ai-compliance:consent-changed` event.
+- `CurrentSubject` resolver (user, else guest cookie) shared by components
+  and middleware; component strings restructured as nested translation
+  groups (flattened in the boot payload).
+
 - **Consent core** (`ai_consent_types`, `ai_consent_records`, minimal
   `ai_activity_events`): append-only consent records with `public_id` ULIDs,
   the exactly-one-of subject/guest-key invariant, and the policy version the

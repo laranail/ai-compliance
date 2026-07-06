@@ -24,19 +24,28 @@ return [
     ],
 
     'strings' => [
-        'preferences.title' => 'AI privacy choices',
-        'preferences.intro' => 'Control, separately, how AI may use your data. Saying no never blocks the non-AI parts of the product.',
-        'preferences.save' => 'Save choices',
-        'preferences.saved' => 'Your choices have been saved.',
-        'preferences.granted' => 'Allowed',
-        'preferences.denied' => 'Not allowed',
-        'preferences.withdraw' => 'Withdraw',
-        'disclosure.badge' => 'AI',
-        'policy.updated' => 'Updated',
-        'policy.version' => 'Version',
-        'policy.fallback_notice' => 'This document is not yet available in your language; you are reading the :locale version.',
-        'reconsent.title' => 'A policy you agreed to has changed',
-        'reconsent.review' => 'Review the changes',
+        'preferences' => [
+            'title' => 'AI privacy choices',
+            'intro' => 'Control, separately, how AI may use your data. Saying no never blocks the non-AI parts of the product.',
+            'save' => 'Save choices',
+            'saved' => 'Your choices have been saved.',
+            'granted' => 'Allowed',
+            'denied' => 'Not allowed',
+            'allow' => 'Allow',
+            'withdraw' => 'Withdraw',
+        ],
+        'disclosure' => [
+            'badge' => 'AI',
+        ],
+        'policy' => [
+            'updated' => 'Updated',
+            'version' => 'Version',
+            'fallback_notice' => 'This document is not yet available in your language; you are reading the :locale version.',
+        ],
+        'reconsent' => [
+            'title' => 'A policy you agreed to has changed',
+            'review' => 'Review the changes',
+        ],
     ],
 
 ];

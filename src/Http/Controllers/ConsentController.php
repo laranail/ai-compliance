@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
@@ -24,7 +25,7 @@ final class ConsentController
         ConsentManager $consent,
         ConsentTypes $types,
         GuestKeys $guestKeys,
-    ): JsonResponse {
+    ): JsonResponse|RedirectResponse {
         /** @var array{type: string, status: string} $validated */
         $validated = $request->validate([
             'type' => ['required', 'string', Rule::in($types->slugs())],
@@ -39,6 +40,11 @@ final class ConsentController
             ConsentStatus::from($validated['status']),
             'api',
         );
+
+        // the no-javascript preferences panel posts a plain form
+        if (! $request->expectsJson()) {
+            return back()->with('ai-compliance.saved', true);
+        }
 
         return new JsonResponse([
             'data' => [
