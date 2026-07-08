@@ -13,7 +13,7 @@ re-deriving.
 |---|---|
 | Package base | `laranail/package-tools ^1.3` (the org's own fluent `Package` builder — NOT spatie/laravel-package-tools; the API surface is deliberately spatie-compatible) |
 | Command base | `Simtabi\Laranail\Package\Tools\Commands\Command` (re-exported from `laranail/console`, ships `SupportsNamespacedNames`) |
-| Schema layer | `laranail/database-tools ^1.0` — `configuredMorphs()`, `auditColumns()` schema macros, audit observer (adopted from M2 when the first migration lands) |
+| Schema layer | `laranail/db-tools ^1.0` — `configuredMorphs()`, `auditColumns()` schema macros, audit observer (adopted from M2 when the first migration lands) |
 | PHP | `^8.4.1 \|\| ^8.5` |
 | Laravel | `illuminate/* ^13.0` only |
 | Local dev | deps resolve from Packagist; NO committed path repositories (composer hard-fails on a missing path-repo dir, breaking CI and consumer installs — verified 2026-07-05). To develop against a sibling checkout, add a path repo locally without committing it |
@@ -150,6 +150,6 @@ gets its page under `docs/tools/`, i18n is covered by `docs/tools/policy-pipelin
 | Spec §12.1 originally said PHP 8.2 / Laravel 11–13 | Superseded by the toolchain floor; spec updated in commit `00b85f1` |
 | Spec §12.2 said ULID PKs everywhere; house uses `id()` | `id()` + `public_id` ULID on the two exported tables |
 | Spec stored policy texts as JSON columns; brief requires editable md files | Hybrid: shipped md defaults + 3-table DB snapshot subsystem; spec updated |
-| Spec referenced `laranail/console`/`database-tools` "v0.2.x" | Both are `^1.0` (verified against git tags and Packagist) |
+| Spec referenced `laranail/console`/`db-tools` "v0.2.x" | Both are `^1.0` (verified against git tags and Packagist) |
 | Brief's flat docs list vs org docs standard | Org standard adopted (this file, "Docs structure") |
-| Brief said "ask before deps beyond spatie + editor" | Approved: laranail toolchain, league/commonmark, symfony/yaml, database-tools |
+| Brief said "ask before deps beyond spatie + editor" | Approved: laranail toolchain, league/commonmark, symfony/yaml, db-tools |

@@ -48,7 +48,7 @@ debug calls, final classes).
 
 ## M2 — policy versioning + editing API
 
-Scope: 3 policy migrations (database-tools macros; `laranail/database-tools ^1.0`
+Scope: 3 policy migrations (db-tools macros; `laranail/db-tools ^1.0`
 dep lands here), models + factories, `PolicySyncCommand` + `InitialPolicySeeder`
 (thin wrapper), `PolicyPublisher`, `routes/admin.php` behind the three gates (CRUD
 drafts, edit translation, preview, publish, history, staleness report),

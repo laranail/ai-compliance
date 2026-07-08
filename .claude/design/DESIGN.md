@@ -11,7 +11,7 @@ in [PLAN.md](PLAN.md).
 ```
 laranail/ai-compliance
 ├── composer.json                 # laranail/package-tools ^1.3, laranail/console ^1.0,
-│                                 # league/commonmark ^2.7, symfony/yaml; database-tools ^1.0 from M2
+│                                 # league/commonmark ^2.7, symfony/yaml; db-tools ^1.0 from M2
 ├── config/ai-compliance.php
 ├── database/{migrations,factories,seeders}/       # from M2
 ├── packages/                     # npm workspaces (from M5): core/ react/ vue/
@@ -67,7 +67,7 @@ Full column lists live in the spec §12.2; this section records shape and ration
 `ai_checklist_items`, `ai_classification_answers`, `ai_feature_states`.
 
 Keys: `$table->id()` everywhere; `public_id` ULIDs only on the two exported
-append-only tables; morphs via database-tools `configuredMorphs()`;
+append-only tables; morphs via db-tools `configuredMorphs()`;
 `Relation::enforceMorphMap(['user' => …, 'guest' => GuestSubject::class])` in the
 provider.
 

@@ -42,7 +42,7 @@
         "illuminate/support": "^13.0",
         "illuminate/translation": "^13.0",
         "laranail/console": "^1.0",
-        "laranail/database-tools": "^1.0",
+        "laranail/db-tools": "^2.0",
         "laranail/package-tools": "^2.1",
         "league/commonmark": "^2.7",
         "symfony/yaml": "^7.0 || ^8.0"

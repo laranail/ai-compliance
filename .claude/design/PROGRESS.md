@@ -501,7 +501,7 @@ was removed (no longer reported under the updated toolchain).
 | 2026-07-05 | `id()` PKs + `public_id` ULID on consent_records/activity_events only | User decision; preserves no-sequence-leak on exported surfaces, house consistency elsewhere |
 | 2026-07-05 | league/commonmark ^2.7 + symfony/yaml approved as runtime deps | User decision; pipeline needs an owned CommonMark environment + frontmatter |
 | 2026-07-05 | Lockstep versioning, one vX.Y.Z tag for composer + npm; `contract` int in payload | User decision |
-| 2026-07-05 | laranail/database-tools ^1.0 adopted for schema macros (from M2) | User added it to spec §12.1; verified v1.0.0 is the only tag (spec's ^0.2 corrected) |
+| 2026-07-05 | laranail/db-tools ^1.0 adopted for schema macros (from M2) | User added it to spec §12.1; verified v1.0.0 is the only tag (spec's ^0.2 corrected) |
 | 2026-07-05 | Hybrid policy storage; 3-table subsystem replaces spec's JSON table | RESEARCH.md A; consent rows need a stable policy_version_id |
 | 2026-07-05 | Plain md + `[[shortcode]]` → `<ai-c>`; no MDX | RESEARCH.md C; MDX can't serve Blade/Livewire/Filament |
 | 2026-07-05 | Milkdown for JS editing surfaces; Filament uses its native MarkdownEditor | RESEARCH.md B; byte-faithful md round-trip protects checksum-based staleness |
@@ -516,7 +516,7 @@ was removed (no longer reported under the updated toolchain).
 | 2026-07-05 | One open draft per document, addressed implicitly (`…/{slug}/draft`) | Removes draft-id bookkeeping from the api and makes sync + editor converge on the same draft; multiple parallel drafts had no use case |
 | 2026-07-05 | Published DB version never falls back to files for missing locales; it serves its own default-locale translation | A file could otherwise shadow operator-published text with outdated shipped content |
 | 2026-07-05 | Cache flush = generation bump (key prefix), not key enumeration | Store-agnostic (no tags needed); orphans age out. Verified by CompiledPolicyCacheTest |
-| 2026-07-05 | Spec §12.2 macro calls corrected to `configuredNullableMorphs('x')` | The `nullable:` named-arg form I wrote into the spec earlier does not exist in database-tools v1.0 (verified in source) |
+| 2026-07-05 | Spec §12.2 macro calls corrected to `configuredNullableMorphs('x')` | The `nullable:` named-arg form I wrote into the spec earlier does not exist in db-tools v1.0 (verified in source) |
 | 2026-07-05 | InstallCommand reports unresolved placeholders instead of prompting/writing .env | Writing env/config from a command is fragile; PLAN's "prompt for placeholders" adjusted — the report gives the operator the same worklist safely |
 | 2026-07-05 | `policy_version_id` on consent records is nullable (spec said required) | File-mode installs (policies never synced/published) must still record consent; the version columns are null then, honestly marking "file-served text". Once synced, every record stamps |
 | 2026-07-05 | Morph map registered non-enforcing (`Relation::morphMap`), not `enforceMorphMap` per spec | `enforceMorphMap` flips a GLOBAL requireMorphMap that would break unrelated host-app morphs; a package must not do that. Hosts wanting enforcement call it themselves |

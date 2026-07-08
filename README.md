@@ -102,7 +102,7 @@ Part of the [laranail](https://github.com/laranail) family:
 [package-tools](https://github.com/laranail/package-tools) (the service
 provider base this package builds on),
 [console](https://github.com/laranail/console), and
-[database-tools](https://github.com/laranail/database-tools).
+[db-tools](https://github.com/laranail/db-tools).
 
 ## Community
 

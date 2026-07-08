@@ -200,7 +200,7 @@ and the project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v
   unmigrated installs keep working in pure file mode.
 - **Commands**: `laranail::ai-compliance.install` (publish + migrate + import +
   unresolved-placeholder report) and `…policy.publish {slug}`.
-- `laranail/database-tools ^1.0` dependency for the configured-morphs schema
+- `laranail/db-tools ^1.0` dependency for the configured-morphs schema
   macros.
 
 - **Read-only policy pipeline** (`src/Policy/`): file loader with app-over-package

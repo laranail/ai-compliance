@@ -9,7 +9,7 @@ use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Simtabi\Laranail\AiCompliance\Providers\AiComplianceServiceProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
-use Simtabi\Laranail\DatabaseTools\Providers\DatabaseToolsServiceProvider;
+use Simtabi\Laranail\DbTools\Providers\DbToolsServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -22,7 +22,7 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            DatabaseToolsServiceProvider::class, // registers the configuredMorphs schema macros
+            DbToolsServiceProvider::class, // registers the configuredMorphs schema macros
             LivewireServiceProvider::class,
             AiComplianceServiceProvider::class,
             AdminPanelProvider::class,
