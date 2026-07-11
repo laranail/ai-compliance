@@ -21,9 +21,11 @@ it('registers the package seeders with the package-tools registry', function ():
 it('auto-seeds the checklist and policies when the host seeds', function (): void {
     expect(ChecklistItem::query()->count())->toBe(0);
 
-    // resolving any seeder from the container is what db:seed does; the
-    // package-tools hook fires once and runs the registered bundle first
-    app(DemoSeeder::class);
+    // package-tools v7: registration happens at boot, execution at db:seed
+    // time. run() executes every registered bundle — the path the host's
+    // db:seed drives (runAutorun() is only for autorun-flagged bundles and is
+    // gated off in tests; this bundle registers via whenConfig, not autorun).
+    app(SeederManager::class)->run();
 
     expect(ChecklistItem::query()->count())->toBeGreaterThan(40)
         ->and(PolicyDocument::query()->count())->toBe(14);
