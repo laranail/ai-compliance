@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*.*.*-*'
+
+permissions: {}
+
+jobs:
+  npm:
+    name: Publish npm packages (lockstep)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing + provenance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspaces
+        run: npm run build
+
+      - name: Vitest
+        run: npx vitest run
+
+      - name: Stamp the tag version on every workspace (lockstep)
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          for pkg in core react vue; do
+            npm version "$version" --no-git-tag-version --workspace "packages/$pkg"
+          done
+          # the bindings depend on the core at the same version
+          for pkg in react vue; do
+            npm pkg set "dependencies.@laranail/ai-compliance=$version" --workspace "packages/$pkg"
+          done
+
+      # trusted publishing: the npm packages are configured with this repo +
+      # workflow as their oidc trusted publisher, so no token secret exists
+      - name: Publish with provenance
+        run: npm publish --provenance --access public --workspaces
+
+  release:
+    name: Publish GitHub release + SBOM
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.5'
+          extensions: dom, curl, libxml, mbstring, zip, fileinfo
+          coverage: none
+
+      - name: Install runtime dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress
+
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: ai-compliance.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Extract this version's CHANGELOG section
+        id: changelog
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          notes=$(awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\]" { f=1; next }
+            f && /^## \[/ { exit }
+            f { print }
+          ' CHANGELOG.md)
+          {
+            echo "body<<__CHANGELOG_EOF__"
+            if [ -n "$notes" ]; then printf '%s\n' "$notes"; else
+              echo "See [CHANGELOG.md](https://github.com/laranail/ai-compliance/blob/main/CHANGELOG.md)."
+            fi
+            echo
+            echo "Full history: [CHANGELOG.md](https://github.com/laranail/ai-compliance/blob/main/CHANGELOG.md)."
+            echo "__CHANGELOG_EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
+        with:
+          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.body }}
+          files: ai-compliance.cdx.json

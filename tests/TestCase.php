@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Simtabi\Laranail\AiCompliance\Tests;
+
+use Livewire\LivewireServiceProvider;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use Simtabi\Laranail\AiCompliance\Providers\AiComplianceServiceProvider;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
+use Simtabi\Laranail\DbTools\Providers\DbToolsServiceProvider;
+
+abstract class TestCase extends OrchestraTestCase
+{
+    /**
+     * Filament registers a dozen providers of its own; discovery pulls them
+     * (and everything else in vendor) the way a real app would.
+     */
+    protected $enablesPackageDiscoveries = true;
+
+    protected function getPackageProviders($app): array
+    {
+        return [
+            DbToolsServiceProvider::class, // registers the configuredMorphs schema macros
+            LivewireServiceProvider::class,
+            AiComplianceServiceProvider::class,
+            AdminPanelProvider::class,
+        ];
+    }
+
+    protected function getEnvironmentSetUp($app): void
+    {
+        $app['config']->set('laranail.ai-compliance.placeholders', [
+            'company' => 'Acme',
+            'product' => 'Acme App',
+            'contact_email' => 'privacy@acme.test',
+            'privacy_url' => 'https://acme.test/privacy',
+            'settings_path' => '/settings/ai',
+        ]);
+
+        // admin gate tests exercise 403s directly; the auth middleware would
+        // redirect guests to a login route the skeleton does not have
+        $app['config']->set('laranail.ai-compliance.admin_routes.middleware', ['web']);
+
+        // the fixture user model gets the short 'user' morph alias
+        $app['config']->set('laranail.ai-compliance.user_model', User::class);
+    }
+}

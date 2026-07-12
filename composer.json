@@ -1,0 +1,131 @@
+{
+    "name": "laranail/ai-compliance",
+    "description": "AI compliance for Laravel apps: markdown-authored policy documents with versioning and draft/publish, consent records, provider registry, disclosure surfaces, and automated compliance checks.",
+    "keywords": [
+        "laravel",
+        "ai",
+        "compliance",
+        "consent",
+        "gdpr",
+        "eu-ai-act",
+        "policies",
+        "disclosure",
+        "laranail"
+    ],
+    "homepage": "https://opensource.simtabi.com/products/laranail/ai-compliance",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Simtabi LLC",
+            "email": "opensource@simtabi.com",
+            "homepage": "https://opensource.simtabi.com",
+            "role": "Organization"
+        },
+        {
+            "name": "Imani Manyara",
+            "email": "imani@simtabi.com",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/laranail/ai-compliance/issues",
+        "source": "https://github.com/laranail/ai-compliance",
+        "docs": "https://opensource.simtabi.com/documentation/laranail/ai-compliance/"
+    },
+    "require": {
+        "php": "^8.4.1 || ^8.5",
+        "illuminate/cache": "^13.0",
+        "illuminate/console": "^13.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/routing": "^13.0",
+        "illuminate/support": "^13.0",
+        "illuminate/translation": "^13.0",
+        "laranail/console": "^0.1",
+        "laranail/db-tools": "^0.1",
+        "laranail/package-tools": "^0.1",
+        "league/commonmark": "^2.7",
+        "symfony/yaml": "^7.0 || ^8.0"
+    },
+    "require-dev": {
+        "filament/filament": "^5.6",
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "livewire/livewire": "^4.0",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "phpstan/phpstan": "^2.0",
+        "rector/rector": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Simtabi\\Laranail\\AiCompliance\\": "src/",
+            "Simtabi\\Laranail\\AiCompliance\\Database\\Factories\\": "database/factories/",
+            "Simtabi\\Laranail\\AiCompliance\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Simtabi\\Laranail\\AiCompliance\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php vendor/bin/testbench package:discover --ansi",
+        "test": "vendor/bin/pest --colors=always",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "lint": [
+            "@pint",
+            "@phpstan",
+            "@rector"
+        ],
+        "pint": "vendor/bin/pint --test",
+        "pint-fix": "vendor/bin/pint",
+        "phpstan": "vendor/bin/phpstan analyse --no-progress",
+        "rector": "vendor/bin/rector process --dry-run",
+        "rector-fix": "vendor/bin/rector process",
+        "audit": "@composer audit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Simtabi\\Laranail\\AiCompliance\\Providers\\AiComplianceServiceProvider"
+            ],
+            "aliases": {
+                "AiCompliance": "Simtabi\\Laranail\\AiCompliance\\Facades\\AiCompliance",
+                "AiConsent": "Simtabi\\Laranail\\AiCompliance\\Facades\\AiConsent"
+            }
+        },
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "suggest": {
+        "livewire/livewire": "Enables the ConsentPreferences and ReconsentPrompt Livewire components (^4.0).",
+        "filament/filament": "Enables the Filament admin plugin (panel resources, policy editor, dashboard widgets) (^5.0)."
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/console"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/db-tools"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laranail/package-tools"
+        }
+    ]
+}

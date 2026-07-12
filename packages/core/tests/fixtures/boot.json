@@ -1,0 +1,146 @@
+{
+    "contract": 1,
+    "locale": "en",
+    "fallback_locale": "en",
+    "consent": {
+        "types": [
+            {
+                "slug": "ai_training",
+                "label": "AI training permissions",
+                "description": "Allow your content and activity to be used to improve and train AI models.",
+                "legal_basis": "consent",
+                "default_state": "denied",
+                "short_html": "Allow Acme to use my content and activity to improve and train AI models. Off by default. You can withdraw anytime and we'll stop using your data going forward.",
+                "policy_version": null
+            },
+            {
+                "slug": "ai_chatbot",
+                "label": "AI chatbot interactions",
+                "description": "Allow the AI assistant to process your messages so it can respond.",
+                "legal_basis": "consent",
+                "default_state": "denied",
+                "short_html": "Allow the AI assistant to process my messages so it can respond. Required to use the assistant; the rest of Acme App works without it.",
+                "policy_version": null
+            },
+            {
+                "slug": "ai_recommendations",
+                "label": "AI recommendations",
+                "description": "Allow AI to suggest content based on your activity.",
+                "legal_basis": "consent",
+                "default_state": "denied",
+                "short_html": "Let Acme App use AI to suggest {{items}} based on your activity. Turning this off gives you non-personalized defaults instead.",
+                "policy_version": null
+            },
+            {
+                "slug": "ai_personalization",
+                "label": "AI personalization",
+                "description": "Allow AI to adapt the interface and content to you.",
+                "legal_basis": "consent",
+                "default_state": "denied",
+                "short_html": "Let Acme App use AI to adapt the interface and content to you. Off means everyone-sees-the-same defaults.",
+                "policy_version": null
+            }
+        ],
+        "state": {
+            "ai_training": {
+                "status": "denied",
+                "recorded_at": null,
+                "policy_version": null
+            },
+            "ai_chatbot": {
+                "status": "denied",
+                "recorded_at": null,
+                "policy_version": null
+            },
+            "ai_recommendations": {
+                "status": "denied",
+                "recorded_at": null,
+                "policy_version": null
+            },
+            "ai_personalization": {
+                "status": "denied",
+                "recorded_at": null,
+                "policy_version": null
+            }
+        },
+        "reconsent": []
+    },
+    "disclosures": {
+        "chat": {
+            "html": "<p>You're chatting with an AI assistant, not a person. It can make mistakes.</p>",
+            "version": null
+        },
+        "content": {
+            "html": "<p>Generated with AI by Acme App.</p>",
+            "version": null
+        },
+        "decision": {
+            "html": "<p>This outcome was informed by an automated tool. You can request human review at privacy@acme.test.</p>",
+            "version": null
+        }
+    },
+    "documents": {
+        "acceptable-use": {
+            "title": "Internal acceptable AI use policy",
+            "url": "http://localhost/ai-compliance/policies/acceptable-use",
+            "version": null
+        },
+        "automated-decisions": {
+            "title": "When Acme App uses AI in decisions about you",
+            "url": "http://localhost/ai-compliance/policies/automated-decisions",
+            "version": null
+        },
+        "data-protection": {
+            "title": "AI data protection addendum",
+            "url": "http://localhost/ai-compliance/policies/data-protection",
+            "version": null
+        },
+        "incident-response": {
+            "title": "AI incident response policy",
+            "url": "http://localhost/ai-compliance/policies/incident-response",
+            "version": null
+        },
+        "training-data": {
+            "title": "Acme training-data statement",
+            "url": "http://localhost/ai-compliance/policies/training-data",
+            "version": null
+        },
+        "transparency": {
+            "title": "How Acme App uses AI",
+            "url": "http://localhost/ai-compliance/policies/transparency",
+            "version": null
+        },
+        "vendor": {
+            "title": "AI vendor policy",
+            "url": "http://localhost/ai-compliance/policies/vendor",
+            "version": null
+        }
+    },
+    "features": {
+        "smart_summaries": [
+            "ai_training"
+        ]
+    },
+    "strings": {
+        "preferences.title": "AI privacy choices",
+        "preferences.intro": "Control, separately, how AI may use your data. Saying no never blocks the non-AI parts of the product.",
+        "preferences.save": "Save choices",
+        "preferences.saved": "Your choices have been saved.",
+        "preferences.granted": "Allowed",
+        "preferences.denied": "Not allowed",
+        "preferences.allow": "Allow",
+        "preferences.withdraw": "Withdraw",
+        "disclosure.badge": "AI",
+        "policy.updated": "Updated",
+        "policy.version": "Version",
+        "policy.fallback_notice": "This document is not yet available in your language; you are reading the :locale version.",
+        "reconsent.title": "A policy you agreed to has changed",
+        "reconsent.review": "Review the changes"
+    },
+    "endpoints": {
+        "boot": "http://localhost/ai-compliance/boot",
+        "policy": "http://localhost/ai-compliance/policies/__slug__",
+        "consents": "http://localhost/ai-compliance/consents"
+    },
+    "guest_key": null
+}
