@@ -32,17 +32,17 @@ final class ReconsentRequested extends Notification
     public function toMail(): MailMessage
     {
         $message = (new MailMessage)
-            ->subject(__('ai-compliance::ai-compliance.notifications.reconsent_subject'))
-            ->line(__('ai-compliance::ai-compliance.strings.reconsent.title'));
+            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.reconsent_subject'))
+            ->line(__('laranail-ai-compliance::ai-compliance.strings.reconsent.title'));
 
         foreach ($this->consentTypes as $type) {
-            $message->line('- ' . __('ai-compliance::ai-compliance.consent_types.' . $type . '.label'));
+            $message->line('- ' . __('laranail-ai-compliance::ai-compliance.consent_types.' . $type . '.label'));
         }
 
         $settingsPath = config('laranail.ai-compliance.placeholders.settings_path');
 
         if (is_string($settingsPath) && $settingsPath !== '') {
-            $message->action(__('ai-compliance::ai-compliance.strings.reconsent.review'), url($settingsPath));
+            $message->action(__('laranail-ai-compliance::ai-compliance.strings.reconsent.review'), url($settingsPath));
         }
 
         return $message;

@@ -40,7 +40,7 @@ final class ReconsentPrompt extends Component
     {
         $subject = app(CurrentSubject::class)->resolve();
 
-        return view('ai-compliance::livewire.reconsent-prompt', [
+        return view('laranail-ai-compliance::livewire.reconsent-prompt', [
             'reconsent' => $subject !== null ? app(ConsentManager::class)->reconsentFor($subject) : [],
         ]);
     }

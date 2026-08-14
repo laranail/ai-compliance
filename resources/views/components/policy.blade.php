@@ -7,7 +7,7 @@
 
         @if ($document->isFallback())
             <p class="ai-compliance-policy-fallback" role="note">
-                {{ __('ai-compliance::ai-compliance.strings.policy.fallback_notice', ['locale' => $document->locale]) }}
+                {{ __('laranail-ai-compliance::ai-compliance.strings.policy.fallback_notice', ['locale' => $document->locale]) }}
             </p>
         @endif
 
@@ -15,7 +15,7 @@
 
         @if ($document->version !== null)
             <footer class="ai-compliance-policy-version">
-                {{ __('ai-compliance::ai-compliance.strings.policy.version') }} {{ $document->version }}
+                {{ __('laranail-ai-compliance::ai-compliance.strings.policy.version') }} {{ $document->version }}
             </footer>
         @endif
     </article>

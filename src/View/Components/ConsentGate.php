@@ -29,7 +29,7 @@ final class ConsentGate extends Component
 
     public function render(): View
     {
-        return $this->view('ai-compliance::components.gate', [
+        return $this->view('laranail-ai-compliance::components.gate', [
             'allowed' => $this->allowed(),
         ]);
     }

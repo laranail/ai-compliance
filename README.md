@@ -25,8 +25,8 @@ The install command publishes the editable policy markdown, migrates, seeds
 the checklist, and imports every policy as published version 1.0. From there:
 
 ```blade
-<x-ai-compliance::disclosure surface="chat" />   {{-- before any model output --}}
-<x-ai-compliance::preferences />                 {{-- the consent panel --}}
+<x-laranail-ai-compliance::disclosure surface="chat" />   {{-- before any model output --}}
+<x-laranail-ai-compliance::preferences />                 {{-- the consent panel --}}
 ```
 
 ```php

@@ -2,33 +2,33 @@
 
 Reference for the server-rendered UI stack: four components under the `ai-compliance` namespace plus the island renderer, all working without any javascript.
 
-## `<x-ai-compliance::disclosure>`
+## `<x-laranail-ai-compliance::disclosure>`
 
 The ai disclosure line for a surface, rendered before any model output:
 
 ```blade
-<x-ai-compliance::disclosure surface="chat" />
-<x-ai-compliance::disclosure surface="content" locale="de" />
+<x-laranail-ai-compliance::disclosure surface="chat" />
+<x-laranail-ai-compliance::disclosure surface="content" locale="de" />
 ```
 
 The text is the `disclosure.{surface}` policy document: versioned, translated,
 and editable like every other document. Renders nothing for unknown surfaces;
 falls back per the locale chain.
 
-## `<x-ai-compliance::gate>`
+## `<x-laranail-ai-compliance::gate>`
 
 Renders its slot only when the current subject (user, else guest cookie) may
 proceed; the `fallback` named slot renders otherwise:
 
 ```blade
-<x-ai-compliance::gate feature="chat_assistant">
+<x-laranail-ai-compliance::gate feature="chat_assistant">
     <x-chat-widget />
     <x-slot:fallback>
-        <x-ai-compliance::preferences />
+        <x-laranail-ai-compliance::preferences />
     </x-slot:fallback>
-</x-ai-compliance::gate>
+</x-laranail-ai-compliance::gate>
 
-<x-ai-compliance::gate consent="ai_personalization">…</x-ai-compliance::gate>
+<x-laranail-ai-compliance::gate consent="ai_personalization">…</x-laranail-ai-compliance::gate>
 ```
 
 `feature` checks the feature's configured consent requirements
@@ -36,18 +36,18 @@ proceed; the `fallback` named slot renders otherwise:
 required. Anonymous subjects carry every default state, so denied-by-default
 types gate them out.
 
-## `<x-ai-compliance::policy>`
+## `<x-laranail-ai-compliance::policy>`
 
 One compiled policy document (title, substituted body with its `<ai-c>`
 islands replaced server-side, a not-yet-translated notice on fallback, and
 the version footer once published):
 
 ```blade
-<x-ai-compliance::policy slug="transparency" />
-<x-ai-compliance::policy slug="consent.ai_training" :show-title="false" />
+<x-laranail-ai-compliance::policy slug="transparency" />
+<x-laranail-ai-compliance::policy slug="consent.ai_training" :show-title="false" />
 ```
 
-## `<x-ai-compliance::preferences>`
+## `<x-laranail-ai-compliance::preferences>`
 
 The consent panel: one block per configured type with its translated label,
 short text, current state, and a plain form posting to the consents endpoint,

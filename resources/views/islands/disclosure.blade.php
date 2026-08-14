@@ -1,2 +1,2 @@
 {{-- inline disclosure island: [[disclosure surface="chat"]] --}}
-<x-ai-compliance::disclosure :surface="$props['surface'] ?? 'chat'" />
+<x-laranail-ai-compliance::disclosure :surface="$props['surface'] ?? 'chat'" />

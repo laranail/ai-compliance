@@ -90,8 +90,8 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
             ->name('laranail/ai-compliance')
             ->setPublishTagId('ai-compliance')
             ->hasConfigFile('ai-compliance')
-            ->hasViews('ai-compliance')
-            ->hasTranslations('ai-compliance')
+            ->hasViews('laranail-ai-compliance')
+            ->hasTranslations('laranail-ai-compliance')
             ->hasRoutes('api', 'admin')
             ->discoversMigrations()
             ->runsMigrations()
@@ -144,9 +144,9 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                     ->cadenceFromConfig('laranail.ai-compliance.checks.schedule', Cadence::Daily)
                     ->whenConfigNotNull('laranail.ai-compliance.retention.activity_events'),
             ])
-            ->hasBladeComponentNamespace('Simtabi\\Laranail\\AiCompliance\\View\\Components', 'ai-compliance')
-            // spec-shaped alias: <x-ai-compliance::gate> next to consent-gate
-            ->hasBladeComponentAlias('ai-compliance::gate', ConsentGate::class)
+            ->hasBladeComponentNamespace('Simtabi\\Laranail\\AiCompliance\\View\\Components', 'laranail-ai-compliance')
+            // spec-shaped alias: <x-laranail-ai-compliance::gate> next to consent-gate
+            ->hasBladeComponentAlias('laranail-ai-compliance::gate', ConsentGate::class)
             ->withoutLivewireNamespacePrefix()
             ->hasLivewireComponents([
                 'ai-compliance.consent-preferences' => ConsentPreferences::class,

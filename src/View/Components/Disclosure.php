@@ -29,7 +29,7 @@ final class Disclosure extends Component
 
         $disclosure = $policies->find('disclosure.' . $this->surface, $this->locale);
 
-        return $this->view('ai-compliance::components.disclosure', [
+        return $this->view('laranail-ai-compliance::components.disclosure', [
             'disclosure' => $disclosure instanceof PolicyContent ? $disclosure : null,
         ]);
     }

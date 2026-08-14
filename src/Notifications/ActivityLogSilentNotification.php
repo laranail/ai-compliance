@@ -24,8 +24,8 @@ final class ActivityLogSilentNotification extends Notification
     public function toMail(): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('ai-compliance::ai-compliance.notifications.log_silent_subject'))
+            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.log_silent_subject'))
             ->line($this->message)
-            ->line(__('ai-compliance::ai-compliance.notifications.log_silent_hint'));
+            ->line(__('laranail-ai-compliance::ai-compliance.notifications.log_silent_hint'));
     }
 }

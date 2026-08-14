@@ -12,7 +12,7 @@
         <input type="hidden" name="type" value="{{ $type }}">
         <input type="hidden" name="status" value="{{ $granted ? 'withdrawn' : 'granted' }}">
         <button type="submit">
-            {{ $granted ? __('ai-compliance::ai-compliance.strings.preferences.withdraw') : __('ai-compliance::ai-compliance.strings.preferences.granted') }}
+            {{ $granted ? __('laranail-ai-compliance::ai-compliance.strings.preferences.withdraw') : __('laranail-ai-compliance::ai-compliance.strings.preferences.granted') }}
         </button>
     </form>
 @else

@@ -9,7 +9,7 @@ use Illuminate\Contracts\View\Factory as ViewFactory;
 /**
  * Server-side hydration for the <ai-c> elements the shortcode compiler
  * emits: each element whose component has a matching island view
- * (ai-compliance::islands.{name}) is replaced with that view's output; the
+ * (laranail-ai-compliance::islands.{name}) is replaced with that view's output; the
  * rest keep their fallback text, so blade/livewire surfaces never ship an
  * inert custom element. The js core does the same job in the browser for
  * react/vue surfaces.
@@ -31,7 +31,7 @@ final readonly class IslandRenderer
                 $props = $this->decodeProps($matches[2]);
                 $fallback = $matches[3];
 
-                $view = 'ai-compliance::islands.' . $name;
+                $view = 'laranail-ai-compliance::islands.' . $name;
 
                 if (! $this->views->exists($view)) {
                     return $fallback;

@@ -30,7 +30,7 @@ final class Policy extends Component
 
         $document = $policies->find($this->slug, $this->locale);
 
-        return $this->view('ai-compliance::components.policy', [
+        return $this->view('laranail-ai-compliance::components.policy', [
             'document' => $document,
             'html' => $document instanceof PolicyContent
                 ? app(IslandRenderer::class)->render($document->html)

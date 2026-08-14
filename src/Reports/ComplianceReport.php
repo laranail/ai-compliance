@@ -60,7 +60,7 @@ final readonly class ComplianceReport
 
     public function html(): string
     {
-        $html = $this->views->make('ai-compliance::report', $this->data())->render();
+        $html = $this->views->make('laranail-ai-compliance::report', $this->data())->render();
 
         $this->activity->record(ActivityType::Export, context: [
             'log' => 'compliance_report',

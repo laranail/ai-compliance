@@ -86,8 +86,8 @@ final readonly class ConsentTypes
 
     private function createFromConfig(string $slug, mixed $settings): ConsentType
     {
-        $label = $this->translator->get('ai-compliance::ai-compliance.consent_types.' . $slug . '.label');
-        $description = $this->translator->get('ai-compliance::ai-compliance.consent_types.' . $slug . '.description');
+        $label = $this->translator->get('laranail-ai-compliance::ai-compliance.consent_types.' . $slug . '.label');
+        $description = $this->translator->get('laranail-ai-compliance::ai-compliance.consent_types.' . $slug . '.description');
 
         return ConsentType::query()->create([
             'slug' => $slug,

@@ -3,7 +3,7 @@
         {{ $this->form }}
 
         <x-filament::button type="submit">
-            {{ __('ai-compliance::ai-compliance.strings.preferences.save') }}
+            {{ __('laranail-ai-compliance::ai-compliance.strings.preferences.save') }}
         </x-filament::button>
     </form>
 </x-filament-panels::page>

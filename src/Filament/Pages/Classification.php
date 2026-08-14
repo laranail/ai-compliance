@@ -20,7 +20,7 @@ use Simtabi\Laranail\AiCompliance\Checklist\Classification as ClassificationServ
  */
 final class Classification extends Page
 {
-    protected string $view = 'ai-compliance::filament.classification';
+    protected string $view = 'laranail-ai-compliance::filament.classification';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-funnel';
 

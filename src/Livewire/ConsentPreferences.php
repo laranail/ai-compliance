@@ -50,7 +50,7 @@ final class ConsentPreferences extends Component
         /** @var array<string, mixed> $consent */
         $consent = is_array($payload['consent']) ? $payload['consent'] : [];
 
-        return view('ai-compliance::livewire.consent-preferences', [
+        return view('laranail-ai-compliance::livewire.consent-preferences', [
             'types' => is_array($consent['types'] ?? null) ? $consent['types'] : [],
             'state' => is_array($consent['state'] ?? null) ? $consent['state'] : [],
             'reconsent' => is_array($consent['reconsent'] ?? null) ? $consent['reconsent'] : [],

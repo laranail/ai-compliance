@@ -26,7 +26,7 @@ final class CheckFailedNotification extends Notification
     public function toMail(): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('ai-compliance::ai-compliance.notifications.check_failed_subject', ['item' => $this->label]))
+            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.check_failed_subject', ['item' => $this->label]))
             ->line($this->label . ' (' . $this->itemKey . ')')
             ->line($this->message);
     }

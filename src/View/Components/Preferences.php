@@ -35,7 +35,7 @@ final class Preferences extends Component
         /** @var array<string, mixed> $consent */
         $consent = is_array($payload['consent']) ? $payload['consent'] : [];
 
-        return $this->view('ai-compliance::components.preferences', [
+        return $this->view('laranail-ai-compliance::components.preferences', [
             'types' => is_array($consent['types'] ?? null) ? $consent['types'] : [],
             'state' => is_array($consent['state'] ?? null) ? $consent['state'] : [],
             'reconsent' => is_array($consent['reconsent'] ?? null) ? $consent['reconsent'] : [],

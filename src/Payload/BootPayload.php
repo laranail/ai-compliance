@@ -187,7 +187,7 @@ final readonly class BootPayload
      */
     private function strings(string $locale): array
     {
-        $strings = $this->translator->get('ai-compliance::ai-compliance.strings', [], $locale);
+        $strings = $this->translator->get('laranail-ai-compliance::ai-compliance.strings', [], $locale);
 
         if (! is_array($strings)) {
             return [];
@@ -259,7 +259,7 @@ final readonly class BootPayload
 
     private function translate(string $key, string $locale): ?string
     {
-        $fullKey = 'ai-compliance::ai-compliance.' . $key;
+        $fullKey = 'laranail-ai-compliance::ai-compliance.' . $key;
         $translated = $this->translator->get($fullKey, [], $locale);
 
         return is_string($translated) && $translated !== $fullKey ? $translated : null;

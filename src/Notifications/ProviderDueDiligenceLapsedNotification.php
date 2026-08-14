@@ -24,7 +24,7 @@ final class ProviderDueDiligenceLapsedNotification extends Notification
     public function toMail(): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('ai-compliance::ai-compliance.notifications.due_diligence_subject'))
+            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.due_diligence_subject'))
             ->line($this->message);
     }
 }
