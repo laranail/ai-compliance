@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Override;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentTypeFactory;
-use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Enums\LegalBasis;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentTypeFactory;
 
 /**
  * One granular consent switch (ai_training, ai_chatbot, ...). The row is
@@ -39,16 +39,6 @@ class ConsentType extends Model
         $this->setTable((string) config('laranail.ai-compliance.tables.consent_types', 'ai_consent_types'));
     }
 
-    #[Override]
-    protected function casts(): array
-    {
-        return [
-            'legal_basis' => LegalBasis::class,
-            'default_state' => ConsentStatus::class,
-            'active' => 'boolean',
-        ];
-    }
-
     /**
      * @return HasMany<ConsentRecord, $this>
      */
@@ -60,5 +50,15 @@ class ConsentType extends Model
     protected static function newFactory(): ConsentTypeFactory
     {
         return ConsentTypeFactory::new();
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'legal_basis'   => LegalBasis::class,
+            'default_state' => ConsentStatus::class,
+            'active'        => 'boolean',
+        ];
     }
 }

@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\GenericUser;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 
 uses(RefreshDatabase::class);
 
@@ -118,10 +118,10 @@ it('writes identified exports only from the console command', function (): void 
     $path = sys_get_temp_dir() . '/ai-compliance-test-export-' . bin2hex(random_bytes(4)) . '.json';
 
     $this->artisan('laranail::ai-compliance.export', [
-        'log' => 'consents',
-        '--format' => 'json',
+        'log'          => 'consents',
+        '--format'     => 'json',
         '--identified' => true,
-        '--path' => $path,
+        '--path'       => $path,
     ])->assertSuccessful();
 
     $rows = json_decode((string) file_get_contents($path), true);

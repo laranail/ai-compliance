@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\GenericUser;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
-use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
-use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 
 uses(RefreshDatabase::class);
 

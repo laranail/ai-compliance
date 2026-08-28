@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Cache;
-use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
 
 it('falls back to the default locale and reports the locale actually served', function (): void {

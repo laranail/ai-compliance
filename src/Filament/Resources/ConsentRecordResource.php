@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources;
 
+use Override;
 use BackedEnum;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Override;
+use Filament\Tables\Filters\SelectFilter;
 use Simtabi\Laranail\AiCompliance\Exports\LogExports;
-use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecords\Pages\ListConsentRecords;
-use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecords\Pages\ListConsentRecords;
 
 /**
  * The consent log, strictly read-only: append-only rows are history, and
@@ -47,8 +47,8 @@ final class ConsentRecordResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('status')->options([
-                    'granted' => 'granted',
-                    'denied' => 'denied',
+                    'granted'   => 'granted',
+                    'denied'    => 'denied',
                     'withdrawn' => 'withdrawn',
                 ]),
             ])

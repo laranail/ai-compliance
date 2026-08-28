@@ -17,7 +17,7 @@ it('serves the contract-1 boot payload', function (): void {
             'contract',
             'locale',
             'fallback_locale',
-            'consent' => ['types', 'state', 'reconsent'],
+            'consent'     => ['types', 'state', 'reconsent'],
             'disclosures' => ['chat', 'content', 'decision'],
             'documents',
             'features',
@@ -54,8 +54,8 @@ it('defaults every consent state to the configured default with no record', func
 
     expect($state)->toHaveKeys(['ai_training', 'ai_chatbot', 'ai_recommendations', 'ai_personalization'])
         ->and($state['ai_training'])->toBe([
-            'status' => 'denied',
-            'recorded_at' => null,
+            'status'         => 'denied',
+            'recorded_at'    => null,
             'policy_version' => null,
         ]);
 });

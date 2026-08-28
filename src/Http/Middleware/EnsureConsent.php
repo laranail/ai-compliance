@@ -6,9 +6,9 @@ namespace Simtabi\Laranail\AiCompliance\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Symfony\Component\HttpFoundation\Response;
+use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**

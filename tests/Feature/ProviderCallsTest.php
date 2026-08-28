@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
-use Simtabi\Laranail\AiCompliance\Events\InferenceLogged;
-use Simtabi\Laranail\AiCompliance\Facades\AiConsent;
-use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Facades\AiConsent;
+use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Events\InferenceLogged;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 uses(RefreshDatabase::class);
@@ -24,8 +24,8 @@ beforeEach(function (): void {
     ]);
 
     Provider::factory()->dueDiligenceComplete()->create([
-        'name' => 'support-assistant',
-        'vendor' => 'OpenAI',
+        'name'       => 'support-assistant',
+        'vendor'     => 'OpenAI',
         'model_name' => 'model-1',
     ]);
 });
@@ -80,10 +80,10 @@ it('logs the inference with the provider id and fires InferenceLogged', function
     expect($event->provider_id)->toBe(Provider::query()->firstOrFail()->id)
         ->and($event->subjectable_type)->toBe('user')
         ->and($event->context)->toMatchArray([
-            'provider' => 'support-assistant',
-            'vendor' => 'OpenAI',
-            'model' => 'model-1',
-            'purpose' => 'support_chat',
+            'provider'     => 'support-assistant',
+            'vendor'       => 'OpenAI',
+            'model'        => 'model-1',
+            'purpose'      => 'support_chat',
             'do_not_train' => true,
         ])
         ->and($event->context)->not->toHaveKey('input'); // no raw prompts, ever

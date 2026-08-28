@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 // the whole ai-compliance schema in one migration, ordered by dependency.
 // table names come from config('laranail.ai-compliance.tables.*') — rename

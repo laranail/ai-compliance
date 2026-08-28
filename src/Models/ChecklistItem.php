@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ChecklistItemFactory;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ChecklistItemFactory;
 
 /**
  * One compliance checklist item. Auto items are kept honest by the check
@@ -47,16 +47,6 @@ class ChecklistItem extends Model
         $this->setTable((string) config('laranail.ai-compliance.tables.checklist_items', 'ai_checklist_items'));
     }
 
-    #[Override]
-    protected function casts(): array
-    {
-        return [
-            'applies_when' => 'array',
-            'status' => CheckStatus::class,
-            'last_verified_at' => 'immutable_datetime',
-        ];
-    }
-
     public function isStale(): bool
     {
         return $this->status === CheckStatus::Ok
@@ -67,5 +57,15 @@ class ChecklistItem extends Model
     protected static function newFactory(): ChecklistItemFactory
     {
         return ChecklistItemFactory::new();
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'applies_when'     => 'array',
+            'status'           => CheckStatus::class,
+            'last_verified_at' => 'immutable_datetime',
+        ];
     }
 }

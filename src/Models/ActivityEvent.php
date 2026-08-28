@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\MassPrunable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Str;
 use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ActivityEventFactory;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\MassPrunable;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ActivityEventFactory;
 
 /**
  * One entry in the ai activity log. This milestone records consent changes
@@ -54,25 +54,6 @@ class ActivityEvent extends Model
         $this->setTable((string) config('laranail.ai-compliance.tables.activity_events', 'ai_activity_events'));
     }
 
-    #[Override]
-    protected function casts(): array
-    {
-        return [
-            'event_type' => ActivityType::class,
-            'context' => 'array',
-            'recorded_at' => 'immutable_datetime',
-        ];
-    }
-
-    #[Override]
-    protected static function booted(): void
-    {
-        static::creating(function (self $event): void {
-            $event->public_id ??= (string) Str::ulid();
-            $event->recorded_at ??= now()->toImmutable();
-        });
-    }
-
     /**
      * Events older than the configured retention (days) are prunable; a null
      * retention keeps everything. Note the hash chain breaks by design when
@@ -108,8 +89,27 @@ class ActivityEvent extends Model
         return $this->morphTo();
     }
 
+    #[Override]
+    protected static function booted(): void
+    {
+        static::creating(function (self $event): void {
+            $event->public_id ??= (string) Str::ulid();
+            $event->recorded_at ??= now()->toImmutable();
+        });
+    }
+
     protected static function newFactory(): ActivityEventFactory
     {
         return ActivityEventFactory::new();
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'event_type'  => ActivityType::class,
+            'context'     => 'array',
+            'recorded_at' => 'immutable_datetime',
+        ];
     }
 }

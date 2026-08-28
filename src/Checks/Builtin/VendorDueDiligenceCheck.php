@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
 use Simtabi\Laranail\AiCompliance\Checks\Check;
-use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
 
 /**
  * Every provider needs a completed due-diligence record, re-reviewed on a

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
@@ -98,7 +98,7 @@ it('flags and never overwrites a hand-edited translation when the file changes',
     $translation = $document->publishedVersion()->firstOrFail()->translations()->firstOrFail();
     $translation->update([
         'source_markdown' => 'ADMIN_EDITED CONTENT',
-        'checksum' => hash('sha256', 'ADMIN_EDITED CONTENT'),
+        'checksum'        => hash('sha256', 'ADMIN_EDITED CONTENT'),
     ]);
 
     overridePolicyDir(['en/transparency.md' => "---\ntitle: File change\ntype: policy\n---\n\nFILE_CHANGED_AGAIN."]);

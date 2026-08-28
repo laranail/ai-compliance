@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\BootController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\ConsentController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\PolicyController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\ConsentController;
 
 if (! config('laranail.ai-compliance.routes.enabled', true)) {
     return;

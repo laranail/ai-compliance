@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Exports\LogExports;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Exports\LogExports;
 
 /**
  * Exports the consent or activity log to a file. Pseudonymized by default;
@@ -37,10 +37,10 @@ final class ExportCommand extends Command
         }
 
         $filters = [
-            'type' => $this->stringOption('type') !== '' ? $this->stringOption('type') : null,
+            'type'   => $this->stringOption('type') !== '' ? $this->stringOption('type') : null,
             'status' => $this->stringOption('status') !== '' ? $this->stringOption('status') : null,
-            'from' => $this->stringOption('from') !== '' ? $this->stringOption('from') : null,
-            'to' => $this->stringOption('to') !== '' ? $this->stringOption('to') : null,
+            'from'   => $this->stringOption('from') !== '' ? $this->stringOption('from') : null,
+            'to'     => $this->stringOption('to') !== '' ? $this->stringOption('to') : null,
         ];
 
         $pseudonymize = ! (bool) $this->option('identified');

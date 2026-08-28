@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\Factory as HttpFactory;
 use Simtabi\Laranail\AiCompliance\Checks\Check;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * Probes the app's own robots.txt (and llms.txt) for a declared ai-crawler

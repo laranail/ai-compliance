@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyDrafts;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 
 /**
  * Write side of the policy editing api, a thin http layer over the
@@ -49,11 +49,11 @@ final readonly class PolicyDraftController
 
         return new JsonResponse([
             'data' => [
-                'locale' => $translation->locale,
-                'title' => $translation->title,
-                'checksum' => $translation->checksum,
+                'locale'        => $translation->locale,
+                'title'         => $translation->title,
+                'checksum'      => $translation->checksum,
                 'compiled_html' => $translation->compiled_html,
-                'hand_edited' => $translation->isHandEdited(),
+                'hand_edited'   => $translation->isHandEdited(),
             ],
         ]);
     }
@@ -74,10 +74,10 @@ final readonly class PolicyDraftController
     private function presentVersion(PolicyVersion $version): array
     {
         return [
-            'version' => $version->version,
-            'status' => $version->status->value,
+            'version'      => $version->version,
+            'status'       => $version->status->value,
             'published_at' => $version->published_at?->toIso8601String(),
-            'locales' => $version->translations()->pluck('locale')->all(),
+            'locales'      => $version->translations()->pluck('locale')->all(),
         ];
     }
 

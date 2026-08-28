@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 
 /**
@@ -23,7 +23,7 @@ final class ClassificationController
     {
         /** @var array{answers: array<string, string>} $validated */
         $validated = $request->validate([
-            'answers' => ['required', 'array'],
+            'answers'   => ['required', 'array'],
             'answers.*' => ['string', 'max:255'],
         ]);
 

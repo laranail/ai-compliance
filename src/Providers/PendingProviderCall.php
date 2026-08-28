@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Providers;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Response;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
-use Simtabi\Laranail\AiCompliance\Events\InferenceLogged;
-use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Events\InferenceLogged;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * One consent-aware call to an ai provider. The do-not-train flag is
@@ -91,7 +91,7 @@ final class PendingProviderCall
      * Send a json request through the wrapper: flags injected, inference
      * logged, InferenceLogged fired.
      *
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function send(string $method, string $url, array $payload = [], string $purpose = 'inference'): Response
     {
@@ -111,7 +111,7 @@ final class PendingProviderCall
     /**
      * The logging half alone, for hosts calling through their own sdk.
      *
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
      */
     public function record(string $purpose, array $context = []): ActivityEvent
     {
@@ -119,10 +119,10 @@ final class PendingProviderCall
             ActivityType::Inference,
             subject: $this->subject instanceof Authenticatable && ! $this->subject instanceof Model ? null : $this->subject,
             context: [
-                'provider' => $this->provider->name,
-                'vendor' => $this->provider->vendor,
-                'model' => $this->provider->model_name,
-                'purpose' => $purpose,
+                'provider'     => $this->provider->name,
+                'vendor'       => $this->provider->vendor,
+                'model'        => $this->provider->model_name,
+                'purpose'      => $purpose,
                 'do_not_train' => $this->doNotTrain(),
                 ...$context,
             ],

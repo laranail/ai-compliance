@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
+use Override;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\PolicyVersionFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Simtabi\Laranail\AiCompliance\Database\Factories\PolicyVersionFactory;
 
 /**
  * One version of a policy document. At most one version per document is
@@ -39,17 +39,6 @@ class PolicyVersion extends Model
         parent::__construct($attributes);
 
         $this->setTable((string) config('laranail.ai-compliance.tables.policy_versions', 'ai_policy_versions'));
-    }
-
-    #[Override]
-    protected function casts(): array
-    {
-        return [
-            'status' => PolicyVersionStatus::class,
-            'effective_at' => 'immutable_datetime',
-            'published_at' => 'immutable_datetime',
-            'superseded_at' => 'immutable_datetime',
-        ];
     }
 
     /**
@@ -84,5 +73,16 @@ class PolicyVersion extends Model
     protected static function newFactory(): PolicyVersionFactory
     {
         return PolicyVersionFactory::new();
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status'        => PolicyVersionStatus::class,
+            'effective_at'  => 'immutable_datetime',
+            'published_at'  => 'immutable_datetime',
+            'superseded_at' => 'immutable_datetime',
+        ];
     }
 }

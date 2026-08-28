@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Simtabi\Laranail\AiCompliance\Tests\TestCase;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
-use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
-use Simtabi\Laranail\AiCompliance\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature', 'Unit');
 
@@ -18,7 +18,7 @@ uses(TestCase::class)->in('Feature', 'Unit');
  * and return its path. $files maps 'locale/relative/path.md' => contents.
  * Lives in the system temp dir; the os owns cleanup.
  *
- * @param  array<string, string>  $files
+ * @param array<string, string> $files
  */
 function overridePolicyDir(array $files): string
 {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy;
 
-use FilesystemIterator;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 use SplFileInfo;
+use FilesystemIterator;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
  * Finds policy markdown files. The app-published directory (publish tag
@@ -122,7 +122,7 @@ final class PolicyFileLoader
     private function markdownFilesIn(string $directory): array
     {
         $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS)
+            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
         );
 
         $files = [];
@@ -161,9 +161,9 @@ final class PolicyFileLoader
     private function typeFor(string $relativePath): PolicyType
     {
         return match (explode('/', $relativePath)[0]) {
-            'consent' => PolicyType::ConsentText,
+            'consent'     => PolicyType::ConsentText,
             'disclosures' => PolicyType::Disclosure,
-            default => PolicyType::Policy,
+            default       => PolicyType::Policy,
         };
     }
 

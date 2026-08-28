@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Exports\LogExports;
 
 /**
@@ -26,10 +26,10 @@ final readonly class ExportController
         /** @var array{format?: string, type?: string, status?: string, from?: string, to?: string} $filters */
         $filters = $request->validate([
             'format' => ['sometimes', 'string', Rule::in(['csv', 'json'])],
-            'type' => ['sometimes', 'string'],
+            'type'   => ['sometimes', 'string'],
             'status' => ['sometimes', 'string', Rule::in(['granted', 'denied', 'withdrawn'])],
-            'from' => ['sometimes', 'date'],
-            'to' => ['sometimes', 'date'],
+            'from'   => ['sometimes', 'date'],
+            'to'     => ['sometimes', 'date'],
         ]);
 
         $rows = $this->exports->consentRows($filters);
@@ -42,9 +42,9 @@ final readonly class ExportController
         /** @var array{format?: string, type?: string, from?: string, to?: string} $filters */
         $filters = $request->validate([
             'format' => ['sometimes', 'string', Rule::in(['csv', 'json'])],
-            'type' => ['sometimes', 'string'],
-            'from' => ['sometimes', 'date'],
-            'to' => ['sometimes', 'date'],
+            'type'   => ['sometimes', 'string'],
+            'from'   => ['sometimes', 'date'],
+            'to'     => ['sometimes', 'date'],
         ]);
 
         $rows = $this->exports->activityRows($filters);
@@ -53,7 +53,7 @@ final readonly class ExportController
     }
 
     /**
-     * @param  list<array<string, string|null>>  $rows
+     * @param list<array<string, string|null>> $rows
      */
     private function respond(array $rows, string $format, string $name): JsonResponse|Response
     {
@@ -62,7 +62,7 @@ final readonly class ExportController
         }
 
         return new Response($this->exports->toCsv($rows), 200, [
-            'Content-Type' => 'text/csv',
+            'Content-Type'        => 'text/csv',
             'Content-Disposition' => sprintf('attachment; filename="%s.csv"', $name),
         ]);
     }

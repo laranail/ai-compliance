@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Listeners;
 
 use Illuminate\Database\Eloquent\Model;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
-use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 /**
  * Mirrors every consent event into the activity log, keyed by the record's
@@ -30,9 +30,9 @@ final readonly class RecordConsentActivity
             subject: $this->subjectOf($record),
             context: [
                 'consent_record' => $record->public_id,
-                'consent_type' => $record->type()->value('slug'),
-                'status' => $record->status->value,
-                'source' => $record->source,
+                'consent_type'   => $record->type()->value('slug'),
+                'status'         => $record->status->value,
+                'source'         => $record->source,
                 'policy_version' => $record->policy_version,
             ],
         );

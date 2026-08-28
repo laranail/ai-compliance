@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use DateTimeInterface;
 use Illuminate\Support\Carbon;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Illuminate\Database\Seeder;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 /**
  * Local-dev demo data reproducing the reference dashboard state (spec
@@ -51,14 +52,14 @@ final class DemoSeeder extends Seeder
 
         $this->activity->record(ActivityType::SettingChange, context: [
             'setting' => 'demo',
-            'action' => 'seeded',
+            'action'  => 'seeded',
         ]);
     }
 
     /**
-     * @param  callable(): void  $callback
+     * @param callable(): void $callback
      */
-    private function travelTo(\DateTimeInterface $moment, callable $callback): void
+    private function travelTo(DateTimeInterface $moment, callable $callback): void
     {
         Carbon::setTestNow($moment);
 

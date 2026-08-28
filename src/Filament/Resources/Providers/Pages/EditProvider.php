@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages;
 
+use Override;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Override;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ProviderResource;
 
 final class EditProvider extends EditRecord

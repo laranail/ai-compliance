@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
-use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 
 uses(RefreshDatabase::class);
 

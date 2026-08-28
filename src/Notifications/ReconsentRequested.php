@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Notifications;
 
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 final class ReconsentRequested extends Notification
 {
     /**
-     * @param  list<string>  $consentTypes  the affected consent type slugs
+     * @param list<string> $consentTypes the affected consent type slugs
      */
     public function __construct(
         private readonly array $consentTypes,

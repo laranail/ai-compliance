@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy\Versioning;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Str;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
-use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
-use Simtabi\Laranail\AiCompliance\Events\PolicyDraftCreated;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
+use Illuminate\Contracts\Events\Dispatcher;
 use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
+use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Simtabi\Laranail\AiCompliance\Events\PolicyDraftCreated;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
@@ -69,8 +69,8 @@ final class PolicySync
 
         if ($latest === null) {
             $version = $document->versions()->create([
-                'version' => VersionNumber::first(),
-                'status' => PolicyVersionStatus::Published,
+                'version'      => VersionNumber::first(),
+                'status'       => PolicyVersionStatus::Published,
                 'effective_at' => now(),
                 'published_at' => now(),
             ]);
@@ -130,14 +130,14 @@ final class PolicySync
         $meta = $this->compiler->compile($file)->meta;
 
         return PolicyDocument::query()->create([
-            'tenant_id' => '',
-            'slug' => $file->slug,
-            'type' => $file->type,
-            'surface' => Str::startsWith($file->slug, 'disclosure.') ? Str::after($file->slug, 'disclosure.') : null,
+            'tenant_id'         => '',
+            'slug'              => $file->slug,
+            'type'              => $file->type,
+            'surface'           => Str::startsWith($file->slug, 'disclosure.') ? Str::after($file->slug, 'disclosure.') : null,
             'consent_type_slug' => Str::startsWith($file->slug, 'consent.') ? Str::after($file->slug, 'consent.') : null,
-            'source_path' => $file->relativePath,
-            'default_locale' => $defaultLocale,
-            'active' => ($meta['internal'] ?? false) !== true,
+            'source_path'       => $file->relativePath,
+            'default_locale'    => $defaultLocale,
+            'active'            => ($meta['internal'] ?? false) !== true,
         ]);
     }
 
@@ -155,18 +155,18 @@ final class PolicySync
         /** @var PolicyVersion $draft */
         $draft = $document->versions()->create([
             'version' => VersionNumber::next($from->version),
-            'status' => PolicyVersionStatus::Draft,
+            'status'  => PolicyVersionStatus::Draft,
         ]);
 
         foreach ($from->translations as $translation) {
             $draft->translations()->create([
-                'locale' => $translation->locale,
-                'title' => $translation->title,
+                'locale'          => $translation->locale,
+                'title'           => $translation->title,
                 'source_markdown' => $translation->source_markdown,
-                'compiled_html' => $translation->compiled_html,
-                'meta' => $translation->meta,
-                'checksum' => $translation->checksum,
-                'file_checksum' => $translation->file_checksum,
+                'compiled_html'   => $translation->compiled_html,
+                'meta'            => $translation->meta,
+                'checksum'        => $translation->checksum,
+                'file_checksum'   => $translation->file_checksum,
                 'origin_checksum' => $translation->origin_checksum,
             ]);
         }
@@ -192,12 +192,12 @@ final class PolicySync
         $version->translations()->updateOrCreate(
             ['locale' => $file->locale],
             [
-                'title' => $compiled->title() ?? Str::headline(Str::afterLast($file->slug, '.')),
+                'title'           => $compiled->title() ?? Str::headline(Str::afterLast($file->slug, '.')),
                 'source_markdown' => $file->contents,
-                'compiled_html' => $compiled->html,
-                'meta' => $compiled->meta,
-                'checksum' => $file->checksum,
-                'file_checksum' => $file->checksum,
+                'compiled_html'   => $compiled->html,
+                'meta'            => $compiled->meta,
+                'checksum'        => $file->checksum,
+                'file_checksum'   => $file->checksum,
                 'origin_checksum' => $originChecksum,
             ],
         );
@@ -213,7 +213,7 @@ final class PolicySync
         usort($locales, static fn (string $a, string $b): int => match (true) {
             $a === $defaultLocale => -1,
             $b === $defaultLocale => 1,
-            default => strcmp($a, $b),
+            default               => strcmp($a, $b),
         });
 
         return $locales;

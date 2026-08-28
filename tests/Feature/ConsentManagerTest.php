@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
-use Simtabi\Laranail\AiCompliance\Exceptions\UnknownConsentType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Exceptions\UnknownConsentType;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 
 uses(RefreshDatabase::class);
 
@@ -81,8 +81,8 @@ it('falls back to the configured default state when no record exists', function 
     $state = consent()->stateFor($user);
 
     expect($state['ai_training'])->toBe([
-        'status' => 'denied',
-        'recorded_at' => null,
+        'status'         => 'denied',
+        'recorded_at'    => null,
         'policy_version' => null,
     ]);
 });
@@ -115,11 +115,11 @@ it('flags re-consent when the granted consent document version is superseded', f
     $document = PolicyDocument::query()->where('slug', 'consent.ai_training')->firstOrFail();
     $draft = $document->versions()->create(['version' => '2.0', 'status' => 'draft']);
     $draft->translations()->create([
-        'locale' => 'en',
-        'title' => 'AI training permissions',
+        'locale'          => 'en',
+        'title'           => 'AI training permissions',
         'source_markdown' => 'materially different terms',
-        'compiled_html' => '<p>materially different terms</p>',
-        'checksum' => hash('sha256', 'materially different terms'),
+        'compiled_html'   => '<p>materially different terms</p>',
+        'checksum'        => hash('sha256', 'materially different terms'),
     ]);
     app(PolicyPublisher::class)->publish($draft);
 

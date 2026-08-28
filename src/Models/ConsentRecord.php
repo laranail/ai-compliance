@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
+use Override;
+use LogicException;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use LogicException;
-use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentRecordFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentRecordFactory;
 
 /**
  * One consent event, append-only by design: a change writes a new row,
@@ -56,13 +56,28 @@ class ConsentRecord extends Model
         $this->setTable((string) config('laranail.ai-compliance.tables.consent_records', 'ai_consent_records'));
     }
 
-    #[Override]
-    protected function casts(): array
+    /**
+     * @return BelongsTo<ConsentType, $this>
+     */
+    public function type(): BelongsTo
     {
-        return [
-            'status' => ConsentStatus::class,
-            'recorded_at' => 'immutable_datetime',
-        ];
+        return $this->belongsTo(ConsentType::class, 'consent_type_id');
+    }
+
+    /**
+     * @return MorphTo<Model, $this>
+     */
+    public function subjectable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * @return BelongsTo<PolicyVersion, $this>
+     */
+    public function policyVersion(): BelongsTo
+    {
+        return $this->belongsTo(PolicyVersion::class, 'policy_version_id');
     }
 
     #[Override]
@@ -90,32 +105,17 @@ class ConsentRecord extends Model
         });
     }
 
-    /**
-     * @return BelongsTo<ConsentType, $this>
-     */
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(ConsentType::class, 'consent_type_id');
-    }
-
-    /**
-     * @return MorphTo<Model, $this>
-     */
-    public function subjectable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * @return BelongsTo<PolicyVersion, $this>
-     */
-    public function policyVersion(): BelongsTo
-    {
-        return $this->belongsTo(PolicyVersion::class, 'policy_version_id');
-    }
-
     protected static function newFactory(): ConsentRecordFactory
     {
         return ConsentRecordFactory::new();
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status'      => ConsentStatus::class,
+            'recorded_at' => 'immutable_datetime',
+        ];
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Provider>
@@ -17,11 +17,11 @@ class ProviderFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->company() . ' assistant',
-            'vendor' => fake()->randomElement(['Anthropic', 'OpenAI', 'Mistral']),
-            'model_name' => fake()->bothify('model-##'),
-            'role' => 'deployer',
-            'trains_on_our_data' => 'no',
+            'name'                 => fake()->company() . ' assistant',
+            'vendor'               => fake()->randomElement(['Anthropic', 'OpenAI', 'Mistral']),
+            'model_name'           => fake()->bothify('model-##'),
+            'role'                 => 'deployer',
+            'trains_on_our_data'   => 'no',
             'due_diligence_status' => 'pending',
         ];
     }
@@ -29,9 +29,9 @@ class ProviderFactory extends Factory
     public function dueDiligenceComplete(): static
     {
         return $this->state([
-            'dpa_signed_at' => now()->subMonth(),
-            'endpoint_region' => 'eu-central-1',
-            'purpose' => 'support assistant',
+            'dpa_signed_at'        => now()->subMonth(),
+            'endpoint_region'      => 'eu-central-1',
+            'purpose'              => 'support assistant',
             'due_diligence_status' => 'complete',
         ]);
     }

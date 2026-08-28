@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\View\Components;
 
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 

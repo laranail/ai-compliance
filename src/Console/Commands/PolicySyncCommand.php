@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 /**
  * Imports the policy markdown files (shipped and app-published) into the

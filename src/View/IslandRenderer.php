@@ -38,7 +38,7 @@ final readonly class IslandRenderer
                 }
 
                 return $this->views->make($view, [
-                    'props' => $props,
+                    'props'    => $props,
                     'fallback' => $fallback,
                 ])->render();
             },

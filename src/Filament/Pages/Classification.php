@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Filament\Pages;
 
 use BackedEnum;
+use Filament\Pages\Page;
+use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Pages\Page;
-use Filament\Schemas\Schema;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification as ClassificationService;
 
 /**
@@ -20,8 +20,6 @@ use Simtabi\Laranail\AiCompliance\Checklist\Classification as ClassificationServ
  */
 final class Classification extends Page
 {
-    protected string $view = 'laranail-ai-compliance::filament.classification';
-
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-funnel';
 
     protected static ?string $navigationLabel = 'AI classification';
@@ -30,6 +28,8 @@ final class Classification extends Page
 
     /** @var array<string, mixed> */
     public array $data = [];
+
+    protected string $view = 'laranail-ai-compliance::filament.classification';
 
     public function mount(): void
     {

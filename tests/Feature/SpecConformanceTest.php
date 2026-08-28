@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 
 uses(RefreshDatabase::class);
 
