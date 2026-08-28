@@ -6,10 +6,10 @@ namespace Simtabi\Laranail\AiCompliance\Tests;
 
 use Livewire\LivewireServiceProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
+use Simtabi\Laranail\Package\Tools\Testing\IsolatedTestCase;
 use Simtabi\Laranail\DbTools\Providers\DbToolsServiceProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
 use Simtabi\Laranail\AiCompliance\Providers\AiComplianceServiceProvider;
-use Simtabi\Laranail\Package\Tools\Testing\IsolatedTestCase;
 
 abstract class TestCase extends IsolatedTestCase
 {
