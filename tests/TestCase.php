@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Tests;
 
 use Livewire\LivewireServiceProvider;
-use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
 use Simtabi\Laranail\DbTools\Providers\DbToolsServiceProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
 use Simtabi\Laranail\AiCompliance\Providers\AiComplianceServiceProvider;
+use Simtabi\Laranail\Package\Tools\Testing\IsolatedTestCase;
 
-abstract class TestCase extends OrchestraTestCase
+abstract class TestCase extends IsolatedTestCase
 {
     /**
      * Filament registers a dozen providers of its own; discovery pulls them
