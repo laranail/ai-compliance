@@ -47,8 +47,12 @@ jobs:
       - name: Stamp the tag version on every workspace (lockstep)
         run: |
           version="${GITHUB_REF_NAME#v}"
+          # --allow-same-version because v0.1.0 is a moving tag: it is force-pushed on
+          # every change, so this workflow re-runs against workspaces already stamped
+          # with that version, and `npm version` exits 1 with "Version not changed".
+          # That turned every routine tag move into a failed publish job.
           for pkg in core react vue; do
-            npm version "$version" --no-git-tag-version --workspace "packages/$pkg"
+            npm version "$version" --no-git-tag-version --allow-same-version --workspace "packages/$pkg"
           done
           # the bindings depend on the core at the same version
           for pkg in react vue; do

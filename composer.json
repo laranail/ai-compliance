@@ -73,7 +73,7 @@
         }
     },
     "scripts": {
-        "post-autoload-dump": "@php vendor/bin/testbench package:discover --ansi",
+        "post-autoload-dump": "@php -r \"file_exists('vendor/bin/testbench') ? passthru('vendor/bin/testbench package:discover --ansi') : print('testbench absent (--no-dev); skipping package:discover' . PHP_EOL);\"",
         "test": "vendor/bin/pest --colors=always",
         "test-coverage": "vendor/bin/pest --coverage",
         "lint": [
