@@ -17,6 +17,22 @@ jobs:
     name: Publish npm packages (lockstep)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Gated because npm is not configured yet. All three packages return 404 on
+    # the registry, and `npm publish` answers E404 on the PUT -- npm's reply when
+    # the scope has no trusted publisher for this workflow, rather than 403,
+    # since it will not confirm whether a package exists. On a moving tag that
+    # failure repeats on every push, and a permanently red release is one nobody
+    # reads: the GitHub-release half of this workflow was broken for weeks behind
+    # exactly that kind of noise.
+    #
+    # To enable: configure npm trusted publishing for @laranail/ai-compliance,
+    # -react and -vue against this repository and workflow, then
+    #
+    #     gh variable set NPM_PUBLISH_ENABLED --body true --repo laranail/ai-compliance
+    #
+    # A repository variable, not the secret itself: the secrets context is not
+    # available in a job-level `if`.
+    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
     environment: npm
     permissions:
       contents: read
