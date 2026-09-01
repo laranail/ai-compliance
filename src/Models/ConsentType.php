@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Override;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Simtabi\Laranail\AiCompliance\Enums\LegalBasis;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
+use Override;
 use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentTypeFactory;
+use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
+use Simtabi\Laranail\AiCompliance\Enums\LegalBasis;
 
 /**
  * One granular consent switch (ai_training, ai_chatbot, ...). The row is
@@ -56,9 +56,9 @@ class ConsentType extends Model
     protected function casts(): array
     {
         return [
-            'legal_basis'   => LegalBasis::class,
+            'legal_basis' => LegalBasis::class,
             'default_state' => ConsentStatus::class,
-            'active'        => 'boolean',
+            'active' => 'boolean',
         ];
     }
 }

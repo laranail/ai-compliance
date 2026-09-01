@@ -4,74 +4,74 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Providers;
 
-use Override;
-use Illuminate\Contracts\Events\Dispatcher;
-use Simtabi\Laranail\Package\Tools\Package;
-use Simtabi\Laranail\AiCompliance\AiCompliance;
-use Illuminate\Contracts\Foundation\Application;
-use Simtabi\Laranail\AiCompliance\Doctor\Checks;
-use Simtabi\Laranail\Package\Tools\Enums\Cadence;
-use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
-use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
-use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
-use Simtabi\Laranail\AiCompliance\Exports\LogExports;
-use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
-use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
-use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
-use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
-use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
-use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
-use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
-use Simtabi\Laranail\AiCompliance\Listeners\SendCheckAlerts;
-use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
-use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
-use Simtabi\Laranail\AiCompliance\Livewire\ConsentPreferences;
-use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Simtabi\Laranail\AiCompliance\Policies\ConsentRecordPolicy;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
-use Simtabi\Laranail\AiCompliance\Console\Commands\AuditCommand;
-use Simtabi\Laranail\AiCompliance\Console\Commands\PruneCommand;
-use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureConsent;
-use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureFeature;
-use Simtabi\Laranail\AiCompliance\Console\Commands\ExportCommand;
-use Simtabi\Laranail\AiCompliance\Console\Commands\ReportCommand;
-use Simtabi\Laranail\AiCompliance\Console\Commands\FeatureCommand;
-use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
-use Simtabi\Laranail\AiCompliance\Listeners\RecordConsentActivity;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
-use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
-use Simtabi\Laranail\AiCompliance\Checks\Builtin\CrawlerSignalsCheck;
-use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyShowCommand;
-use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
-use Simtabi\Laranail\AiCompliance\Listeners\FlushCompiledPolicyCache;
-use Simtabi\Laranail\AiCompliance\Console\Commands\VerifyChainCommand;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
+use Override;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\AiCompliance;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\ActivityLogAliveCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\ConsentUiReachableCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\CrawlerSignalsCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\DataProtectionContactCheck;
+use Simtabi\Laranail\AiCompliance\Checks\Builtin\DisclosureSurfacesCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\PolicyVersioningCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\ProviderRegistryCheck;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\InitialPolicySeeder;
-use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
-use Simtabi\Laranail\AiCompliance\Checks\Builtin\ConsentUiReachableCheck;
-use Simtabi\Laranail\AiCompliance\Checks\Builtin\DisclosureSurfacesCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\RetentionScheduledCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\VendorDueDiligenceCheck;
+use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
+use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
+use Simtabi\Laranail\AiCompliance\Console\Commands\AuditCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\ExportCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\FeatureCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\InstallCommand;
 use Simtabi\Laranail\AiCompliance\Console\Commands\NotifyReconsentCommand;
-use Simtabi\Laranail\AiCompliance\Checks\Builtin\DataProtectionContactCheck;
-use Simtabi\Laranail\Package\Tools\Support\Definitions\AutoSeederDefinition;
+use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyPublishCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\PolicyShowCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\PolicySyncCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\PruneCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\ReportCommand;
+use Simtabi\Laranail\AiCompliance\Console\Commands\VerifyChainCommand;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\InitialPolicySeeder;
+use Simtabi\Laranail\AiCompliance\Doctor\Checks;
+use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
+use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
+use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
+use Simtabi\Laranail\AiCompliance\Events\PoliciesSynced;
+use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
+use Simtabi\Laranail\AiCompliance\Exports\LogExports;
+use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
+use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureConsent;
+use Simtabi\Laranail\AiCompliance\Http\Middleware\EnsureFeature;
+use Simtabi\Laranail\AiCompliance\Listeners\FlushCompiledPolicyCache;
+use Simtabi\Laranail\AiCompliance\Listeners\RecordConsentActivity;
+use Simtabi\Laranail\AiCompliance\Listeners\SendCheckAlerts;
+use Simtabi\Laranail\AiCompliance\Livewire\ConsentPreferences;
+use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
+use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
+use Simtabi\Laranail\AiCompliance\Policies\ConsentRecordPolicy;
+use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
+use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
+use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
+use Simtabi\Laranail\AiCompliance\View\Components\ConsentGate;
+use Simtabi\Laranail\Package\Tools\Enums\Cadence;
+use Simtabi\Laranail\Package\Tools\Package;
+use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\AboutSectionDefinition;
+use Simtabi\Laranail\Package\Tools\Support\Definitions\AutoSeederDefinition;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\ScheduledCommandDefinition;
 
 /**
@@ -120,11 +120,11 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                     )),
             )
             ->registerEventListeners([
-                PolicyPublished::class  => FlushCompiledPolicyCache::class,
-                PoliciesSynced::class   => FlushCompiledPolicyCache::class,
-                ConsentRecorded::class  => RecordConsentActivity::class,
+                PolicyPublished::class => FlushCompiledPolicyCache::class,
+                PoliciesSynced::class => FlushCompiledPolicyCache::class,
+                ConsentRecorded::class => RecordConsentActivity::class,
                 ConsentWithdrawn::class => RecordConsentActivity::class,
-                CheckFailed::class      => SendCheckAlerts::class,
+                CheckFailed::class => SendCheckAlerts::class,
             ])
             ->registerRouteMiddlewares([
                 'ai.consent' => EnsureConsent::class,
@@ -150,7 +150,7 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
             ->withoutLivewireNamespacePrefix()
             ->hasLivewireComponents([
                 'ai-compliance.consent-preferences' => ConsentPreferences::class,
-                'ai-compliance.reconsent-prompt'    => ReconsentPrompt::class,
+                'ai-compliance.reconsent-prompt' => ReconsentPrompt::class,
             ], whenConfig: 'laranail.ai-compliance.livewire.enabled')
             ->hasPackageSeeders(
                 AutoSeederDefinition::make('laranail/ai-compliance')

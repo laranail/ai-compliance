@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy;
 
-use Illuminate\Support\Str;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\QueryException;
-use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Illuminate\Support\Str;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
+use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
  * Resolves policy documents for serving. A published database version is

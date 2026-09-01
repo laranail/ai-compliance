@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\View\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\Component;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 
@@ -27,7 +27,7 @@ final class Disclosure extends Component
         /** @var PolicyRepository $policies */
         $policies = app(PolicyRepository::class);
 
-        $disclosure = $policies->find('disclosure.' . $this->surface, $this->locale);
+        $disclosure = $policies->find('disclosure.'.$this->surface, $this->locale);
 
         return $this->view('laranail-ai-compliance::components.disclosure', [
             'disclosure' => $disclosure instanceof PolicyContent ? $disclosure : null,

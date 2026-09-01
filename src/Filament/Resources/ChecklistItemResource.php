@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources;
 
-use Override;
 use BackedEnum;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
-use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
+use Filament\Tables\Table;
+use Override;
 use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
-use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
+use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ChecklistItems\Pages\ListChecklistItems;
+use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 
 /**
  * The compliance checklist: statuses at a glance, manual evidence per item,
@@ -43,9 +43,9 @@ final class ChecklistItemResource extends Resource
                 TextColumn::make('section')->badge(),
                 TextColumn::make('label')->wrap()->limit(80),
                 TextColumn::make('status')->badge()->color(fn (CheckStatus $state): string => match ($state) {
-                    CheckStatus::Ok            => 'success',
-                    CheckStatus::Review        => 'warning',
-                    CheckStatus::Fail          => 'danger',
+                    CheckStatus::Ok => 'success',
+                    CheckStatus::Review => 'warning',
+                    CheckStatus::Fail => 'danger',
                     CheckStatus::NotApplicable => 'gray',
                 }),
                 TextColumn::make('evidence_type'),
@@ -57,10 +57,10 @@ final class ChecklistItemResource extends Resource
                 SelectFilter::make('section')->options(fn (): array => ChecklistItem::query()
                     ->distinct()->pluck('section', 'section')->all()),
                 SelectFilter::make('status')->options([
-                    'ok'     => 'ok',
+                    'ok' => 'ok',
                     'review' => 'review',
-                    'fail'   => 'fail',
-                    'na'     => 'n/a',
+                    'fail' => 'fail',
+                    'na' => 'n/a',
                 ]),
             ])
             ->recordActions([
@@ -74,10 +74,10 @@ final class ChecklistItemResource extends Resource
                         $verifiedBy = auth()->user()?->getAuthIdentifier();
 
                         $record->update([
-                            'status'           => CheckStatus::Ok,
-                            'evidence_ref'     => (string) $data['evidence_ref'],
+                            'status' => CheckStatus::Ok,
+                            'evidence_ref' => (string) $data['evidence_ref'],
                             'last_verified_at' => now(),
-                            'verified_by'      => $verifiedBy !== null ? (string) $verifiedBy : 'admin',
+                            'verified_by' => $verifiedBy !== null ? (string) $verifiedBy : 'admin',
                         ]);
 
                         Notification::make()->title('evidence recorded')->success()->send();

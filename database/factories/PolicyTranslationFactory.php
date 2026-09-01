@@ -21,14 +21,14 @@ class PolicyTranslationFactory extends Factory
 
         return [
             'policy_version_id' => PolicyVersionFactory::new(),
-            'locale'            => 'en',
-            'title'             => fake()->sentence(4),
-            'source_markdown'   => $markdown,
-            'compiled_html'     => '<p>' . e($markdown) . '</p>',
-            'meta'              => ['title' => 'Factory document'],
-            'checksum'          => $checksum,
-            'file_checksum'     => $checksum, // imported and untouched by default
-            'origin_checksum'   => null,
+            'locale' => 'en',
+            'title' => fake()->sentence(4),
+            'source_markdown' => $markdown,
+            'compiled_html' => '<p>'.e($markdown).'</p>',
+            'meta' => ['title' => 'Factory document'],
+            'checksum' => $checksum,
+            'file_checksum' => $checksum, // imported and untouched by default
+            'origin_checksum' => null,
         ];
     }
 
@@ -39,11 +39,11 @@ class PolicyTranslationFactory extends Factory
     public function handEdited(): static
     {
         return $this->state(function (array $attributes): array {
-            $edited = ($attributes['source_markdown'] ?? 'edited') . ' (edited)';
+            $edited = ($attributes['source_markdown'] ?? 'edited').' (edited)';
 
             return [
                 'source_markdown' => $edited,
-                'checksum'        => hash('sha256', $edited),
+                'checksum' => hash('sha256', $edited),
             ];
         });
     }
@@ -54,7 +54,7 @@ class PolicyTranslationFactory extends Factory
     public function stale(): static
     {
         return $this->state([
-            'locale'          => 'de',
+            'locale' => 'de',
             'origin_checksum' => hash('sha256', 'a previous default-locale source'),
         ]);
     }

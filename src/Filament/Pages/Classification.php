@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Filament\Pages;
 
 use BackedEnum;
-use Filament\Pages\Page;
-use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Schemas\Schema;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification as ClassificationService;
 
 /**

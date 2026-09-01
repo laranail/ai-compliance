@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\On;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
+use Livewire\Component;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Support\CurrentSubject;
 

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
+use Illuminate\Contracts\Notifications\Dispatcher as NotificationDispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Notifications\ReconsentRequested;
-use Illuminate\Contracts\Notifications\Dispatcher as NotificationDispatcher;
+use Simtabi\Laranail\Package\Tools\Commands\Command;
 
 /**
  * Notifies exactly the subjects whose current granted consent references a
@@ -83,7 +83,7 @@ final class NotifyReconsentCommand extends Command
                 continue; // anonymized history
             }
 
-            $key = $record->subjectable_type . '#' . $record->subjectable_id;
+            $key = $record->subjectable_type.'#'.$record->subjectable_id;
 
             if (isset($users[$key])) {
                 continue;

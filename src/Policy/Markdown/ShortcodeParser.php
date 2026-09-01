@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy\Markdown;
 
-use League\CommonMark\Parser\InlineParserContext;
-use League\CommonMark\Parser\Inline\InlineParserMatch;
 use League\CommonMark\Parser\Inline\InlineParserInterface;
+use League\CommonMark\Parser\Inline\InlineParserMatch;
+use League\CommonMark\Parser\InlineParserContext;
 
 /**
  * Parses [[name key="value" other="value"]] into a ShortcodeNode. Names are

@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\GenericUser;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
-use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Illuminate\Support\Facades\Gate;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
+use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
@@ -42,7 +42,7 @@ it('serves the point-in-time report with every required block', function (): voi
 });
 
 it('writes the report to a file from the command and logs the export', function (): void {
-    $path = sys_get_temp_dir() . '/ai-compliance-test-report-' . bin2hex(random_bytes(4)) . '.html';
+    $path = sys_get_temp_dir().'/ai-compliance-test-report-'.bin2hex(random_bytes(4)).'.html';
 
     $this->artisan('laranail::ai-compliance.report', ['--path' => $path])->assertSuccessful();
 

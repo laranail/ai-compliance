@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\Package\Tools\Commands\Command;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
+use Simtabi\Laranail\Package\Tools\Commands\Command;
 
 /**
  * The feature kill switches from the console: list the configured features

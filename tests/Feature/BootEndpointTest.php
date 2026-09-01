@@ -17,7 +17,7 @@ it('serves the contract-1 boot payload', function (): void {
             'contract',
             'locale',
             'fallback_locale',
-            'consent'     => ['types', 'state', 'reconsent'],
+            'consent' => ['types', 'state', 'reconsent'],
             'disclosures' => ['chat', 'content', 'decision'],
             'documents',
             'features',
@@ -54,8 +54,8 @@ it('defaults every consent state to the configured default with no record', func
 
     expect($state)->toHaveKeys(['ai_training', 'ai_chatbot', 'ai_recommendations', 'ai_personalization'])
         ->and($state['ai_training'])->toBe([
-            'status'         => 'denied',
-            'recorded_at'    => null,
+            'status' => 'denied',
+            'recorded_at' => null,
             'policy_version' => null,
         ]);
 });
@@ -89,9 +89,9 @@ it('exports the boot contract fixture consumed by the js packages', function ():
 
     $payload = $this->getJson('/ai-compliance/boot')->json();
 
-    $path = __DIR__ . '/../../packages/core/tests/fixtures/boot.json';
+    $path = __DIR__.'/../../packages/core/tests/fixtures/boot.json';
     File::ensureDirectoryExists(dirname($path));
-    File::put($path, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+    File::put($path, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
 
     expect($payload['contract'])->toBe(1);
 })->skip(

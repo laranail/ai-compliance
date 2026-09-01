@@ -18,7 +18,7 @@ trait BelongsToTenant
     public const string DEFAULT_TENANT = '';
 
     /**
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      */
     public function scopeForDefaultTenant(Builder $query): void
     {

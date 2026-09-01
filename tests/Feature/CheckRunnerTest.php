@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Notification;
-use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
-use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
+use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
 use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
+use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
+use Simtabi\Laranail\AiCompliance\Events\ChecklistItemDegraded;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
-use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Events\ChecklistItemDegraded;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
-use Simtabi\Laranail\AiCompliance\Notifications\CheckFailedNotification;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
 use Simtabi\Laranail\AiCompliance\Notifications\ActivityLogSilentNotification;
+use Simtabi\Laranail\AiCompliance\Notifications\CheckFailedNotification;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     Http::fake([
         '*/robots.txt' => Http::response("User-agent: GPTBot\nDisallow: /\n"),
-        '*/llms.txt'   => Http::response('# acme'),
+        '*/llms.txt' => Http::response('# acme'),
     ]);
 
     app(ChecklistSeeder::class)->run();
@@ -123,9 +123,9 @@ it('auto-degrades stale manual verifications to review', function (): void {
         ?? ChecklistItem::query()->where('evidence_type', 'manual')->firstOrFail();
 
     $item->update([
-        'status'           => CheckStatus::Ok,
+        'status' => CheckStatus::Ok,
         'last_verified_at' => now()->subMonths($item->staleness_months + 1),
-        'verified_by'      => 'auditor',
+        'verified_by' => 'auditor',
     ]);
 
     app(CheckRunner::class)->run();

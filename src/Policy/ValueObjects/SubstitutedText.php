@@ -11,7 +11,7 @@ namespace Simtabi\Laranail\AiCompliance\Policy\ValueObjects;
 final readonly class SubstitutedText
 {
     /**
-     * @param list<string> $unresolved
+     * @param  list<string>  $unresolved
      */
     public function __construct(
         public string $text,

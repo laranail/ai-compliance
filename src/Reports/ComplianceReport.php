@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Reports;
 
-use Simtabi\Laranail\AiCompliance\Models\Provider;
 use Illuminate\Contracts\View\Factory as ViewFactory;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
 use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
-use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 /**
  * The point-in-time compliance report (spec FR-7): dashboard statistics,
@@ -49,12 +49,12 @@ final readonly class ComplianceReport
             ->get();
 
         return [
-            'generated_at'   => now()->toIso8601String(),
-            'tiles'          => $this->stats->tiles(),
+            'generated_at' => now()->toIso8601String(),
+            'tiles' => $this->stats->tiles(),
             'classification' => $this->classification->answers(),
-            'checklist'      => $checklist,
-            'providers'      => $providers,
-            'documents'      => $documents,
+            'checklist' => $checklist,
+            'providers' => $providers,
+            'documents' => $documents,
         ];
     }
 
@@ -63,7 +63,7 @@ final readonly class ComplianceReport
         $html = $this->views->make('laranail-ai-compliance::report', $this->data())->render();
 
         $this->activity->record(ActivityType::Export, context: [
-            'log'    => 'compliance_report',
+            'log' => 'compliance_report',
             'format' => 'html',
         ]);
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Override;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ProviderResource;
 
 final class ListProviders extends ListRecords

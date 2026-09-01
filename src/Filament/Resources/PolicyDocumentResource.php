@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources;
 
-use Override;
 use BackedEnum;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Filament\Tables\Table;
+use Override;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\EditPolicyDocument;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\ListPolicyDocuments;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 
 /**
  * The policy documents: list with version state, and the markdown editor
@@ -50,7 +50,7 @@ final class PolicyDocumentResource extends Resource
     {
         return [
             'index' => ListPolicyDocuments::route('/'),
-            'edit'  => EditPolicyDocument::route('/{record}/edit'),
+            'edit' => EditPolicyDocument::route('/{record}/edit'),
         ];
     }
 

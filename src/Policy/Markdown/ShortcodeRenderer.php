@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy\Markdown;
 
-use Psr\Log\LoggerInterface;
-use League\CommonMark\Util\Xml;
 use League\CommonMark\Node\Node;
-use League\CommonMark\Util\HtmlElement;
-use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
+use League\CommonMark\Renderer\NodeRendererInterface;
+use League\CommonMark\Util\HtmlElement;
+use League\CommonMark\Util\Xml;
+use Psr\Log\LoggerInterface;
 
 /**
  * Renders a ShortcodeNode to the neutral <ai-c> custom element every UI
@@ -23,7 +23,7 @@ use League\CommonMark\Renderer\ChildNodeRendererInterface;
 final readonly class ShortcodeRenderer implements NodeRendererInterface
 {
     /**
-     * @param list<string> $registered
+     * @param  list<string>  $registered
      */
     public function __construct(
         private array $registered,
@@ -44,7 +44,7 @@ final readonly class ShortcodeRenderer implements NodeRendererInterface
 
         return new HtmlElement('ai-c', [
             'data-component' => $node->name,
-            'data-props'     => json_encode($node->props, JSON_THROW_ON_ERROR),
+            'data-props' => json_encode($node->props, JSON_THROW_ON_ERROR),
         ], Xml::escape($node->fallback));
     }
 }

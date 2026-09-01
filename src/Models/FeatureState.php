@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Override;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
 
 /**
@@ -38,7 +38,7 @@ class FeatureState extends Model
     protected function casts(): array
     {
         return [
-            'enabled'    => 'boolean',
+            'enabled' => 'boolean',
             'toggled_at' => 'immutable_datetime',
         ];
     }

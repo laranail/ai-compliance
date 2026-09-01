@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy;
 
-use Psr\Log\LoggerInterface;
-use League\CommonMark\MarkdownConverter;
-use League\CommonMark\Environment\Environment;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
+use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
+use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
+use League\CommonMark\MarkdownConverter;
+use Psr\Log\LoggerInterface;
 use Simtabi\Laranail\AiCompliance\Policy\Markdown\ShortcodeExtension;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
-use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
  * Compiles policy markdown to html: yaml frontmatter becomes meta,
@@ -68,7 +68,7 @@ final class PolicyCompiler
         }
 
         $environment = new Environment([
-            'html_input'         => 'escape',
+            'html_input' => 'escape',
             'allow_unsafe_links' => false,
         ]);
 

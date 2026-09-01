@@ -16,8 +16,8 @@ use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 final readonly class PolicyContent
 {
     /**
-     * @param array<string, mixed> $meta
-     * @param list<string> $unresolvedPlaceholders
+     * @param  array<string, mixed>  $meta
+     * @param  list<string>  $unresolvedPlaceholders
      */
     public function __construct(
         public string $slug,

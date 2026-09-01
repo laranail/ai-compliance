@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
+use Illuminate\Http\Request;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -27,17 +27,17 @@ final class ChecklistController
             ->orderBy('id')
             ->get()
             ->map(fn (ChecklistItem $item): array => [
-                'key'              => $item->key,
-                'section'          => $item->section,
-                'label'            => $item->label,
-                'description'      => $item->description,
-                'status'           => $item->status->value,
-                'evidence_type'    => $item->evidence_type,
-                'evidence_ref'     => $item->evidence_ref,
+                'key' => $item->key,
+                'section' => $item->section,
+                'label' => $item->label,
+                'description' => $item->description,
+                'status' => $item->status->value,
+                'evidence_type' => $item->evidence_type,
+                'evidence_ref' => $item->evidence_ref,
                 'last_verified_at' => $item->last_verified_at?->toIso8601String(),
-                'verified_by'      => $item->verified_by,
+                'verified_by' => $item->verified_by,
                 'staleness_months' => $item->staleness_months,
-                'stale'            => $item->isStale(),
+                'stale' => $item->isStale(),
             ]);
 
         return new JsonResponse(['data' => $items]);
@@ -66,20 +66,20 @@ final class ChecklistController
         $verifiedBy = $request->user()?->getAuthIdentifier();
 
         $item->update([
-            'status'           => CheckStatus::Ok,
-            'evidence_ref'     => $validated['evidence_ref'],
+            'status' => CheckStatus::Ok,
+            'evidence_ref' => $validated['evidence_ref'],
             'last_verified_at' => now(),
-            'verified_by'      => $verifiedBy !== null ? (string) $verifiedBy : 'admin',
+            'verified_by' => $verifiedBy !== null ? (string) $verifiedBy : 'admin',
         ]);
 
         $activity->record(ActivityType::SettingChange, context: [
             'setting' => 'checklist_evidence',
-            'item'    => $key,
+            'item' => $key,
         ]);
 
         return new JsonResponse(['data' => [
-            'key'              => $item->key,
-            'status'           => $item->status->value,
+            'key' => $item->key,
+            'status' => $item->status->value,
             'last_verified_at' => $item->last_verified_at?->toIso8601String(),
         ]]);
     }

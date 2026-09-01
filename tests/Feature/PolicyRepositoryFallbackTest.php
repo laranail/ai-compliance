@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Cache;
+use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
 
 it('falls back to the default locale and reports the locale actually served', function (): void {
@@ -18,7 +18,7 @@ it('falls back to the default locale and reports the locale actually served', fu
 });
 
 it('serves a translated file when the locale has one', function (): void {
-    config()->set('laranail.ai-compliance.policies.path', __DIR__ . '/../Fixtures/policies');
+    config()->set('laranail.ai-compliance.policies.path', __DIR__.'/../Fixtures/policies');
     $this->app->make(PolicyFileLoader::class)->flush();
 
     $content = $this->app->make(PolicyRepository::class)->find('transparency', 'de');
@@ -30,7 +30,7 @@ it('serves a translated file when the locale has one', function (): void {
 });
 
 it('walks the configured fallback chain for regional locales', function (): void {
-    config()->set('laranail.ai-compliance.policies.path', __DIR__ . '/../Fixtures/policies');
+    config()->set('laranail.ai-compliance.policies.path', __DIR__.'/../Fixtures/policies');
     config()->set('laranail.ai-compliance.locales.fallbacks', ['de-CH' => ['de']]);
     $this->app->make(PolicyFileLoader::class)->flush();
 

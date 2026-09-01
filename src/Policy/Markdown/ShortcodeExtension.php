@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy\Markdown;
 
-use Psr\Log\LoggerInterface;
-use League\CommonMark\Extension\ExtensionInterface;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
+use League\CommonMark\Extension\ExtensionInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Registers the [[shortcode]] inline parser and its <ai-c> renderer on a
@@ -16,7 +16,7 @@ use League\CommonMark\Environment\EnvironmentBuilderInterface;
 final readonly class ShortcodeExtension implements ExtensionInterface
 {
     /**
-     * @param list<string> $registered
+     * @param  list<string>  $registered
      */
     public function __construct(
         private array $registered,
