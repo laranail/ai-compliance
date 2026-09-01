@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Support;
 
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 
 /**
  * Resolves the consent subject of the current request: the authenticated

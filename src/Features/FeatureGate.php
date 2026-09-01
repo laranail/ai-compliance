@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Features;
 
-use Throwable;
-use Laravel\Pennant\Feature;
-use Illuminate\Database\QueryException;
 use Illuminate\Contracts\Events\Dispatcher;
-use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
-use Simtabi\Laranail\AiCompliance\Models\FeatureState;
-use Simtabi\Laranail\AiCompliance\Events\FeatureToggled;
+use Illuminate\Database\QueryException;
+use Laravel\Pennant\Feature;
 use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Events\FeatureToggled;
+use Simtabi\Laranail\AiCompliance\Models\FeatureState;
+use Throwable;
 
 /**
  * The admin kill switch per ai feature. A feature runs unless a state row
@@ -53,7 +53,7 @@ final readonly class FeatureGate
             ->first();
 
         $attributes = [
-            'enabled'    => $enabled,
+            'enabled' => $enabled,
             'toggled_by' => $toggledBy,
             'toggled_at' => now(),
         ];
@@ -64,7 +64,7 @@ final readonly class FeatureGate
         } else {
             $state = FeatureState::query()->create([
                 'tenant_id' => '',
-                'feature'   => $feature,
+                'feature' => $feature,
                 ...$attributes,
             ]);
         }
@@ -72,9 +72,9 @@ final readonly class FeatureGate
         $this->events->dispatch(new FeatureToggled($feature, $enabled, $toggledBy));
 
         $this->activity->record(ActivityType::SettingChange, context: [
-            'setting'    => 'feature',
-            'feature'    => $feature,
-            'enabled'    => $enabled,
+            'setting' => 'feature',
+            'feature' => $feature,
+            'enabled' => $enabled,
             'toggled_by' => $toggledBy,
         ]);
 

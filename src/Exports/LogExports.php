@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Exports;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
-use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 
 /**
  * Consent-log and activity-log exports (spec FR-5): scoped by date and type,
@@ -26,8 +26,7 @@ final readonly class LogExports
     ) {}
 
     /**
-     * @param array{type?: string|null, status?: string|null, from?: string|null, to?: string|null} $filters
-     *
+     * @param  array{type?: string|null, status?: string|null, from?: string|null, to?: string|null}  $filters
      * @return list<array<string, string|null>>
      */
     public function consentRows(array $filters = [], bool $pseudonymize = true): array
@@ -51,13 +50,13 @@ final readonly class LogExports
 
         foreach ($query->lazy() as $record) {
             $rows[] = [
-                'id'             => $record->public_id,
-                'subject'        => $this->subjectColumn($record->subjectable_type, $record->subjectable_id, $record->guest_key, $pseudonymize),
-                'consent_type'   => (string) $slugs->get($record->consent_type_id),
-                'status'         => $record->status->value,
-                'source'         => $record->source,
+                'id' => $record->public_id,
+                'subject' => $this->subjectColumn($record->subjectable_type, $record->subjectable_id, $record->guest_key, $pseudonymize),
+                'consent_type' => (string) $slugs->get($record->consent_type_id),
+                'status' => $record->status->value,
+                'source' => $record->source,
                 'policy_version' => $record->policy_version,
-                'recorded_at'    => $record->recorded_at->toIso8601String(),
+                'recorded_at' => $record->recorded_at->toIso8601String(),
             ];
         }
 
@@ -67,8 +66,7 @@ final readonly class LogExports
     }
 
     /**
-     * @param array{type?: string|null, from?: string|null, to?: string|null} $filters
-     *
+     * @param  array{type?: string|null, from?: string|null, to?: string|null}  $filters
      * @return list<array<string, string|null>>
      */
     public function activityRows(array $filters = [], bool $pseudonymize = true): array
@@ -91,11 +89,11 @@ final readonly class LogExports
             }
 
             $rows[] = [
-                'id'          => $event->public_id,
-                'event_type'  => $event->event_type->value,
-                'subject'     => $this->subjectColumn($event->subjectable_type, $event->subjectable_id, null, $pseudonymize),
+                'id' => $event->public_id,
+                'event_type' => $event->event_type->value,
+                'subject' => $this->subjectColumn($event->subjectable_type, $event->subjectable_id, null, $pseudonymize),
                 'provider_id' => $event->provider_id !== null ? (string) $event->provider_id : null,
-                'context'     => json_encode($context, JSON_THROW_ON_ERROR),
+                'context' => json_encode($context, JSON_THROW_ON_ERROR),
                 'recorded_at' => $event->recorded_at->toIso8601String(),
             ];
         }
@@ -106,7 +104,7 @@ final readonly class LogExports
     }
 
     /**
-     * @param list<array<string, string|null>> $rows
+     * @param  list<array<string, string|null>>  $rows
      */
     public function toCsv(array $rows): string
     {
@@ -142,7 +140,7 @@ final readonly class LogExports
     {
         $key = $this->config->get('app.key');
 
-        return 'sub_' . substr(hash_hmac('sha256', $type . '#' . $id, is_string($key) ? $key : ''), 0, 16);
+        return 'sub_'.substr(hash_hmac('sha256', $type.'#'.$id, is_string($key) ? $key : ''), 0, 16);
     }
 
     private function subjectColumn(?string $subjectType, int|string|null $subjectId, ?string $guestKey, bool $pseudonymize): ?string
@@ -157,12 +155,12 @@ final readonly class LogExports
 
         return $pseudonymize
             ? $this->pseudonym($subjectType, (string) $subjectId)
-            : $subjectType . '#' . $subjectId;
+            : $subjectType.'#'.$subjectId;
     }
 
     /**
-     * @param Builder<ConsentRecord>|Builder<ActivityEvent> $query
-     * @param array<string, string|null> $filters
+     * @param  Builder<ConsentRecord>|Builder<ActivityEvent>  $query
+     * @param  array<string, string|null>  $filters
      */
     private function applyDateRange($query, array $filters): void
     {
@@ -176,14 +174,14 @@ final readonly class LogExports
     }
 
     /**
-     * @param array<string, string|null> $filters
+     * @param  array<string, string|null>  $filters
      */
     private function logExport(string $log, int $rows, array $filters, bool $pseudonymize): void
     {
         $this->activity->record(ActivityType::Export, context: [
-            'log'           => $log,
-            'rows'          => $rows,
-            'filters'       => array_filter($filters, static fn (?string $value): bool => $value !== null),
+            'log' => $log,
+            'rows' => $rows,
+            'filters' => array_filter($filters, static fn (?string $value): bool => $value !== null),
             'pseudonymized' => $pseudonymize,
         ]);
     }

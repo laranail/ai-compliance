@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Illuminate\Support\Facades\Notification;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Notifications\ReconsentRequested;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
@@ -17,11 +17,11 @@ function supersedeConsentDocument(string $slug): void
     $document = PolicyDocument::query()->where('slug', $slug)->firstOrFail();
     $draft = $document->versions()->create(['version' => '2.0', 'status' => 'draft']);
     $draft->translations()->create([
-        'locale'          => 'en',
-        'title'           => 'New terms',
+        'locale' => 'en',
+        'title' => 'New terms',
         'source_markdown' => 'materially different terms',
-        'compiled_html'   => '<p>materially different terms</p>',
-        'checksum'        => hash('sha256', 'materially different terms'),
+        'compiled_html' => '<p>materially different terms</p>',
+        'checksum' => hash('sha256', 'materially different terms'),
     ]);
     app(PolicyPublisher::class)->publish($draft);
 }
@@ -41,7 +41,7 @@ it('notifies exactly the users whose granted consent was superseded', function (
     $denier = makeUser('Denier');
     $consent->deny($denier, 'ai_training'); // never granted
 
-    $guestKey = 'g_' . str_repeat('z', 32);
+    $guestKey = 'g_'.str_repeat('z', 32);
     $consent->grant($guestKey, 'ai_training'); // guests get the boot prompt, not mail
 
     supersedeConsentDocument('consent.ai_training');

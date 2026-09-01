@@ -21,7 +21,7 @@ final readonly class ActivityRecorder
     ) {}
 
     /**
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     public function record(
         ActivityType $type,
@@ -35,14 +35,14 @@ final readonly class ActivityRecorder
         }
 
         return ActivityEvent::query()->create([
-            'event_type'       => $type,
-            'actorable_type'   => $actor?->getMorphClass(),
-            'actorable_id'     => $actor?->getKey(),
+            'event_type' => $type,
+            'actorable_type' => $actor?->getMorphClass(),
+            'actorable_id' => $actor?->getKey(),
             'subjectable_type' => $subject instanceof Model ? $subject->getMorphClass() : null,
-            'subjectable_id'   => $subject instanceof Model ? $subject->getKey() : null,
-            'provider_id'      => $providerId,
-            'context'          => $context,
-            'hash_prev'        => $this->chain->enabled() ? $this->chain->nextLink() : null,
+            'subjectable_id' => $subject instanceof Model ? $subject->getKey() : null,
+            'provider_id' => $providerId,
+            'context' => $context,
+            'hash_prev' => $this->chain->enabled() ? $this->chain->nextLink() : null,
         ]);
     }
 }

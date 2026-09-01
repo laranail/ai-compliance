@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use Livewire\Livewire;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Livewire\ConsentPreferences;
+use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
-use Simtabi\Laranail\AiCompliance\Livewire\ConsentPreferences;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
@@ -66,11 +66,11 @@ it('shows the reconsent prompt only when a granted version was superseded', func
     $document = PolicyDocument::query()->where('slug', 'consent.ai_training')->firstOrFail();
     $draft = $document->versions()->create(['version' => '2.0', 'status' => 'draft']);
     $draft->translations()->create([
-        'locale'          => 'en',
-        'title'           => 'AI training permissions',
+        'locale' => 'en',
+        'title' => 'AI training permissions',
         'source_markdown' => 'new terms',
-        'compiled_html'   => '<p>new terms</p>',
-        'checksum'        => hash('sha256', 'new terms'),
+        'compiled_html' => '<p>new terms</p>',
+        'checksum' => hash('sha256', 'new terms'),
     ]);
     app(PolicyPublisher::class)->publish($draft);
 

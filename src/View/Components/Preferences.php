@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\View\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\Component;
 use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
 use Simtabi\Laranail\AiCompliance\Support\CurrentSubject;
 
@@ -36,10 +36,10 @@ final class Preferences extends Component
         $consent = is_array($payload['consent']) ? $payload['consent'] : [];
 
         return $this->view('laranail-ai-compliance::components.preferences', [
-            'types'     => is_array($consent['types'] ?? null) ? $consent['types'] : [],
-            'state'     => is_array($consent['state'] ?? null) ? $consent['state'] : [],
+            'types' => is_array($consent['types'] ?? null) ? $consent['types'] : [],
+            'state' => is_array($consent['state'] ?? null) ? $consent['state'] : [],
             'reconsent' => is_array($consent['reconsent'] ?? null) ? $consent['reconsent'] : [],
-            'strings'   => is_array($payload['strings']) ? $payload['strings'] : [],
+            'strings' => is_array($payload['strings']) ? $payload['strings'] : [],
         ]);
     }
 }

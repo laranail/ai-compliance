@@ -6,8 +6,8 @@ namespace Simtabi\Laranail\AiCompliance\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**

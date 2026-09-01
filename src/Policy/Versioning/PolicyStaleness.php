@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Policy\Versioning;
 
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
@@ -56,11 +56,11 @@ final readonly class PolicyStaleness
                     && $translation->file_checksum !== null
                     && $file->checksum !== $translation->file_checksum) {
                     $entries[] = [
-                        'slug'        => $document->slug,
-                        'locale'      => (string) $locale,
-                        'signal'      => 'file_drift',
+                        'slug' => $document->slug,
+                        'locale' => (string) $locale,
+                        'signal' => 'file_drift',
                         'hand_edited' => $translation->isHandEdited(),
-                        'version'     => $latest->version,
+                        'version' => $latest->version,
                     ];
                 }
 
@@ -69,11 +69,11 @@ final readonly class PolicyStaleness
                     && $translation->origin_checksum !== null
                     && $translation->origin_checksum !== $default->checksum) {
                     $entries[] = [
-                        'slug'        => $document->slug,
-                        'locale'      => (string) $locale,
-                        'signal'      => 'translation_drift',
+                        'slug' => $document->slug,
+                        'locale' => (string) $locale,
+                        'signal' => 'translation_drift',
                         'hand_edited' => $translation->isHandEdited(),
-                        'version'     => $latest->version,
+                        'version' => $latest->version,
                     ];
                 }
             }

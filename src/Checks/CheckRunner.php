@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Events\Dispatcher;
 use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
-use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Events\ChecklistItemDegraded;
+use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 
 /**
  * Runs every registered check (the built-ins plus anything the host tagged
@@ -20,7 +20,7 @@ use Simtabi\Laranail\AiCompliance\Events\ChecklistItemDegraded;
 final readonly class CheckRunner
 {
     /**
-     * @param list<class-string<Check>> $builtin
+     * @param  list<class-string<Check>>  $builtin
      */
     public function __construct(
         private Container $container,
@@ -51,10 +51,10 @@ final readonly class CheckRunner
             $result = $check->run();
 
             $item->update([
-                'status'           => $result->status,
-                'evidence_ref'     => $result->message,
+                'status' => $result->status,
+                'evidence_ref' => $result->message,
                 'last_verified_at' => now(),
-                'verified_by'      => 'check-runner',
+                'verified_by' => 'check-runner',
             ]);
 
             if ($result->status === CheckStatus::Fail) {
@@ -62,8 +62,8 @@ final readonly class CheckRunner
             }
 
             $results[] = [
-                'key'     => $check->key(),
-                'status'  => $result->status->value,
+                'key' => $check->key(),
+                'status' => $result->status->value,
                 'message' => $result->message,
             ];
         }
@@ -100,7 +100,7 @@ final readonly class CheckRunner
             );
 
             $item->update([
-                'status'       => CheckStatus::Review,
+                'status' => CheckStatus::Review,
                 'evidence_ref' => $message,
             ]);
 

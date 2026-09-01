@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources;
 
-use Override;
 use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Filament\Tables\Table;
+use Override;
+use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\CreateProvider;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\EditProvider;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\ListProviders;
-use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\CreateProvider;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
 
 /**
  * The ai provider registry: the inventory rule as a crud surface. Deletes
@@ -81,9 +81,9 @@ final class ProviderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListProviders::route('/'),
+            'index' => ListProviders::route('/'),
             'create' => CreateProvider::route('/create'),
-            'edit'   => EditProvider::route('/{record}/edit'),
+            'edit' => EditProvider::route('/{record}/edit'),
         ];
     }
 }

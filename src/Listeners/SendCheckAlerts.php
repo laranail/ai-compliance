@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Listeners;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Notifications\Dispatcher as NotificationDispatcher;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Simtabi\Laranail\AiCompliance\Events\CheckFailed;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Simtabi\Laranail\AiCompliance\Notifications\CheckFailedNotification;
-use Illuminate\Contracts\Notifications\Dispatcher as NotificationDispatcher;
 use Simtabi\Laranail\AiCompliance\Notifications\ActivityLogSilentNotification;
+use Simtabi\Laranail\AiCompliance\Notifications\CheckFailedNotification;
 use Simtabi\Laranail\AiCompliance\Notifications\ProviderDueDiligenceLapsedNotification;
 
 /**
@@ -37,8 +37,8 @@ final readonly class SendCheckAlerts
 
         $notification = match ($event->item->key) {
             'logging.activity_log_alive' => new ActivityLogSilentNotification($event->result->message),
-            'vendors.due_diligence'      => new ProviderDueDiligenceLapsedNotification($event->result->message),
-            default                      => new CheckFailedNotification($event->item->key, $event->item->label, $event->result->message),
+            'vendors.due_diligence' => new ProviderDueDiligenceLapsedNotification($event->result->message),
+            default => new CheckFailedNotification($event->item->key, $event->item->label, $event->result->message),
         };
 
         $this->notifications->send($notifiable, $notification);

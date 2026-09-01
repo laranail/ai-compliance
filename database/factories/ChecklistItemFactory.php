@@ -18,11 +18,11 @@ class ChecklistItemFactory extends Factory
     public function definition(): array
     {
         return [
-            'key'              => 'test.' . fake()->unique()->word(),
-            'section'          => 'governance',
-            'label'            => fake()->sentence(4),
-            'evidence_type'    => 'manual',
-            'status'           => CheckStatus::Review,
+            'key' => 'test.'.fake()->unique()->word(),
+            'section' => 'governance',
+            'label' => fake()->sentence(4),
+            'evidence_type' => 'manual',
+            'status' => CheckStatus::Review,
             'staleness_months' => 12,
         ];
     }
@@ -30,9 +30,9 @@ class ChecklistItemFactory extends Factory
     public function ok(): static
     {
         return $this->state([
-            'status'           => CheckStatus::Ok,
+            'status' => CheckStatus::Ok,
             'last_verified_at' => now(),
-            'verified_by'      => 'factory',
+            'verified_by' => 'factory',
         ]);
     }
 
@@ -44,9 +44,9 @@ class ChecklistItemFactory extends Factory
     public function stale(): static
     {
         return $this->state([
-            'status'           => CheckStatus::Ok,
+            'status' => CheckStatus::Ok,
             'last_verified_at' => now()->subMonths(13),
-            'verified_by'      => 'factory',
+            'verified_by' => 'factory',
             'staleness_months' => 12,
         ]);
     }

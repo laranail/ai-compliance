@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages;
 
-use Override;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Forms\Components\MarkdownEditor;
-use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
+use Override;
+use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocumentResource;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
+use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyDrafts;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
-use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocumentResource;
 
 /**
  * The policy editor: the markdown of the document's open draft (or, before

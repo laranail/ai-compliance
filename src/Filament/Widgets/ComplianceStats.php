@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament\Widgets;
 
-use Override;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Override;
 use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
 
 /**

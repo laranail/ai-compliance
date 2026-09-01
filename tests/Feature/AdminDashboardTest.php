@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\GenericUser;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
-use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
-use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
+use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
 
 uses(RefreshDatabase::class);
 
@@ -97,10 +97,10 @@ it('stores classification answers and reports them back', function (): void {
 
 it('manages the provider registry with activity logging', function (): void {
     $created = $this->actingAs(dashManager())->postJson('/ai-compliance/admin/providers', [
-        'name'               => 'Claude assistant',
-        'vendor'             => 'Anthropic',
-        'model_name'         => 'claude-sonnet-5',
-        'role'               => 'deployer',
+        'name' => 'Claude assistant',
+        'vendor' => 'Anthropic',
+        'model_name' => 'claude-sonnet-5',
+        'role' => 'deployer',
         'trains_on_our_data' => 'no',
     ])->assertCreated();
 
@@ -108,14 +108,14 @@ it('manages the provider registry with activity logging', function (): void {
 
     $this->actingAs(dashManager())
         ->putJson("/ai-compliance/admin/providers/{$id}", [
-            'name'                 => 'Claude assistant',
-            'vendor'               => 'Anthropic',
-            'model_name'           => 'claude-sonnet-5',
-            'role'                 => 'deployer',
-            'trains_on_our_data'   => 'no',
-            'endpoint_region'      => 'eu-central-1',
-            'purpose'              => 'support assistant',
-            'dpa_signed_at'        => now()->toDateString(),
+            'name' => 'Claude assistant',
+            'vendor' => 'Anthropic',
+            'model_name' => 'claude-sonnet-5',
+            'role' => 'deployer',
+            'trains_on_our_data' => 'no',
+            'endpoint_region' => 'eu-central-1',
+            'purpose' => 'support assistant',
+            'dpa_signed_at' => now()->toDateString(),
             'due_diligence_status' => 'complete',
         ])
         ->assertOk()

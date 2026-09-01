@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
 use Simtabi\Laranail\Package\Tools\Services\Database\SeederManager;
 
 uses(RefreshDatabase::class);

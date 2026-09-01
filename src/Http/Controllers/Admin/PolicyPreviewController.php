@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
 use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
@@ -44,9 +44,9 @@ final class PolicyPreviewController
 
         return new JsonResponse([
             'data' => [
-                'title'                   => $compiled->title(),
-                'html'                    => $html->text,
-                'meta'                    => $compiled->meta,
+                'title' => $compiled->title(),
+                'html' => $html->text,
+                'meta' => $compiled->meta,
                 'unresolved_placeholders' => $html->unresolved,
             ],
         ]);

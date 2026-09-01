@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
@@ -26,12 +26,12 @@ it('serves published edits and ignores the file once a version is published', fu
     $document = PolicyDocument::query()->where('slug', 'transparency')->firstOrFail();
     $draft = $document->versions()->create(['version' => '1.1', 'status' => 'draft']);
     $draft->translations()->create([
-        'locale'          => 'en',
-        'title'           => 'Edited transparency',
+        'locale' => 'en',
+        'title' => 'Edited transparency',
         'source_markdown' => 'DB_EDITED for {{company}}.',
-        'compiled_html'   => '<p>DB_EDITED for {{company}}.</p>',
-        'meta'            => [],
-        'checksum'        => hash('sha256', 'DB_EDITED for {{company}}.'),
+        'compiled_html' => '<p>DB_EDITED for {{company}}.</p>',
+        'meta' => [],
+        'checksum' => hash('sha256', 'DB_EDITED for {{company}}.'),
     ]);
 
     $this->app->make(PolicyPublisher::class)->publish($draft);

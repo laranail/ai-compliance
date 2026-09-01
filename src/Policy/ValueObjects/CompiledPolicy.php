@@ -12,7 +12,7 @@ namespace Simtabi\Laranail\AiCompliance\Policy\ValueObjects;
 final readonly class CompiledPolicy
 {
     /**
-     * @param array<string, mixed> $meta
+     * @param  array<string, mixed>  $meta
      */
     public function __construct(
         public string $html,

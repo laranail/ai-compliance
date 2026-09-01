@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Policy\Versioning;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
-use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Events\PolicyDraftCreated;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Models\PolicyTranslation;
+use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
 
 /**
@@ -43,19 +43,19 @@ final readonly class PolicyDrafts
         /** @var PolicyVersion $draft */
         $draft = $document->versions()->create([
             'version' => $latest instanceof PolicyVersion ? VersionNumber::next($latest->version) : VersionNumber::first(),
-            'status'  => PolicyVersionStatus::Draft,
+            'status' => PolicyVersionStatus::Draft,
         ]);
 
         if ($latest instanceof PolicyVersion) {
             foreach ($latest->translations as $translation) {
                 $draft->translations()->create([
-                    'locale'          => $translation->locale,
-                    'title'           => $translation->title,
+                    'locale' => $translation->locale,
+                    'title' => $translation->title,
                     'source_markdown' => $translation->source_markdown,
-                    'compiled_html'   => $translation->compiled_html,
-                    'meta'            => $translation->meta,
-                    'checksum'        => $translation->checksum,
-                    'file_checksum'   => $translation->file_checksum,
+                    'compiled_html' => $translation->compiled_html,
+                    'meta' => $translation->meta,
+                    'checksum' => $translation->checksum,
+                    'file_checksum' => $translation->file_checksum,
                     'origin_checksum' => $translation->origin_checksum,
                 ]);
             }
@@ -97,11 +97,11 @@ final readonly class PolicyDrafts
         $translation = $draft->translations()->updateOrCreate(
             ['locale' => $locale],
             array_filter([
-                'title'           => $compiled->title(),
+                'title' => $compiled->title(),
                 'source_markdown' => $markdown,
-                'compiled_html'   => $compiled->html,
-                'meta'            => $compiled->meta,
-                'checksum'        => hash('sha256', $markdown),
+                'compiled_html' => $compiled->html,
+                'meta' => $compiled->meta,
+                'checksum' => hash('sha256', $markdown),
                 'origin_checksum' => $originChecksum,
             ], static fn (mixed $value): bool => $value !== null),
         );

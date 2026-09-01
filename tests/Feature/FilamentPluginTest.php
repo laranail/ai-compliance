@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-use Livewire\Livewire;
 use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
-use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
-use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
-use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Illuminate\Support\Facades\Gate;
+use Livewire\Livewire;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
-use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
-use Simtabi\Laranail\AiCompliance\Filament\Pages\Classification;
 use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
-use Simtabi\Laranail\AiCompliance\Filament\Widgets\ComplianceStats;
-use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecordResource;
-use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\CreateProvider;
+use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Simtabi\Laranail\AiCompliance\Filament\Pages\Classification;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ChecklistItems\Pages\ListChecklistItems;
+use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecordResource;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecords\Pages\ListConsentRecords;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\EditPolicyDocument;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\ListPolicyDocuments;
+use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\CreateProvider;
+use Simtabi\Laranail\AiCompliance\Filament\Widgets\ComplianceStats;
+use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
+use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Policy\CompiledPolicyCache;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
@@ -106,10 +106,10 @@ it('lists policy documents with their version state', function (): void {
 it('creates providers through the resource', function (): void {
     Livewire::test(CreateProvider::class)
         ->fillForm([
-            'name'               => 'Claude assistant',
-            'vendor'             => 'Anthropic',
-            'model_name'         => 'claude-sonnet-5',
-            'role'               => 'deployer',
+            'name' => 'Claude assistant',
+            'vendor' => 'Anthropic',
+            'model_name' => 'claude-sonnet-5',
+            'role' => 'deployer',
             'trains_on_our_data' => 'no',
         ])
         ->call('create')

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Doctor;
 
-use Simtabi\Laranail\Package\Tools\Services\Doctor\DoctorCheck;
 use Simtabi\Laranail\Package\Tools\Services\Doctor\Checks\ConfigPresentCheck;
+use Simtabi\Laranail\Package\Tools\Services\Doctor\DoctorCheck;
 
 /**
  * Doctor checks contributed by laranail/ai-compliance. Run by

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Checklist\ChecklistDefinitions;
+use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 
 /**
  * Seeds every checklist item from spec sections 4-10, keyed and idempotent:
@@ -27,12 +27,12 @@ final class ChecklistSeeder extends Seeder
                 ->first();
 
             $attributes = [
-                'section'          => $definition['section'],
-                'label'            => $definition['label'],
-                'description'      => $definition['description'],
-                'evidence_type'    => $definition['evidence_type'],
+                'section' => $definition['section'],
+                'label' => $definition['label'],
+                'description' => $definition['description'],
+                'evidence_type' => $definition['evidence_type'],
                 'staleness_months' => $definition['staleness_months'],
-                'applies_when'     => $definition['applies_when'],
+                'applies_when' => $definition['applies_when'],
             ];
 
             if ($existing instanceof ChecklistItem) {
@@ -43,8 +43,8 @@ final class ChecklistSeeder extends Seeder
 
             ChecklistItem::query()->create([
                 'tenant_id' => '',
-                'key'       => $definition['key'],
-                'status'    => 'review',
+                'key' => $definition['key'],
+                'status' => 'review',
                 ...$attributes,
             ]);
         }

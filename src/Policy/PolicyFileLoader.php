@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy;
 
-use SplFileInfo;
 use FilesystemIterator;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
+use SplFileInfo;
 
 /**
  * Finds policy markdown files. The app-published directory (publish tag
@@ -91,7 +91,7 @@ final class PolicyFileLoader
 
         // package files first so app files overwrite them in the merge below
         foreach ([$this->packagePath, $this->overridePath()] as $root) {
-            $localeDir = $root . DIRECTORY_SEPARATOR . $locale;
+            $localeDir = $root.DIRECTORY_SEPARATOR.$locale;
 
             if (! is_dir($localeDir)) {
                 continue;
@@ -161,9 +161,9 @@ final class PolicyFileLoader
     private function typeFor(string $relativePath): PolicyType
     {
         return match (explode('/', $relativePath)[0]) {
-            'consent'     => PolicyType::ConsentText,
+            'consent' => PolicyType::ConsentText,
             'disclosures' => PolicyType::Disclosure,
-            default       => PolicyType::Policy,
+            default => PolicyType::Policy,
         };
     }
 
