@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Simtabi\Laranail\AiCompliance\View\IslandRenderer;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\View\IslandRenderer;
 
 uses(RefreshDatabase::class);
 

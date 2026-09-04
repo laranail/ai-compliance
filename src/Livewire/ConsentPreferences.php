@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Livewire;
 
-use Illuminate\Contracts\View\View;
 use Livewire\Component;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Support\CurrentSubject;
 
 /**
@@ -51,10 +51,10 @@ final class ConsentPreferences extends Component
         $consent = is_array($payload['consent']) ? $payload['consent'] : [];
 
         return view('laranail-ai-compliance::livewire.consent-preferences', [
-            'types' => is_array($consent['types'] ?? null) ? $consent['types'] : [],
-            'state' => is_array($consent['state'] ?? null) ? $consent['state'] : [],
+            'types'     => is_array($consent['types'] ?? null) ? $consent['types'] : [],
+            'state'     => is_array($consent['state'] ?? null) ? $consent['state'] : [],
             'reconsent' => is_array($consent['reconsent'] ?? null) ? $consent['reconsent'] : [],
-            'strings' => is_array($payload['strings']) ? $payload['strings'] : [],
+            'strings'   => is_array($payload['strings']) ? $payload['strings'] : [],
         ]);
     }
 }

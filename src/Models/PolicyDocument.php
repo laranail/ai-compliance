@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\PolicyDocumentFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\PolicyDocumentFactory;
 
 /**
  * One logical policy document per tenant: a transparency page, a consent
@@ -92,7 +92,7 @@ class PolicyDocument extends Model
     protected function casts(): array
     {
         return [
-            'type' => PolicyType::class,
+            'type'   => PolicyType::class,
             'active' => 'boolean',
         ];
     }

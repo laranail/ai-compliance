@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Database\Seeders;
 
 use DateTimeInterface;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Illuminate\Database\Seeder;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 /**
  * Local-dev demo data reproducing the reference dashboard state (spec
@@ -32,8 +32,8 @@ final class DemoSeeder extends Seeder
         $now = now();
 
         $guests = [
-            'g_demo_'.str_pad('1', 26, '1'),
-            'g_demo_'.str_pad('2', 26, '2'),
+            'g_demo_' . str_pad('1', 26, '1'),
+            'g_demo_' . str_pad('2', 26, '2'),
         ];
 
         $this->travelTo($earlier, function () use ($guests): void {
@@ -52,12 +52,12 @@ final class DemoSeeder extends Seeder
 
         $this->activity->record(ActivityType::SettingChange, context: [
             'setting' => 'demo',
-            'action' => 'seeded',
+            'action'  => 'seeded',
         ]);
     }
 
     /**
-     * @param  callable(): void  $callback
+     * @param callable(): void $callback
      */
     private function travelTo(DateTimeInterface $moment, callable $callback): void
     {

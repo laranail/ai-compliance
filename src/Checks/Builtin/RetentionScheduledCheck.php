@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * A retention schedule must exist for the compliance stores. The pruning
@@ -38,6 +38,6 @@ final readonly class RetentionScheduledCheck implements Check
             return CheckResult::review('retention config exists but every period is null');
         }
 
-        return CheckResult::ok('retention periods configured for: '.implode(', ', array_map(strval(...), $configured)));
+        return CheckResult::ok('retention periods configured for: ' . implode(', ', array_map(strval(...), $configured)));
     }
 }

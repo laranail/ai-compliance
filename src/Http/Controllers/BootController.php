@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Consent\GuestKeys;
 use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
 

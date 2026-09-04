@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
-use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
+use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 
 /**
  * One-shot setup: publish the config and policy files, run the migrations,
@@ -64,7 +64,7 @@ final class InstallCommand extends Command
             $this->components->warn('these placeholders are still unresolved in your policy documents:');
 
             foreach (array_keys($unresolved) as $placeholder) {
-                $this->components->bulletList(['{{'.$placeholder.'}}']);
+                $this->components->bulletList(['{{' . $placeholder . '}}']);
             }
 
             $this->line('fill the simple keys in config/ai-compliance.php (placeholders block) and edit the prose ones in the published policy files.');

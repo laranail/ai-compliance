@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 
 uses(RefreshDatabase::class);
 
@@ -34,7 +34,7 @@ it('erases a user completely and logs the dsr action (spec acceptance 2)', funct
 });
 
 it('scrubs guest keys out of activity context on erasure', function (): void {
-    $guestKey = 'g_'.str_repeat('f', 32);
+    $guestKey = 'g_' . str_repeat('f', 32);
     $consent = app(ConsentManager::class);
 
     $consent->grant($guestKey, 'ai_chatbot');

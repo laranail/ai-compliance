@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 
 uses(RefreshDatabase::class);
@@ -28,7 +28,7 @@ it('lets consented users through', function (): void {
 });
 
 it('lets consented guests through and blocks them again after withdrawal', function (): void {
-    $key = 'g_'.str_repeat('d', 40);
+    $key = 'g_' . str_repeat('d', 40);
 
     app(ConsentManager::class)->grant($key, 'ai_chatbot');
 

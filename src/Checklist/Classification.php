@@ -20,7 +20,7 @@ use Simtabi\Laranail\AiCompliance\Models\ClassificationAnswer;
 final class Classification
 {
     /**
-     * @param  array<string, string>  $answers
+     * @param array<string, string> $answers
      */
     public function record(array $answers, string $answeredBy): void
     {
@@ -31,7 +31,7 @@ final class Classification
                 ->first();
 
             $attributes = [
-                'answer' => $answer,
+                'answer'      => $answer,
                 'answered_by' => $answeredBy,
                 'answered_at' => now(),
             ];
@@ -40,7 +40,7 @@ final class Classification
                 $existing->update($attributes);
             } else {
                 ClassificationAnswer::query()->create([
-                    'tenant_id' => '',
+                    'tenant_id'    => '',
                     'question_key' => $questionKey,
                     ...$attributes,
                 ]);
@@ -83,14 +83,14 @@ final class Classification
 
             if ($reason !== null && $item->status !== CheckStatus::NotApplicable) {
                 $item->update([
-                    'status' => CheckStatus::NotApplicable,
-                    'evidence_ref' => 'switched off by classification: '.$reason,
+                    'status'       => CheckStatus::NotApplicable,
+                    'evidence_ref' => 'switched off by classification: ' . $reason,
                 ]);
             }
 
             if ($reason === null && $item->status === CheckStatus::NotApplicable) {
                 $item->update([
-                    'status' => CheckStatus::Review,
+                    'status'       => CheckStatus::Review,
                     'evidence_ref' => null,
                 ]);
             }
@@ -98,8 +98,8 @@ final class Classification
     }
 
     /**
-     * @param  array<string, string>  $rules
-     * @param  array<string, string>  $answers
+     * @param array<string, string> $rules
+     * @param array<string, string> $answers
      */
     private function switchedOffReason(array $rules, array $answers): ?string
     {
@@ -119,8 +119,8 @@ final class Classification
     }
 
     /**
-     * @param  list<array<string, string>>  $alternatives
-     * @param  array<string, string>  $answers
+     * @param list<array<string, string>> $alternatives
+     * @param array<string, string> $answers
      */
     private function allAlternativesDefeated(array $alternatives, array $answers): ?string
     {

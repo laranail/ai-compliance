@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * Logging is what turns every other section from claims into evidence: the
@@ -44,7 +44,7 @@ final readonly class ActivityLogAliveCheck implements Check
             ));
         }
 
-        return CheckResult::ok('the activity log is receiving events (last: '.$latest->recorded_at->toIso8601String().')');
+        return CheckResult::ok('the activity log is receiving events (last: ' . $latest->recorded_at->toIso8601String() . ')');
     }
 
     private function silenceHours(): int

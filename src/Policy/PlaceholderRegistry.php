@@ -25,7 +25,7 @@ final class PlaceholderRegistry
     public function __construct(private readonly ConfigRepository $config) {}
 
     /**
-     * @param  Closure(): ?string  $resolver
+     * @param Closure(): ?string $resolver
      */
     public function register(string $key, Closure $resolver): void
     {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Activity;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * The tamper-evidence tier: when enabled, every new event stores the hash of

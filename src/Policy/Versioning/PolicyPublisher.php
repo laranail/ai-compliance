@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Policy\Versioning;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Model;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
-use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
-use Simtabi\Laranail\AiCompliance\Exceptions\CannotPublishVersion;
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Simtabi\Laranail\AiCompliance\Exceptions\CannotPublishVersion;
 
 /**
  * Publishes a draft version. The invariant this class owns: at most one
@@ -48,16 +48,16 @@ final readonly class PolicyPublisher
                 ->first();
 
             $current?->update([
-                'status' => PolicyVersionStatus::Superseded,
+                'status'        => PolicyVersionStatus::Superseded,
                 'superseded_at' => now(),
             ]);
 
             $version->update(array_filter([
-                'status' => PolicyVersionStatus::Published,
-                'published_at' => now(),
-                'effective_at' => $version->effective_at ?? now(),
+                'status'          => PolicyVersionStatus::Published,
+                'published_at'    => now(),
+                'effective_at'    => $version->effective_at ?? now(),
                 'authorable_type' => $publisher?->getMorphClass(),
-                'authorable_id' => $publisher?->getKey(),
+                'authorable_id'   => $publisher?->getKey(),
             ], static fn (mixed $value): bool => $value !== null));
 
             $this->events->dispatch(new PolicyPublished($version, $current));

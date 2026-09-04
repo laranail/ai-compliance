@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 
 /**
  * Serves one compiled policy document, resolved through the locale fallback
@@ -26,15 +26,15 @@ final class PolicyController
         }
 
         return new JsonResponse([
-            'slug' => $document->slug,
-            'type' => $document->type->value,
-            'locale' => $document->locale,
-            'requested_locale' => $document->requestedLocale,
-            'fallback' => $document->isFallback(),
-            'title' => $document->title,
-            'html' => $document->html,
-            'meta' => $document->meta,
-            'version' => $document->version,
+            'slug'                    => $document->slug,
+            'type'                    => $document->type->value,
+            'locale'                  => $document->locale,
+            'requested_locale'        => $document->requestedLocale,
+            'fallback'                => $document->isFallback(),
+            'title'                   => $document->title,
+            'html'                    => $document->html,
+            'meta'                    => $document->meta,
+            'version'                 => $document->version,
             'unresolved_placeholders' => $document->unresolvedPlaceholders,
         ]);
     }

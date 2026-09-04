@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Filament;
 
-use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Filament\Contracts\Plugin;
 use Simtabi\Laranail\AiCompliance\Filament\Pages\Classification;
+use Simtabi\Laranail\AiCompliance\Filament\Widgets\ComplianceStats;
+use Simtabi\Laranail\AiCompliance\Filament\Resources\ProviderResource;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ChecklistItemResource;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecordResource;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocumentResource;
-use Simtabi\Laranail\AiCompliance\Filament\Resources\ProviderResource;
-use Simtabi\Laranail\AiCompliance\Filament\Widgets\ComplianceStats;
 
 /**
  * The filament admin plugin: policy editor, provider registry, consent log,

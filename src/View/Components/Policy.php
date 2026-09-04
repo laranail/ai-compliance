@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\View\Components;
 
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
+use Simtabi\Laranail\AiCompliance\View\IslandRenderer;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
-use Simtabi\Laranail\AiCompliance\View\IslandRenderer;
 
 /**
  * Renders one policy document: title, version, the compiled html with its
@@ -32,7 +32,7 @@ final class Policy extends Component
 
         return $this->view('laranail-ai-compliance::components.policy', [
             'document' => $document,
-            'html' => $document instanceof PolicyContent
+            'html'     => $document instanceof PolicyContent
                 ? app(IslandRenderer::class)->render($document->html)
                 : null,
         ]);

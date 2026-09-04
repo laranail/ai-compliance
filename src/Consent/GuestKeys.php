@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Consent;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Cookie\CookieJar;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Cookie\CookieJar;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * Server-issued pseudonymous identity for consent before login. The key is
@@ -45,7 +45,7 @@ final readonly class GuestKeys
             return $existing;
         }
 
-        $key = self::PREFIX.Str::random(40);
+        $key = self::PREFIX . Str::random(40);
 
         $this->cookies->queue($this->cookies->make(
             name: $this->cookieName(),

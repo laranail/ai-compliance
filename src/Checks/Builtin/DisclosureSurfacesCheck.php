@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 
 /**
@@ -36,13 +36,13 @@ final readonly class DisclosureSurfacesCheck implements Check
         $missing = [];
 
         foreach (is_array($surfaces) ? $surfaces : [] as $surface) {
-            if (is_string($surface) && ! $this->policies->find('disclosure.'.$surface) instanceof PolicyContent) {
+            if (is_string($surface) && ! $this->policies->find('disclosure.' . $surface) instanceof PolicyContent) {
                 $missing[] = $surface;
             }
         }
 
         if ($missing !== []) {
-            return CheckResult::fail('no disclosure document resolves for: '.implode(', ', $missing));
+            return CheckResult::fail('no disclosure document resolves for: ' . implode(', ', $missing));
         }
 
         return CheckResult::ok('every configured surface serves a disclosure document');

@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Consent;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
-use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
-use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Providers\PendingProviderCall;
+use Simtabi\Laranail\AiCompliance\Events\ConsentRecorded;
+use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
 use Simtabi\Laranail\AiCompliance\Providers\ProviderCalls;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Simtabi\Laranail\AiCompliance\Providers\PendingProviderCall;
 
 /**
  * The consent api application code talks to instead of reading rows.
@@ -124,13 +124,13 @@ final readonly class ConsentManager
 
             $state[$slug] = $record instanceof ConsentRecord
                 ? [
-                    'status' => $record->status->value,
-                    'recorded_at' => $record->recorded_at->toIso8601String(),
+                    'status'         => $record->status->value,
+                    'recorded_at'    => $record->recorded_at->toIso8601String(),
                     'policy_version' => $record->policy_version,
                 ]
                 : [
-                    'status' => $this->types->defaultStateFor($slug)->value,
-                    'recorded_at' => null,
+                    'status'         => $this->types->defaultStateFor($slug)->value,
+                    'recorded_at'    => null,
                     'policy_version' => null,
                 ];
         }
@@ -218,12 +218,12 @@ final readonly class ConsentManager
             ->orderBy('id')
             ->get()
             ->map(fn (ConsentRecord $record): array => [
-                'id' => $record->public_id,
-                'type' => $slugs->get($record->consent_type_id),
-                'status' => $record->status->value,
-                'source' => $record->source,
+                'id'             => $record->public_id,
+                'type'           => $slugs->get($record->consent_type_id),
+                'status'         => $record->status->value,
+                'source'         => $record->source,
                 'policy_version' => $record->policy_version,
-                'recorded_at' => $record->recorded_at->toIso8601String(),
+                'recorded_at'    => $record->recorded_at->toIso8601String(),
             ])
             ->all());
 
@@ -232,9 +232,9 @@ final readonly class ConsentManager
             ->orderBy('id')
             ->get()
             ->map(fn (ActivityEvent $event): array => [
-                'id' => $event->public_id,
-                'event_type' => $event->event_type->value,
-                'context' => $event->context,
+                'id'          => $event->public_id,
+                'event_type'  => $event->event_type->value,
+                'context'     => $event->context,
                 'recorded_at' => $event->recorded_at->toIso8601String(),
             ])
             ->all());
@@ -255,8 +255,8 @@ final readonly class ConsentManager
     {
         $this->recordsQuery($subject)->toBase()->update([
             'subjectable_type' => null,
-            'subjectable_id' => null,
-            'guest_key' => null,
+            'subjectable_id'   => null,
+            'guest_key'        => null,
         ]);
 
         if (is_string($subject)) {
@@ -268,7 +268,7 @@ final readonly class ConsentManager
         } else {
             $this->activityQuery($subject)->toBase()->update([
                 'subjectable_type' => null,
-                'subjectable_id' => null,
+                'subjectable_id'   => null,
             ]);
         }
 
@@ -356,11 +356,11 @@ final readonly class ConsentManager
         ?string $versionString,
     ): ConsentRecord {
         $record = new ConsentRecord([
-            'consent_type_id' => $type->id,
-            'status' => $status,
-            'source' => $source,
+            'consent_type_id'   => $type->id,
+            'status'            => $status,
+            'source'            => $source,
             'policy_version_id' => $versionId,
-            'policy_version' => $versionString,
+            'policy_version'    => $versionString,
         ]);
 
         if (is_string($subject)) {
@@ -382,7 +382,7 @@ final readonly class ConsentManager
     {
         $document = PolicyDocument::query()
             ->forDefaultTenant()
-            ->where('slug', 'consent.'.$type)
+            ->where('slug', 'consent.' . $type)
             ->where('active', true)
             ->first();
 

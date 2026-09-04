@@ -16,15 +16,15 @@ return [
     |
     */
     'placeholders' => [
-        'company' => env('AI_COMPLIANCE_COMPANY', env('APP_NAME')),
-        'product' => env('AI_COMPLIANCE_PRODUCT', env('APP_NAME')),
-        'contact_email' => env('AI_COMPLIANCE_CONTACT_EMAIL'),
-        'privacy_url' => env('AI_COMPLIANCE_PRIVACY_URL'),
-        'terms_url' => env('AI_COMPLIANCE_TERMS_URL'),
-        'settings_path' => env('AI_COMPLIANCE_SETTINGS_PATH', '/settings/ai'),
-        'domain' => env('APP_URL'),
+        'company'             => env('AI_COMPLIANCE_COMPANY', env('APP_NAME')),
+        'product'             => env('AI_COMPLIANCE_PRODUCT', env('APP_NAME')),
+        'contact_email'       => env('AI_COMPLIANCE_CONTACT_EMAIL'),
+        'privacy_url'         => env('AI_COMPLIANCE_PRIVACY_URL'),
+        'terms_url'           => env('AI_COMPLIANCE_TERMS_URL'),
+        'settings_path'       => env('AI_COMPLIANCE_SETTINGS_PATH', '/settings/ai'),
+        'domain'              => env('APP_URL'),
         'dpo_or_contact_name' => env('AI_COMPLIANCE_DPO_NAME'),
-        'jurisdiction' => env('AI_COMPLIANCE_JURISDICTION'),
+        'jurisdiction'        => env('AI_COMPLIANCE_JURISDICTION'),
     ],
 
     /*
@@ -38,7 +38,7 @@ return [
     |
     */
     'locales' => [
-        'default' => 'en',
+        'default'   => 'en',
         'fallbacks' => [],
     ],
 
@@ -54,10 +54,10 @@ return [
     |
     */
     'policies' => [
-        'path' => null,
+        'path'  => null,
         'cache' => [
             'enabled' => env('AI_COMPLIANCE_POLICY_CACHE', true),
-            'store' => null,
+            'store'   => null,
         ],
     ],
 
@@ -91,15 +91,15 @@ return [
     |
     */
     'routes' => [
-        'enabled' => true,
-        'prefix' => 'ai-compliance',
+        'enabled'    => true,
+        'prefix'     => 'ai-compliance',
         'middleware' => ['web'],
         'rate_limit' => '60,1',
     ],
 
     'admin_routes' => [
-        'enabled' => true,
-        'prefix' => 'ai-compliance/admin',
+        'enabled'    => true,
+        'prefix'     => 'ai-compliance/admin',
         'middleware' => ['web', 'auth'],
     ],
 
@@ -115,19 +115,19 @@ return [
     */
     'consent_types' => [
         'ai_training' => [
-            'legal_basis' => 'consent',
+            'legal_basis'   => 'consent',
             'default_state' => 'denied',
         ],
         'ai_chatbot' => [
-            'legal_basis' => 'consent',
+            'legal_basis'   => 'consent',
             'default_state' => 'denied',
         ],
         'ai_recommendations' => [
-            'legal_basis' => 'consent',
+            'legal_basis'   => 'consent',
             'default_state' => 'denied',
         ],
         'ai_personalization' => [
-            'legal_basis' => 'consent',
+            'legal_basis'   => 'consent',
             'default_state' => 'denied',
         ],
     ],
@@ -157,16 +157,16 @@ return [
     |
     */
     'tables' => [
-        'policy_documents' => 'ai_policy_documents',
-        'policy_versions' => 'ai_policy_versions',
-        'policy_translations' => 'ai_policy_translations',
-        'consent_types' => 'ai_consent_types',
-        'consent_records' => 'ai_consent_records',
-        'activity_events' => 'ai_activity_events',
-        'providers' => 'ai_providers',
-        'checklist_items' => 'ai_checklist_items',
+        'policy_documents'       => 'ai_policy_documents',
+        'policy_versions'        => 'ai_policy_versions',
+        'policy_translations'    => 'ai_policy_translations',
+        'consent_types'          => 'ai_consent_types',
+        'consent_records'        => 'ai_consent_records',
+        'activity_events'        => 'ai_activity_events',
+        'providers'              => 'ai_providers',
+        'checklist_items'        => 'ai_checklist_items',
         'classification_answers' => 'ai_classification_answers',
-        'feature_states' => 'ai_feature_states',
+        'feature_states'         => 'ai_feature_states',
     ],
 
     /*
@@ -182,10 +182,10 @@ return [
     |
     */
     'user_model' => null,
-    'morph_map' => [],
+    'morph_map'  => [],
 
     'guest' => [
-        'cookie' => 'laranail_ai_compliance_guest',
+        'cookie'        => 'laranail_ai_compliance_guest',
         'lifetime_days' => 365,
     ],
 
@@ -234,7 +234,7 @@ return [
     ],
 
     'alerting' => [
-        'mail' => env('AI_COMPLIANCE_ALERT_MAIL'),
+        'mail'              => env('AI_COMPLIANCE_ALERT_MAIL'),
         'log_silence_hours' => 24,
     ],
 
@@ -309,9 +309,9 @@ return [
     |
     */
     'providers' => [
-        'timeout' => 120, // seconds per outbound provider call (models stream slowly)
+        'timeout'      => 120, // seconds per outbound provider call (models stream slowly)
         'do_not_train' => [
-            'openai' => ['body' => 'store', 'body_value' => false],
+            'openai'    => ['body' => 'store', 'body_value' => false],
             'anthropic' => [],
         ],
     ],

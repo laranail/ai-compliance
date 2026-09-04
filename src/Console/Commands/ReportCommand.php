@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
 
 /**
  * Writes the point-in-time compliance report to an html file — the artifact
@@ -29,7 +29,7 @@ final class ReportCommand extends Command
 
         file_put_contents($path, $report->html());
 
-        $this->components->info('report written to '.$path);
+        $this->components->info('report written to ' . $path);
 
         return self::SUCCESS;
     }

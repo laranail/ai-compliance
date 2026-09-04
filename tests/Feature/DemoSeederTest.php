@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
-use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\DemoSeeder;
 
 uses(RefreshDatabase::class);
 

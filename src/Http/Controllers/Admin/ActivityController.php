@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 /**
  * The activity log read surface: filterable, paginated, public ids only —
@@ -23,7 +23,7 @@ final class ActivityController
         $filters = $request->validate([
             'type' => ['sometimes', 'string'],
             'from' => ['sometimes', 'date'],
-            'to' => ['sometimes', 'date'],
+            'to'   => ['sometimes', 'date'],
         ]);
 
         $query = ActivityEvent::query()->orderByDesc('recorded_at')->orderByDesc('id');
@@ -45,27 +45,27 @@ final class ActivityController
         $reader = $request->user()?->getAuthIdentifier();
 
         $recorder->record(ActivityType::LogRead, context: [
-            'log' => 'activity',
-            'reader' => $reader !== null ? (string) $reader : 'unknown',
+            'log'     => 'activity',
+            'reader'  => $reader !== null ? (string) $reader : 'unknown',
             'filters' => $filters,
         ]);
 
         return new JsonResponse([
             'data' => collect($page->items())->map(static fn (ActivityEvent $event): array => [
-                'id' => $event->public_id,
+                'id'         => $event->public_id,
                 'event_type' => $event->event_type->value,
-                'subject' => $event->subjectable_type !== null
-                    ? $event->subjectable_type.'#'.$event->subjectable_id
+                'subject'    => $event->subjectable_type !== null
+                    ? $event->subjectable_type . '#' . $event->subjectable_id
                     : null,
                 'provider_id' => $event->provider_id,
-                'context' => $event->context,
-                'chained' => $event->hash_prev !== null,
+                'context'     => $event->context,
+                'chained'     => $event->hash_prev !== null,
                 'recorded_at' => $event->recorded_at->toIso8601String(),
             ])->values(),
             'meta' => [
                 'current_page' => $page->currentPage(),
-                'last_page' => $page->lastPage(),
-                'total' => $page->total(),
+                'last_page'    => $page->lastPage(),
+                'total'        => $page->total(),
             ],
         ]);
     }

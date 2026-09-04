@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * An accountable owner must be named and reachable: the contact placeholders
@@ -40,7 +40,7 @@ final readonly class DataProtectionContactCheck implements Check
         }
 
         if ($missing !== []) {
-            return CheckResult::fail('data-protection contact placeholders are unset: '.implode(', ', $missing));
+            return CheckResult::fail('data-protection contact placeholders are unset: ' . implode(', ', $missing));
         }
 
         return CheckResult::ok('the accountable contact is configured and feeds the published policies');

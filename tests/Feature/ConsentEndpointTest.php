@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 
 uses(RefreshDatabase::class);
 
 it('records a guest consent, issuing the guest cookie', function (): void {
     $response = $this->postJson('/ai-compliance/consents', [
-        'type' => 'ai_chatbot',
+        'type'   => 'ai_chatbot',
         'status' => 'granted',
     ]);
 
@@ -27,7 +27,7 @@ it('records a guest consent, issuing the guest cookie', function (): void {
 });
 
 it('reuses the existing guest key from the cookie', function (): void {
-    $key = 'g_'.str_repeat('c', 40);
+    $key = 'g_' . str_repeat('c', 40);
 
     $this->withCredentials()->withCookie('laranail_ai_compliance_guest', $key)
         ->postJson('/ai-compliance/consents', ['type' => 'ai_training', 'status' => 'granted'])

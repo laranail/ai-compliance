@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\View\ViewException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
 

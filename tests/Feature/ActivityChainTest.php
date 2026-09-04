@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 uses(RefreshDatabase::class);
 

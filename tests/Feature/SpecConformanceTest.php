@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Simtabi\Laranail\AiCompliance\Checklist\Classification;
-use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Database\Seeders\ChecklistSeeder;
 
 uses(RefreshDatabase::class);
 
@@ -60,7 +60,7 @@ it('seeds the internal policies deactivated so they never serve publicly', funct
         expect(PolicyDocument::query()->where('slug', $slug)->firstOrFail()->active)->toBeFalse()
             ->and(app(PolicyRepository::class)->find($slug))->toBeNull();
 
-        $this->get('/ai-compliance/policies/'.$slug)->assertNotFound();
+        $this->get('/ai-compliance/policies/' . $slug)->assertNotFound();
     }
 
     // the public transparency page is unaffected

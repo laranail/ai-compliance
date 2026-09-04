@@ -31,14 +31,14 @@ final readonly class IslandRenderer
                 $props = $this->decodeProps($matches[2]);
                 $fallback = $matches[3];
 
-                $view = 'laranail-ai-compliance::islands.'.$name;
+                $view = 'laranail-ai-compliance::islands.' . $name;
 
                 if (! $this->views->exists($view)) {
                     return $fallback;
                 }
 
                 return $this->views->make($view, [
-                    'props' => $props,
+                    'props'    => $props,
                     'fallback' => $fallback,
                 ])->render();
             },

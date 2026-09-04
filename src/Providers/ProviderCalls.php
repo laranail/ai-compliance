@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Providers;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Client\Factory as HttpFactory;
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**

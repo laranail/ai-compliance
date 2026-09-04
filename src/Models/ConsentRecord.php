@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
+use Override;
+use LogicException;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use LogicException;
-use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentRecordFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ConsentRecordFactory;
 
 /**
  * One consent event, append-only by design: a change writes a new row,
@@ -114,7 +114,7 @@ class ConsentRecord extends Model
     protected function casts(): array
     {
         return [
-            'status' => ConsentStatus::class,
+            'status'      => ConsentStatus::class,
             'recorded_at' => 'immutable_datetime',
         ];
     }
