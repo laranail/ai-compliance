@@ -13,7 +13,7 @@
         "typecheck": "tsc --build packages/core packages/react packages/vue"
     },
     "devDependencies": {
-        "@testing-library/react": "^16.1.0",
+        "@testing-library/react": "^16.3.3",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.2.5",
         "jsdom": "^30.0.1",
