@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Override;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Override;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Database\Factories\PolicyTranslationFactory;
 
 /**

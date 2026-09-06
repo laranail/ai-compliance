@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityChain;
 
 /**
  * Recomputes the activity log's hash chain and reports the first broken

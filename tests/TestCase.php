@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Tests;
 
 use Livewire\LivewireServiceProvider;
-use Simtabi\Laranail\AiCompliance\Providers\AiComplianceServiceProvider;
-use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
 use Simtabi\Laranail\AiCompliance\Tests\Fixtures\User;
-use Simtabi\Laranail\DbTools\Providers\DbToolsServiceProvider;
 use Simtabi\Laranail\Package\Tools\Testing\IsolatedTestCase;
+use Simtabi\Laranail\DbTools\Providers\DbToolsServiceProvider;
+use Simtabi\Laranail\AiCompliance\Tests\Fixtures\AdminPanelProvider;
+use Simtabi\Laranail\AiCompliance\Providers\AiComplianceServiceProvider;
 
 abstract class TestCase extends IsolatedTestCase
 {
@@ -32,10 +32,10 @@ abstract class TestCase extends IsolatedTestCase
     protected function getEnvironmentSetUp($app): void
     {
         $app['config']->set('laranail.ai-compliance.placeholders', [
-            'company' => 'Acme',
-            'product' => 'Acme App',
+            'company'       => 'Acme',
+            'product'       => 'Acme App',
             'contact_email' => 'privacy@acme.test',
-            'privacy_url' => 'https://acme.test/privacy',
+            'privacy_url'   => 'https://acme.test/privacy',
             'settings_path' => '/settings/ai',
         ]);
 

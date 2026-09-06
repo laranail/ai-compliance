@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\GenericUser;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 
 uses(RefreshDatabase::class);
 
@@ -28,7 +28,7 @@ it('exports the consent log pseudonymized, matching the on-screen data (spec acc
     $consent = app(ConsentManager::class);
     $consent->grant($user, 'ai_training', 'settings_page');
     $consent->withdraw($user, 'ai_training', 'settings_page');
-    $consent->grant('g_'.str_repeat('x', 32), 'ai_chatbot');
+    $consent->grant('g_' . str_repeat('x', 32), 'ai_chatbot');
 
     $response = $this->actingAs(exporter())
         ->get('/ai-compliance/admin/exports/consents?format=json')
@@ -46,7 +46,7 @@ it('exports the consent log pseudonymized, matching the on-screen data (spec acc
     // user reference or the raw guest key
     $subjects = collect($rows)->pluck('subject');
     expect($subjects->every(fn (?string $subject): bool => $subject === null || str_starts_with($subject, 'sub_')))->toBeTrue()
-        ->and($subjects)->not->toContain('user#'.$user->id)
+        ->and($subjects)->not->toContain('user#' . $user->id)
         ->and($subjects->filter(fn (?string $subject): bool => $subject !== null && str_contains($subject, 'g_')))->toBeEmpty();
 
     // the same subject lines up across rows
@@ -77,7 +77,7 @@ it('scopes exports by type, status, and date', function (): void {
         ->and($rows[0]['consent_type'])->toBe('ai_training');
 
     $none = $this->actingAs(exporter())
-        ->get('/ai-compliance/admin/exports/consents?format=json&from='.now()->addDay()->toDateString())
+        ->get('/ai-compliance/admin/exports/consents?format=json&from=' . now()->addDay()->toDateString())
         ->json('data');
 
     expect($none)->toBeEmpty();
@@ -100,7 +100,7 @@ it('logs every export as an activity event', function (): void {
 });
 
 it('exports the activity log with guest keys pseudonymized inside context', function (): void {
-    app(ConsentManager::class)->grant('g_'.str_repeat('y', 32), 'ai_chatbot');
+    app(ConsentManager::class)->grant('g_' . str_repeat('y', 32), 'ai_chatbot');
 
     $rows = $this->actingAs(exporter())
         ->get('/ai-compliance/admin/exports/activity?format=json&type=consent_change')
@@ -115,18 +115,18 @@ it('writes identified exports only from the console command', function (): void 
     $user = makeUser();
     app(ConsentManager::class)->grant($user, 'ai_training');
 
-    $path = sys_get_temp_dir().'/ai-compliance-test-export-'.bin2hex(random_bytes(4)).'.json';
+    $path = sys_get_temp_dir() . '/ai-compliance-test-export-' . bin2hex(random_bytes(4)) . '.json';
 
     $this->artisan('laranail::ai-compliance.export', [
-        'log' => 'consents',
-        '--format' => 'json',
+        'log'          => 'consents',
+        '--format'     => 'json',
         '--identified' => true,
-        '--path' => $path,
+        '--path'       => $path,
     ])->assertSuccessful();
 
     $rows = json_decode((string) file_get_contents($path), true);
 
-    expect($rows[0]['subject'])->toBe('user#'.$user->id);
+    expect($rows[0]['subject'])->toBe('user#' . $user->id);
 
     unlink($path);
 });

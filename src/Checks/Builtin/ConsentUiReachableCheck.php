@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Checks\Builtin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Checks\Check;
 use Simtabi\Laranail\AiCompliance\Checks\CheckResult;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentTypes;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 
 /**
@@ -42,11 +42,11 @@ final readonly class ConsentUiReachableCheck implements Check
 
         $missingTexts = array_values(array_filter(
             $slugs,
-            fn (string $slug): bool => ! $this->policies->find('consent.'.$slug) instanceof PolicyContent,
+            fn (string $slug): bool => ! $this->policies->find('consent.' . $slug) instanceof PolicyContent,
         ));
 
         if ($missingTexts !== []) {
-            return CheckResult::fail('no consent text resolves for: '.implode(', ', $missingTexts));
+            return CheckResult::fail('no consent text resolves for: ' . implode(', ', $missingTexts));
         }
 
         return CheckResult::ok(sprintf('%d granular consent types with resolvable texts and a reachable endpoint', count($slugs)));

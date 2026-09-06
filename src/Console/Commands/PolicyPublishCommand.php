@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 
 /**
  * Publishes a document's open draft, superseding the currently published

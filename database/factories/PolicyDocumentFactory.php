@@ -18,18 +18,18 @@ class PolicyDocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'slug' => fake()->unique()->slug(2),
-            'type' => PolicyType::Policy,
+            'slug'           => fake()->unique()->slug(2),
+            'type'           => PolicyType::Policy,
             'default_locale' => 'en',
-            'active' => true,
+            'active'         => true,
         ];
     }
 
     public function consentText(string $consentTypeSlug = 'ai_training'): static
     {
         return $this->state([
-            'type' => PolicyType::ConsentText,
-            'slug' => 'consent.'.$consentTypeSlug,
+            'type'              => PolicyType::ConsentText,
+            'slug'              => 'consent.' . $consentTypeSlug,
             'consent_type_slug' => $consentTypeSlug,
         ]);
     }
@@ -37,8 +37,8 @@ class PolicyDocumentFactory extends Factory
     public function disclosure(string $surface = 'chat'): static
     {
         return $this->state([
-            'type' => PolicyType::Disclosure,
-            'slug' => 'disclosure.'.$surface,
+            'type'    => PolicyType::Disclosure,
+            'slug'    => 'disclosure.' . $surface,
             'surface' => $surface,
         ]);
     }

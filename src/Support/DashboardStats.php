@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Support;
 
 use Illuminate\Database\QueryException;
+use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\AiCompliance\Models\ConsentType;
-use Simtabi\Laranail\AiCompliance\Models\Provider;
 
 /**
  * The dashboard numbers (spec FR-1), shared by the admin json endpoint and
@@ -25,10 +25,10 @@ final class DashboardStats
     public function tiles(): array
     {
         return [
-            'consents' => $this->consentTiles(),
-            'providers' => $this->count(static fn (): int => Provider::query()->count()),
+            'consents'        => $this->consentTiles(),
+            'providers'       => $this->count(static fn (): int => Provider::query()->count()),
             'activity_events' => $this->count(static fn (): int => ActivityEvent::query()->count()),
-            'checklist' => $this->checklistSummary(),
+            'checklist'       => $this->checklistSummary(),
         ];
     }
 
@@ -53,14 +53,14 @@ final class DashboardStats
         $seen = [];
 
         foreach ($records as $record) {
-            $subject = $record->guest_key ?? ($record->subjectable_type.'#'.$record->subjectable_id);
+            $subject = $record->guest_key ?? ($record->subjectable_type . '#' . $record->subjectable_id);
             $slug = $slugs->get($record->consent_type_id);
 
             if (! is_string($slug) || $subject === '#') {
                 continue; // anonymized rows carry no current state
             }
 
-            $key = $subject.'|'.$slug;
+            $key = $subject . '|' . $slug;
 
             if (isset($seen[$key])) {
                 continue;
@@ -104,7 +104,7 @@ final class DashboardStats
     }
 
     /**
-     * @param  callable(): int  $count
+     * @param callable(): int $count
      */
     private function count(callable $count): int
     {

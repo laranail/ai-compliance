@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
-use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\MassPrunable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Str;
 use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ActivityEventFactory;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\MassPrunable;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ActivityEventFactory;
 
 /**
  * One entry in the ai activity log. This milestone records consent changes
@@ -107,8 +107,8 @@ class ActivityEvent extends Model
     protected function casts(): array
     {
         return [
-            'event_type' => ActivityType::class,
-            'context' => 'array',
+            'event_type'  => ActivityType::class,
+            'context'     => 'array',
             'recorded_at' => 'immutable_datetime',
         ];
     }

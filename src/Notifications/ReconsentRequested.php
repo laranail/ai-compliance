@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Notifications;
 
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 final class ReconsentRequested extends Notification
 {
     /**
-     * @param  list<string>  $consentTypes  the affected consent type slugs
+     * @param list<string> $consentTypes the affected consent type slugs
      */
     public function __construct(
         private readonly array $consentTypes,
@@ -36,7 +36,7 @@ final class ReconsentRequested extends Notification
             ->line(__('laranail-ai-compliance::ai-compliance.strings.reconsent.title'));
 
         foreach ($this->consentTypes as $type) {
-            $message->line('- '.__('laranail-ai-compliance::ai-compliance.consent_types.'.$type.'.label'));
+            $message->line('- ' . __('laranail-ai-compliance::ai-compliance.consent_types.' . $type . '.label'));
         }
 
         $settingsPath = config('laranail.ai-compliance.placeholders.settings_path');

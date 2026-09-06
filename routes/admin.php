@@ -3,18 +3,18 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ActivityController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ChecklistController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ClassificationController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\DashboardController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ExportController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ReportController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\FeatureController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyDocumentController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ActivityController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ProviderController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ChecklistController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\DashboardController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyDraftController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyPreviewController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ClassificationController;
+use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyDocumentController;
 use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\PolicyStalenessController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ProviderController;
-use Simtabi\Laranail\AiCompliance\Http\Controllers\Admin\ReportController;
 
 if (! config('laranail.ai-compliance.admin_routes.enabled', true)) {
     return;

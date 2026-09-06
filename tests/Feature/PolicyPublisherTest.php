@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
-use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
-use Simtabi\Laranail\AiCompliance\Exceptions\CannotPublishVersion;
-use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
 use Simtabi\Laranail\AiCompliance\Models\PolicyVersion;
+use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Events\PolicyPublished;
+use Simtabi\Laranail\AiCompliance\Enums\PolicyVersionStatus;
+use Simtabi\Laranail\AiCompliance\Exceptions\CannotPublishVersion;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyPublisher;
 
 uses(RefreshDatabase::class);

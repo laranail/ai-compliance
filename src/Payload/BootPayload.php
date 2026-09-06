@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Payload;
 
+use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Translation\Translator;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
-use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
-use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
+use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Policy\PlaceholderRegistry;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 
 /**
@@ -49,20 +49,20 @@ final readonly class BootPayload
         $subject = $user ?? $guestKey;
 
         return [
-            'contract' => self::CONTRACT,
-            'locale' => $locale,
+            'contract'        => self::CONTRACT,
+            'locale'          => $locale,
             'fallback_locale' => $this->fallbackLocale(),
-            'consent' => [
-                'types' => $this->consentTypes($locale),
-                'state' => $subject !== null ? $this->consent->stateFor($subject) : $this->defaultState(),
+            'consent'         => [
+                'types'     => $this->consentTypes($locale),
+                'state'     => $subject !== null ? $this->consent->stateFor($subject) : $this->defaultState(),
                 'reconsent' => $subject !== null ? $this->consent->reconsentFor($subject) : [],
             ],
             'disclosures' => $this->disclosures($locale),
-            'documents' => $this->documents($locale),
-            'features' => $this->features(),
-            'strings' => $this->strings($locale),
-            'endpoints' => $this->endpoints(),
-            'guest_key' => $guestKey,
+            'documents'   => $this->documents($locale),
+            'features'    => $this->features(),
+            'strings'     => $this->strings($locale),
+            'endpoints'   => $this->endpoints(),
+            'guest_key'   => $guestKey,
         ];
     }
 
@@ -98,15 +98,15 @@ final readonly class BootPayload
         $types = [];
 
         foreach ($this->configuredConsentTypes() as $slug => $settings) {
-            $document = $this->policies->find('consent.'.$slug, $locale);
+            $document = $this->policies->find('consent.' . $slug, $locale);
 
             $types[] = [
-                'slug' => $slug,
-                'label' => $this->translate('consent_types.'.$slug.'.label', $locale),
-                'description' => $this->translate('consent_types.'.$slug.'.description', $locale),
-                'legal_basis' => $this->stringSetting($settings, 'legal_basis', 'consent'),
-                'default_state' => $this->stringSetting($settings, 'default_state', 'denied'),
-                'short_html' => $this->shortHtml($document),
+                'slug'           => $slug,
+                'label'          => $this->translate('consent_types.' . $slug . '.label', $locale),
+                'description'    => $this->translate('consent_types.' . $slug . '.description', $locale),
+                'legal_basis'    => $this->stringSetting($settings, 'legal_basis', 'consent'),
+                'default_state'  => $this->stringSetting($settings, 'default_state', 'denied'),
+                'short_html'     => $this->shortHtml($document),
                 'policy_version' => $document?->version,
             ];
         }
@@ -123,8 +123,8 @@ final readonly class BootPayload
 
         foreach ($this->configuredConsentTypes() as $slug => $settings) {
             $state[$slug] = [
-                'status' => $this->stringSetting($settings, 'default_state', 'denied'),
-                'recorded_at' => null,
+                'status'         => $this->stringSetting($settings, 'default_state', 'denied'),
+                'recorded_at'    => null,
                 'policy_version' => null,
             ];
         }
@@ -145,14 +145,14 @@ final readonly class BootPayload
                 continue;
             }
 
-            $document = $this->policies->find('disclosure.'.$surface, $locale);
+            $document = $this->policies->find('disclosure.' . $surface, $locale);
 
             if (! $document instanceof PolicyContent) {
                 continue;
             }
 
             $disclosures[$surface] = [
-                'html' => $document->html,
+                'html'    => $document->html,
                 'version' => $document->version,
             ];
         }
@@ -173,8 +173,8 @@ final readonly class BootPayload
             }
 
             $documents[$document->slug] = [
-                'title' => $document->title,
-                'url' => $this->url->route('laranail.ai-compliance.policy', ['slug' => $document->slug]),
+                'title'   => $document->title,
+                'url'     => $this->url->route('laranail.ai-compliance.policy', ['slug' => $document->slug]),
                 'version' => $document->version,
             ];
         }
@@ -210,8 +210,8 @@ final readonly class BootPayload
     private function endpoints(): array
     {
         return [
-            'boot' => $this->url->route('laranail.ai-compliance.boot'),
-            'policy' => $this->url->route('laranail.ai-compliance.policy', ['slug' => '__slug__']),
+            'boot'     => $this->url->route('laranail.ai-compliance.boot'),
+            'policy'   => $this->url->route('laranail.ai-compliance.policy', ['slug' => '__slug__']),
             'consents' => $this->url->route('laranail.ai-compliance.consents'),
         ];
     }
@@ -259,7 +259,7 @@ final readonly class BootPayload
 
     private function translate(string $key, string $locale): ?string
     {
-        $fullKey = 'laranail-ai-compliance::ai-compliance.'.$key;
+        $fullKey = 'laranail-ai-compliance::ai-compliance.' . $key;
         $translated = $this->translator->get($fullKey, [], $locale);
 
         return is_string($translated) && $translated !== $fullKey ? $translated : null;

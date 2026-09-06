@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
-use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
 use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicySync;
+use Simtabi\Laranail\AiCompliance\Policy\Versioning\PolicyStaleness;
 
 uses(RefreshDatabase::class);
 
@@ -42,7 +42,7 @@ it('marks file drift as hand-edited when the database copy was changed too', fun
     $translation = $document->publishedVersion()->firstOrFail()->translations()->firstOrFail();
     $translation->update([
         'source_markdown' => 'ADMIN CHANGED THIS',
-        'checksum' => hash('sha256', 'ADMIN CHANGED THIS'),
+        'checksum'        => hash('sha256', 'ADMIN CHANGED THIS'),
     ]);
 
     overridePolicyDir(['en/vendor.md' => "---\ntitle: Vendor policy v2\ntype: policy\n---\n\nFILE CHANGED TOO."]);
@@ -66,7 +66,7 @@ it('reports translation drift when the default-locale source changes after a tra
     $draft = $document->draftVersion()->firstOrFail();
     $draft->translations()->where('locale', 'en')->firstOrFail()->update([
         'source_markdown' => 'REWRITTEN ENGLISH SOURCE',
-        'checksum' => hash('sha256', 'REWRITTEN ENGLISH SOURCE'),
+        'checksum'        => hash('sha256', 'REWRITTEN ENGLISH SOURCE'),
     ]);
 
     $entries = array_values(array_filter(

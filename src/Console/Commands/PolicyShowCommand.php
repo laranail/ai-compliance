@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
 use Simtabi\Laranail\AiCompliance\AiCompliance;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
 
 /**
  * Renders a compiled policy document in the terminal: title, resolution

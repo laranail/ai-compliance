@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Console\Commands;
 
-use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
+use Simtabi\Laranail\Package\Tools\Commands\Command;
 use Simtabi\Laranail\AiCompliance\Enums\ActivityType;
 use Simtabi\Laranail\AiCompliance\Models\ActivityEvent;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
-use Simtabi\Laranail\Package\Tools\Commands\Command;
+use Simtabi\Laranail\AiCompliance\Activity\ActivityRecorder;
 
 /**
  * Applies the configured retention. Activity events prune by schedule-able
@@ -45,8 +45,8 @@ final class PruneCommand extends Command
         }
 
         $activity->record(ActivityType::SettingChange, context: [
-            'setting' => 'retention',
-            'action' => 'pruned',
+            'setting'         => 'retention',
+            'action'          => 'pruned',
             'activity_events' => $prunedEvents,
             'consent_records' => $prunedConsents,
         ]);

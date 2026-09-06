@@ -37,7 +37,7 @@ it('derives the document type from the directory', function (): void {
 });
 
 it('prefers app-published files over the shipped defaults', function (): void {
-    config()->set('laranail.ai-compliance.policies.path', __DIR__.'/../Fixtures/policies-override');
+    config()->set('laranail.ai-compliance.policies.path', __DIR__ . '/../Fixtures/policies-override');
 
     $loader = $this->app->make(PolicyFileLoader::class);
     $loader->flush();

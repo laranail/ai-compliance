@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Http\Controllers\Admin;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * The feature kill switches: one per configured feature, default on, with

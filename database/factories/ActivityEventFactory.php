@@ -18,8 +18,8 @@ class ActivityEventFactory extends Factory
     public function definition(): array
     {
         return [
-            'event_type' => ActivityType::ConsentChange,
-            'context' => [],
+            'event_type'  => ActivityType::ConsentChange,
+            'context'     => [],
             'recorded_at' => now(),
         ];
     }

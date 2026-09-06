@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Simtabi\Laranail\AiCompliance\AiCompliance as AiComplianceManager;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyContent;
+use Simtabi\Laranail\AiCompliance\AiCompliance as AiComplianceManager;
 
 /**
  * @method static PolicyContent|null policy(string $slug, string|null $locale = null)

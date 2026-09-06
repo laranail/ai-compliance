@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 // the whole ai-compliance schema in one migration, ordered by dependency.
 // table names come from config('laranail.ai-compliance.tables.*') — rename
@@ -85,11 +85,11 @@ return new class extends Migration
             $table->timestamp('recorded_at')->index(); // utc; append-only rows carry no created_at/updated_at
             $table->index(
                 ['subjectable_type', 'subjectable_id', 'consent_type_id', 'recorded_at'],
-                $this->table('consent_records').'_subject_lookup',
+                $this->table('consent_records') . '_subject_lookup',
             );
             $table->index(
                 ['guest_key', 'consent_type_id', 'recorded_at'],
-                $this->table('consent_records').'_guest_lookup',
+                $this->table('consent_records') . '_guest_lookup',
             );
         });
 
@@ -191,8 +191,8 @@ return new class extends Migration
 
     private function table(string $key): string
     {
-        $default = 'ai_'.$key;
+        $default = 'ai_' . $key;
 
-        return (string) config('laranail.ai-compliance.tables.'.$key, $default);
+        return (string) config('laranail.ai-compliance.tables.' . $key, $default);
     }
 };

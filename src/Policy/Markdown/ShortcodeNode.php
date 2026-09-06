@@ -14,7 +14,7 @@ use League\CommonMark\Node\Inline\AbstractInline;
 final class ShortcodeNode extends AbstractInline
 {
     /**
-     * @param  array<string, string>  $props
+     * @param array<string, string> $props
      */
     public function __construct(
         public readonly string $name,

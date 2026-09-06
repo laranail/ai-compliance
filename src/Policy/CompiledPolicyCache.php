@@ -8,8 +8,8 @@ use Closure;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
 use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\PolicyFile;
+use Simtabi\Laranail\AiCompliance\Policy\ValueObjects\CompiledPolicy;
 
 /**
  * Content-addressed cache for compiled policies. The key embeds the source
@@ -29,7 +29,7 @@ final readonly class CompiledPolicyCache
     ) {}
 
     /**
-     * @param  Closure(): CompiledPolicy  $compile
+     * @param Closure(): CompiledPolicy $compile
      */
     public function remember(PolicyFile $file, Closure $compile): CompiledPolicy
     {

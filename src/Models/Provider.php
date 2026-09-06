@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\AiCompliance\Models;
 
+use Override;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Override;
-use Simtabi\Laranail\AiCompliance\Database\Factories\ProviderFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Simtabi\Laranail\AiCompliance\Models\Concerns\BelongsToTenant;
+use Simtabi\Laranail\AiCompliance\Database\Factories\ProviderFactory;
 
 /**
  * One row in the ai provider/vendor registry: which model, from whom, under
@@ -73,7 +73,7 @@ class Provider extends Model
     protected function casts(): array
     {
         return [
-            'dpa_signed_at' => 'immutable_datetime',
+            'dpa_signed_at'     => 'immutable_datetime',
             'marking_supported' => 'boolean',
         ];
     }
