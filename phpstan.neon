@@ -21,3 +21,13 @@ parameters:
             identifier: argument.type
             message: '#Parameter \#1 \$view of function view expects view-string#'
             path: src/Livewire/*
+        # The same blindness through the view factory rather than the helper.
+        # IslandRenderer and ComplianceReport call $this->views->make(), which is
+        # Illuminate\View\Factory::make() — a different signature from view(), so
+        # the pattern above never matched it and the error surfaced on every run.
+        -
+            identifier: argument.type
+            message: '#Parameter \#1 \$view of method Illuminate\\(Contracts\\View\\|View\\)Factory::make\(\) expects view-string#'
+            paths:
+                - src/View/*
+                - src/Reports/*
