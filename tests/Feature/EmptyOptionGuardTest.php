@@ -13,7 +13,7 @@ uses(AssertsDriverContract::class);
  * Four filters were built that way, each calling the accessor twice.
  */
 it('resolves export filters with the absence-preserving accessor', function (): void {
-    $source = (string) file_get_contents((string) (new ReflectionClass(ExportCommand::class))->getFileName());
+    $source = (string) file_get_contents((string) new ReflectionClass(ExportCommand::class)->getFileName());
 
     expect($source)->not->toContain("!== '' ? \$this->stringOption")
         ->and(substr_count($source, '$this->strOption('))->toBe(4);
