@@ -37,10 +37,10 @@ final class ExportCommand extends Command
         }
 
         $filters = [
-            'type'   => $this->stringOption('type') !== '' ? $this->stringOption('type') : null,
-            'status' => $this->stringOption('status') !== '' ? $this->stringOption('status') : null,
-            'from'   => $this->stringOption('from') !== '' ? $this->stringOption('from') : null,
-            'to'     => $this->stringOption('to') !== '' ? $this->stringOption('to') : null,
+            'type'   => $this->strOption('type'),
+            'status' => $this->strOption('status'),
+            'from'   => $this->strOption('from'),
+            'to'     => $this->strOption('to'),
         ];
 
         $pseudonymize = ! (bool) $this->option('identified');
