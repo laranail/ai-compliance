@@ -17,6 +17,5 @@
 /.gitignore            export-ignore
 /packages              export-ignore
 /package.json          export-ignore
-/package-lock.json     export-ignore
 /tsconfig.base.json    export-ignore
 /vitest.config.ts      export-ignore
