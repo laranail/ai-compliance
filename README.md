@@ -20,10 +20,28 @@ php artisan laranail::ai-compliance.install
 The npm bindings for React/Vue apps ship in lockstep:
 `npm install @laranail/ai-compliance-react` (or `-vue`, or the framework-agnostic core).
 
-## Quick start
+## Quick start guide and usage
+
+### Getting started
 
 The install command publishes the editable policy markdown, migrates, seeds
-the checklist, and imports every policy as published version 1.0. From there:
+the checklist, and imports every policy as published version 1.0. Then:
+
+1. Fill the policy placeholders, for example in `.env`:
+
+   ```dotenv
+   AI_COMPLIANCE_COMPANY="Acme Ltd"
+   AI_COMPLIANCE_PRODUCT="Acme App"
+   AI_COMPLIANCE_CONTACT_EMAIL=privacy@acme.com
+   ```
+
+2. See what still needs filling:
+
+   ```bash
+   php artisan laranail::ai-compliance.policy.show transparency
+   ```
+
+### Usage
 
 ```blade
 <x-laranail-ai-compliance::disclosure surface="chat" />   {{-- before any model output --}}
