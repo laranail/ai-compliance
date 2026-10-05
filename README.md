@@ -19,6 +19,16 @@ php artisan laranail::ai-compliance.install
 
 The npm bindings for React/Vue apps ship in lockstep:
 `npm install @laranail/ai-compliance-react` (or `-vue`, or the framework-agnostic core).
+They are published to GitHub Packages, not npm, which asks for a token even for
+a public package, so first add a GitHub token with `read:packages` to the
+project's `.npmrc`:
+
+```ini
+@laranail:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+See [docs/release.md](docs/release.md) for how they are published.
 
 ## Quick start guide and usage
 

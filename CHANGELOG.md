@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.dev/tools/npm-release github|npm` publishes every missing release; see
   `docs/release.md`. `.dev/` is export-ignored, so it never reaches the Composer
   dist.
+- **The README says where the npm bindings install from.** They are on GitHub
+  Packages, which needs a scoped `.npmrc` and a `read:packages` token; the
+  Install section now shows both.
 
 - **Vendor-scoped names for every surface the package registers into a shared registry.**
   Middleware aliases `laranail-ai-compliance.consent` and `laranail-ai-compliance.feature`;
