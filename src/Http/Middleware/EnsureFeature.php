@@ -11,9 +11,10 @@ use Simtabi\Laranail\AiCompliance\Features\FeatureGate;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * Route middleware `ai.feature:{feature}`: 403 when the admin kill switch
- * (or the pennant bridge) has the feature off. Pair with ai.consent for the
- * subject-level check.
+ * Route middleware `laranail-ai-compliance.feature:{feature}` (the bare
+ * `ai.feature` alias is deprecated and forwards here): 403 when the admin
+ * kill switch (or the pennant bridge) has the feature off. Pair with
+ * `laranail-ai-compliance.consent` for the subject-level check.
  */
 final readonly class EnsureFeature
 {

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Livewire\Livewire;
+use Livewire\Attributes\On;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
@@ -31,6 +32,8 @@ it('toggling writes an append-only record and re-renders the fresh state', funct
 
     Livewire::test(ConsentPreferences::class)
         ->call('toggle', 'ai_training', 'granted')
+        ->assertDispatched('laranail-ai-compliance:consent-changed')
+        // the deprecated bare event still fires during the deprecation window
         ->assertDispatched('ai-compliance:consent-changed');
 
     expect(ConsentRecord::query()->count())->toBe(1)
@@ -77,6 +80,8 @@ it('shows the reconsent prompt only when a granted version was superseded', func
     Livewire::test(ReconsentPrompt::class)
         ->assertSee('data-consent-type="ai_training"', false)
         ->call('regrant', 'ai_training')
+        ->assertDispatched('laranail-ai-compliance:consent-changed')
+        // the deprecated bare event still fires during the deprecation window
         ->assertDispatched('ai-compliance:consent-changed');
 
     expect(app(ConsentManager::class)->reconsentFor($user))->toBe([])
@@ -86,6 +91,24 @@ it('shows the reconsent prompt only when a granted version was superseded', func
 it('registers the components under their aliases', function (): void {
     // resolving by alias proves registration ran (it is guarded on livewire
     // being installed; without livewire the same guard skips it silently)
-    expect(app('livewire')->new('ai-compliance.consent-preferences'))->toBeInstanceOf(ConsentPreferences::class)
+    expect(app('livewire')->new('laranail-ai-compliance.consent-preferences'))->toBeInstanceOf(ConsentPreferences::class)
+        ->and(app('livewire')->new('laranail-ai-compliance.reconsent-prompt'))->toBeInstanceOf(ReconsentPrompt::class)
+        // the deprecated bare names still resolve
+        ->and(app('livewire')->new('ai-compliance.consent-preferences'))->toBeInstanceOf(ConsentPreferences::class)
         ->and(app('livewire')->new('ai-compliance.reconsent-prompt'))->toBeInstanceOf(ReconsentPrompt::class);
+});
+
+it('refreshes the reconsent prompt on the scoped and the deprecated consent-changed events', function (): void {
+    $this->actingAs(makeUser());
+
+    Livewire::test(ReconsentPrompt::class)
+        ->dispatch('laranail-ai-compliance:consent-changed')
+        ->assertOk()
+        ->dispatch('ai-compliance:consent-changed')
+        ->assertOk();
+
+    $listeners = new ReflectionMethod(ReconsentPrompt::class, 'refresh')->getAttributes(On::class);
+
+    expect(array_map(static fn (ReflectionAttribute $attribute): mixed => $attribute->getArguments()[0], $listeners))
+        ->toBe(['laranail-ai-compliance:consent-changed', 'ai-compliance:consent-changed']);
 });

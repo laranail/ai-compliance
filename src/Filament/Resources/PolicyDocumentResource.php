@@ -11,6 +11,8 @@ use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Simtabi\Laranail\AiCompliance\Models\PolicyDocument;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
+use Simtabi\Laranail\AiCompliance\Filament\Concerns\RedirectsLegacyResourceSlug;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\EditPolicyDocument;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\ListPolicyDocuments;
 
@@ -23,6 +25,20 @@ use Simtabi\Laranail\AiCompliance\Filament\Resources\PolicyDocuments\Pages\ListP
  */
 final class PolicyDocumentResource extends Resource
 {
+    // the pre-0.1 slug keeps answering, as a redirect (see RedirectsLegacyResourceSlug)
+    use RedirectsLegacyResourceSlug;
+
+    /**
+     * The pre-0.1 slug, derived by Filament from the class name. Its URLs and route names
+     * redirect to the scoped slug below.
+     *
+     * @deprecated use the `laranail-ai-compliance/policy-documents` slug. Earliest
+     *             removal: the next minor after 0.1.
+     */
+    public const string LEGACY_SLUG = 'policy-documents';
+
+    protected static ?string $slug = RegisteredNames::FILAMENT_SLUG_PREFIX . '/policy-documents';
+
     protected static ?string $model = PolicyDocument::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';

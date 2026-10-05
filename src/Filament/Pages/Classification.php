@@ -10,6 +10,8 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
+use Simtabi\Laranail\AiCompliance\Filament\Concerns\RedirectsLegacyPageSlug;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification as ClassificationService;
 
 /**
@@ -20,6 +22,20 @@ use Simtabi\Laranail\AiCompliance\Checklist\Classification as ClassificationServ
  */
 final class Classification extends Page
 {
+    // the pre-0.1 slug keeps answering, as a redirect (see RedirectsLegacyPageSlug)
+    use RedirectsLegacyPageSlug;
+
+    /**
+     * The pre-0.1 slug, derived by Filament from the class name. Its URLs and route names
+     * redirect to the scoped slug below.
+     *
+     * @deprecated use the `laranail-ai-compliance/classification` slug. Earliest
+     *             removal: the next minor after 0.1.
+     */
+    public const string LEGACY_SLUG = 'classification';
+
+    protected static ?string $slug = RegisteredNames::FILAMENT_SLUG_PREFIX . '/classification';
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-funnel';
 
     protected static ?string $navigationLabel = 'AI classification';
@@ -29,7 +45,7 @@ final class Classification extends Page
     /** @var array<string, mixed> */
     public array $data = [];
 
-    protected string $view = 'laranail-ai-compliance::filament.classification';
+    protected string $view = 'laranail/ai-compliance::filament.classification';
 
     public function mount(): void
     {

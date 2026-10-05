@@ -71,6 +71,21 @@ with island views (`resources/views/islands/{name}.blade.php`, publishable):
 Islands without a view keep their fallback text, so a policy document never
 ships an inert custom element from a blade surface.
 
+## View namespace
+
+The package's views are registered as `laranail/ai-compliance::` (the composer package name) and
+as `laranail-ai-compliance::` over the same files, so either spelling renders them:
+
+```php
+view('laranail/ai-compliance::report');
+view('laranail-ai-compliance::report'); // the same view
+```
+
+The package's own calls use the slash form. Overrides published with
+`php artisan vendor:publish --tag=laranail::ai-compliance-views` land in
+`resources/views/vendor/laranail-ai-compliance/` and win under both spellings. Blade tags keep the
+hyphen (`<x-laranail-ai-compliance::disclosure />`), because a tag cannot contain a slash.
+
 ## Strings
 
 Every visible string comes from `resources/lang/{locale}/ai-compliance.php`

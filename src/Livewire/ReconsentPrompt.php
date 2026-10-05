@@ -9,6 +9,7 @@ use Livewire\Attributes\On;
 use Illuminate\Contracts\View\View;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Support\CurrentSubject;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
 
 /**
  * Shows when the current subject's granted consents reference superseded
@@ -27,10 +28,13 @@ final class ReconsentPrompt extends Component
 
         app(ConsentManager::class)->grant($subject, $type, 'reconsent_prompt');
 
-        $this->dispatch('ai-compliance:consent-changed', type: $type, status: 'granted');
+        // the scoped event, and the deprecated bare one for listeners not yet moved
+        $this->dispatch(RegisteredNames::CONSENT_CHANGED_EVENT, type: $type, status: 'granted');
+        $this->dispatch(RegisteredNames::LEGACY_CONSENT_CHANGED_EVENT, type: $type, status: 'granted');
     }
 
-    #[On('ai-compliance:consent-changed')]
+    #[On(RegisteredNames::CONSENT_CHANGED_EVENT)]
+    #[On(RegisteredNames::LEGACY_CONSENT_CHANGED_EVENT)]
     public function refresh(): void
     {
         // re-render; the reconsent list is computed fresh in render()
@@ -40,7 +44,7 @@ final class ReconsentPrompt extends Component
     {
         $subject = app(CurrentSubject::class)->resolve();
 
-        return view('laranail-ai-compliance::livewire.reconsent-prompt', [
+        return view('laranail/ai-compliance::livewire.reconsent-prompt', [
             'reconsent' => $subject !== null ? app(ConsentManager::class)->reconsentFor($subject) : [],
         ]);
     }

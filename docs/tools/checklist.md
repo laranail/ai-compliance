@@ -57,7 +57,8 @@ the checklist summary per status.
 `/ai-compliance/admin/providers` is the registry CRUD (soft deletes, every
 change logged as `provider_change`); `/ai-compliance/admin/features` reads
 and throws the per-feature kill switches (`FeatureToggled` +
-`setting_change`). The `ai.feature:{feature}` middleware and
+`setting_change`). The `laranail-ai-compliance.feature:{feature}` middleware (the bare
+`ai.feature` alias is deprecated and forwards to it) and
 `AiConsent::allows()` both respect the switch; when laravel/pennant is
 installed, a defined pennant feature of the same name is consulted as well.
 

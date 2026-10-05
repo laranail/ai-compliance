@@ -25,8 +25,11 @@ if (AiConsent::allows($user, 'smart_summaries')) {
 Or on the route:
 
 ```php
-Route::middleware(['web', 'ai.consent:ai_chatbot'])->post('/chat', ChatController::class);
+Route::middleware(['web', 'laranail-ai-compliance.consent:ai_chatbot'])->post('/chat', ChatController::class);
 ```
+
+> The bare `ai.consent` alias still works and enforces the same check, but it is deprecated:
+> it logs one warning per process and may be removed in the next minor after 0.1.
 
 Unlisted features and missing grants are denied by default, guests are
 resolved through their cookie, and withdrawing consent blocks the very next

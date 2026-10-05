@@ -15,6 +15,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Simtabi\Laranail\AiCompliance\Exports\LogExports;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Simtabi\Laranail\AiCompliance\Models\ConsentRecord;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
+use Simtabi\Laranail\AiCompliance\Filament\Concerns\RedirectsLegacyResourceSlug;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecords\Pages\ListConsentRecords;
 
 /**
@@ -27,6 +29,20 @@ use Simtabi\Laranail\AiCompliance\Filament\Resources\ConsentRecords\Pages\ListCo
  */
 final class ConsentRecordResource extends Resource
 {
+    // the pre-0.1 slug keeps answering, as a redirect (see RedirectsLegacyResourceSlug)
+    use RedirectsLegacyResourceSlug;
+
+    /**
+     * The pre-0.1 slug, derived by Filament from the class name. Its URLs and route names
+     * redirect to the scoped slug below.
+     *
+     * @deprecated use the `laranail-ai-compliance/consent-records` slug. Earliest
+     *             removal: the next minor after 0.1.
+     */
+    public const string LEGACY_SLUG = 'consent-records';
+
+    protected static ?string $slug = RegisteredNames::FILAMENT_SLUG_PREFIX . '/consent-records';
+
     protected static ?string $model = ConsentRecord::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';

@@ -17,6 +17,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Simtabi\Laranail\AiCompliance\Enums\CheckStatus;
 use Simtabi\Laranail\AiCompliance\Checks\CheckRunner;
 use Simtabi\Laranail\AiCompliance\Models\ChecklistItem;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
+use Simtabi\Laranail\AiCompliance\Filament\Concerns\RedirectsLegacyResourceSlug;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\ChecklistItems\Pages\ListChecklistItems;
 
 /**
@@ -28,6 +30,20 @@ use Simtabi\Laranail\AiCompliance\Filament\Resources\ChecklistItems\Pages\ListCh
  */
 final class ChecklistItemResource extends Resource
 {
+    // the pre-0.1 slug keeps answering, as a redirect (see RedirectsLegacyResourceSlug)
+    use RedirectsLegacyResourceSlug;
+
+    /**
+     * The pre-0.1 slug, derived by Filament from the class name. Its URLs and route names
+     * redirect to the scoped slug below.
+     *
+     * @deprecated use the `laranail-ai-compliance/checklist-items` slug. Earliest
+     *             removal: the next minor after 0.1.
+     */
+    public const string LEGACY_SLUG = 'checklist-items';
+
+    protected static ?string $slug = RegisteredNames::FILAMENT_SLUG_PREFIX . '/checklist-items';
+
     protected static ?string $model = ChecklistItem::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-check-badge';

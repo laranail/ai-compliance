@@ -12,7 +12,8 @@ use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * Route middleware `ai.consent:{type}`: the current subject (user or guest)
+ * Route middleware `laranail-ai-compliance.consent:{type}` (the bare
+ * `ai.consent` alias is deprecated and forwards here): the current subject (user or guest)
  * must have granted the consent type, otherwise 403. Guests without a key
  * carry every default state, so a denied-by-default type blocks them too.
  */
