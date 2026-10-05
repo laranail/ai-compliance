@@ -33,9 +33,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `tests/Feature/NamingConventionTest.php` asserts the names against the live registries
   through package-tools' `AssertsRegisteredNames`, which raises the floor to
   `laranail/package-tools ^0.1.4`.
+- **`Support\Translations`, the one place the package looks up its own strings.** It reads the
+  canonical `laranail/ai-compliance::` namespace and falls back to an override made against
+  `laranail-ai-compliance::` when the canonical line is still the packaged default, the same rule
+  as `laranail/console` 0.1.5 and `laranail/db-console-webui`. `lines()` applies that rule leaf by
+  leaf to a whole group, for the boot payload's `strings`.
+  `tests/Feature/TranslationOverridesTest.php` pins a real `vendor:publish`, a hyphen-directory
+  override, both at once, and a missing key, and fails on any `__('laranail-ai-compliance::…')`
+  left in `src/` or `resources/views/`.
 
 ### Fixed
 
+- **Published translation overrides were never read.**
+  `vendor:publish --tag=laranail::ai-compliance-translations` writes to
+  `lang/vendor/laranail/ai-compliance/`, but every string the package rendered went through
+  `laranail-ai-compliance::`, and Laravel reads that namespace's overrides from
+  `lang/vendor/laranail-ai-compliance/`. An edited published file changed nothing. The Blade
+  components, Livewire and Filament views, notifications, consent-type labels and the boot
+  payload's `strings` now translate through `laranail/ai-compliance::` via `Support\Translations`,
+  which still honours an override made against the hyphen namespace, so nothing a host
+  overrode before is lost.
 - **`tests.yml` no longer skips a markdown-only pull request.** The `pest`
   contexts it produces are required by branch protection, and
   `paths-ignore: ['**.md']` meant a docs-only change never produced them.
@@ -57,6 +74,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   host override published to `resources/views/vendor/laranail-ai-compliance/` still wins under
   both (pinned by a test that renders a published override through the package's own call).
   Blade tags keep the hyphen form, which is the only one a tag can spell.
+
+- **The package's own strings use the `laranail/ai-compliance::` namespace.** Both namespaces
+  stay registered over the same files, so `__('laranail-ai-compliance::…')` in a host keeps
+  resolving. When both namespaces override the same line, the canonical one wins; an override
+  only in `lang/vendor/laranail-ai-compliance/`, or added with
+  `addLines(…, 'laranail-ai-compliance')`, still applies.
 
 ### Deprecated
 

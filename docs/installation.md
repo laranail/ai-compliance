@@ -63,6 +63,11 @@ Component strings (labels, buttons, notices) are ordinary Laravel translations:
 php artisan vendor:publish --tag=laranail::ai-compliance-translations
 ```
 
+They land in `lang/vendor/laranail/ai-compliance/{locale}/ai-compliance.php`, which the
+`laranail/ai-compliance::` namespace reads; edit lines there and the components pick them up.
+An override already placed in `lang/vendor/laranail-ai-compliance/` (the older hyphen namespace)
+still applies, but when both directories override the same line the slash directory wins.
+
 ## See also
 
 - [Getting started](getting-started.md)

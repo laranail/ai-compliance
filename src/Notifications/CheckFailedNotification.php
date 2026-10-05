@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AiCompliance\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Simtabi\Laranail\AiCompliance\Support\Translations;
 
 final class CheckFailedNotification extends Notification
 {
@@ -26,7 +27,7 @@ final class CheckFailedNotification extends Notification
     public function toMail(): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.check_failed_subject', ['item' => $this->label]))
+            ->subject(Translations::get('ai-compliance.notifications.check_failed_subject', ['item' => $this->label]))
             ->line($this->label . ' (' . $this->itemKey . ')')
             ->line($this->message);
     }

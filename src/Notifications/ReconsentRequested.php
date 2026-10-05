@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AiCompliance\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Simtabi\Laranail\AiCompliance\Support\Translations;
 
 final class ReconsentRequested extends Notification
 {
@@ -32,17 +33,17 @@ final class ReconsentRequested extends Notification
     public function toMail(): MailMessage
     {
         $message = (new MailMessage)
-            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.reconsent_subject'))
-            ->line(__('laranail-ai-compliance::ai-compliance.strings.reconsent.title'));
+            ->subject(Translations::get('ai-compliance.notifications.reconsent_subject'))
+            ->line(Translations::get('ai-compliance.strings.reconsent.title'));
 
         foreach ($this->consentTypes as $type) {
-            $message->line('- ' . __('laranail-ai-compliance::ai-compliance.consent_types.' . $type . '.label'));
+            $message->line('- ' . Translations::get('ai-compliance.consent_types.' . $type . '.label'));
         }
 
         $settingsPath = config('laranail.ai-compliance.placeholders.settings_path');
 
         if (is_string($settingsPath) && $settingsPath !== '') {
-            $message->action(__('laranail-ai-compliance::ai-compliance.strings.reconsent.review'), url($settingsPath));
+            $message->action(Translations::get('ai-compliance.strings.reconsent.review'), url($settingsPath));
         }
 
         return $message;

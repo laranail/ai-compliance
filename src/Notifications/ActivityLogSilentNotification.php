@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AiCompliance\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Simtabi\Laranail\AiCompliance\Support\Translations;
 
 final class ActivityLogSilentNotification extends Notification
 {
@@ -24,8 +25,8 @@ final class ActivityLogSilentNotification extends Notification
     public function toMail(): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.log_silent_subject'))
+            ->subject(Translations::get('ai-compliance.notifications.log_silent_subject'))
             ->line($this->message)
-            ->line(__('laranail-ai-compliance::ai-compliance.notifications.log_silent_hint'));
+            ->line(Translations::get('ai-compliance.notifications.log_silent_hint'));
     }
 }

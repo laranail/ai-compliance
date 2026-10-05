@@ -7,6 +7,7 @@ namespace Simtabi\Laranail\AiCompliance\Consent;
 use Illuminate\Contracts\Translation\Translator;
 use Simtabi\Laranail\AiCompliance\Models\ConsentType;
 use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
+use Simtabi\Laranail\AiCompliance\Support\Translations;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Simtabi\Laranail\AiCompliance\Exceptions\UnknownConsentType;
 
@@ -86,13 +87,13 @@ final readonly class ConsentTypes
 
     private function createFromConfig(string $slug, mixed $settings): ConsentType
     {
-        $label = $this->translator->get('laranail-ai-compliance::ai-compliance.consent_types.' . $slug . '.label');
-        $description = $this->translator->get('laranail-ai-compliance::ai-compliance.consent_types.' . $slug . '.description');
+        $label = Translations::get('ai-compliance.consent_types.' . $slug . '.label', translator: $this->translator);
+        $description = Translations::get('ai-compliance.consent_types.' . $slug . '.description', translator: $this->translator);
 
         return ConsentType::query()->create([
             'slug'          => $slug,
-            'label'         => is_string($label) && ! str_contains($label, '::') ? $label : $slug,
-            'description'   => is_string($description) && ! str_contains($description, '::') ? $description : null,
+            'label'         => ! str_contains($label, '::') ? $label : $slug,
+            'description'   => ! str_contains($description, '::') ? $description : null,
             'legal_basis'   => is_array($settings) && is_string($settings['legal_basis'] ?? null) ? $settings['legal_basis'] : 'consent',
             'default_state' => is_array($settings) && is_string($settings['default_state'] ?? null) ? $settings['default_state'] : 'denied',
             'active'        => true,
