@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\AiCompliance\Providers;
 
 use Override;
+use Livewire\Livewire;
+use Livewire\Component;
 use Illuminate\Contracts\Events\Dispatcher;
 use Simtabi\Laranail\Package\Tools\Package;
 use Simtabi\Laranail\AiCompliance\AiCompliance;
@@ -29,6 +31,7 @@ use Simtabi\Laranail\AiCompliance\Support\DashboardStats;
 use Simtabi\Laranail\AiCompliance\Events\ConsentWithdrawn;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyFileLoader;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
 use Simtabi\Laranail\AiCompliance\Checklist\Classification;
 use Simtabi\Laranail\AiCompliance\Livewire\ReconsentPrompt;
 use Simtabi\Laranail\AiCompliance\Reports\ComplianceReport;
@@ -68,6 +71,8 @@ use Simtabi\Laranail\AiCompliance\Checks\Builtin\ConsentUiReachableCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\DisclosureSurfacesCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\RetentionScheduledCheck;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\VendorDueDiligenceCheck;
+use Simtabi\Laranail\AiCompliance\Http\Middleware\DeprecatedConsentAlias;
+use Simtabi\Laranail\AiCompliance\Http\Middleware\DeprecatedFeatureAlias;
 use Simtabi\Laranail\AiCompliance\Console\Commands\NotifyReconsentCommand;
 use Simtabi\Laranail\AiCompliance\Checks\Builtin\DataProtectionContactCheck;
 use Simtabi\Laranail\Package\Tools\Support\Definitions\AutoSeederDefinition;
@@ -127,8 +132,11 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 CheckFailed::class      => SendCheckAlerts::class,
             ])
             ->registerRouteMiddlewares([
-                'ai.consent' => EnsureConsent::class,
-                'ai.feature' => EnsureFeature::class,
+                RegisteredNames::CONSENT_MIDDLEWARE => EnsureConsent::class,
+                RegisteredNames::FEATURE_MIDDLEWARE => EnsureFeature::class,
+                // deprecated bare aliases: log one warning, then enforce the same check
+                RegisteredNames::LEGACY_CONSENT_MIDDLEWARE => DeprecatedConsentAlias::class,
+                RegisteredNames::LEGACY_FEATURE_MIDDLEWARE => DeprecatedFeatureAlias::class,
             ])
             ->registerPolicies([ConsentRecord::class => ConsentRecordPolicy::class])
             // non-enforcing 'user' alias so stored *_type columns survive a
@@ -148,9 +156,14 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
             // spec-shaped alias: <x-laranail-ai-compliance::gate> next to consent-gate
             ->hasBladeComponentAlias('laranail-ai-compliance::gate', ConsentGate::class)
             ->withoutLivewireNamespacePrefix()
+            // Scoped names first: Livewire maps a class back to the FIRST name it
+            // was registered under. The bare `ai-compliance.*` names follow as
+            // deprecated aliases; mounting one raises a single E_USER_DEPRECATED.
             ->hasLivewireComponents([
-                'ai-compliance.consent-preferences' => ConsentPreferences::class,
-                'ai-compliance.reconsent-prompt'    => ReconsentPrompt::class,
+                RegisteredNames::LIVEWIRE_PREFIX . 'consent-preferences'        => ConsentPreferences::class,
+                RegisteredNames::LIVEWIRE_PREFIX . 'reconsent-prompt'           => ReconsentPrompt::class,
+                RegisteredNames::LEGACY_LIVEWIRE_PREFIX . 'consent-preferences' => ConsentPreferences::class,
+                RegisteredNames::LEGACY_LIVEWIRE_PREFIX . 'reconsent-prompt'    => ReconsentPrompt::class,
             ], whenConfig: 'laranail.ai-compliance.livewire.enabled')
             ->hasPackageSeeders(
                 AutoSeederDefinition::make('laranail/ai-compliance')
@@ -206,6 +219,37 @@ final class AiComplianceServiceProvider extends PackageServiceProvider
                 PolicyVersioningCheck::class,
             ],
         ));
+    }
+
+    #[Override]
+    public function packageBooted(): void
+    {
+        $this->announceLegacyLivewireNames();
+    }
+
+    /**
+     * Announce a component mounted under its deprecated bare name. Registered only when the
+     * components are, so a host without Livewire, or with the components switched off, pays
+     * nothing.
+     */
+    private function announceLegacyLivewireNames(): void
+    {
+        if (! class_exists(Livewire::class)
+            || ! (bool) $this->app->make(ConfigRepository::class)->get('laranail.ai-compliance.livewire.enabled', false)) {
+            return;
+        }
+
+        $listen = static function (): void {
+            Livewire::listen('mount', static function (Component $component): void {
+                RegisteredNames::announceIfLegacyLivewire($component->getName());
+            });
+        };
+
+        if ($this->app->bound('livewire')) {
+            $listen();
+        } else {
+            $this->app->afterResolving('livewire', static fn () => $listen());
+        }
     }
 
     private function defaultLocale(): string

@@ -9,7 +9,7 @@ use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    Route::middleware(['web', 'ai.consent:ai_chatbot'])
+    Route::middleware(['web', 'laranail-ai-compliance.consent:ai_chatbot'])
         ->get('/test-chat', static fn (): string => 'chat ok');
 });
 

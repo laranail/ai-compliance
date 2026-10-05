@@ -11,6 +11,7 @@ use Simtabi\Laranail\AiCompliance\Enums\ConsentStatus;
 use Simtabi\Laranail\AiCompliance\Payload\BootPayload;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Support\CurrentSubject;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
 
 /**
  * Interactive consent preferences: each toggle writes an append-only record
@@ -35,7 +36,9 @@ final class ConsentPreferences extends Component
 
         app(ConsentManager::class)->record($subject, $type, $consentStatus, 'livewire');
 
-        $this->dispatch('ai-compliance:consent-changed', type: $type, status: $status);
+        // the scoped event, and the deprecated bare one for listeners not yet moved
+        $this->dispatch(RegisteredNames::CONSENT_CHANGED_EVENT, type: $type, status: $status);
+        $this->dispatch(RegisteredNames::LEGACY_CONSENT_CHANGED_EVENT, type: $type, status: $status);
     }
 
     public function render(): View
@@ -50,7 +53,7 @@ final class ConsentPreferences extends Component
         /** @var array<string, mixed> $consent */
         $consent = is_array($payload['consent']) ? $payload['consent'] : [];
 
-        return view('laranail-ai-compliance::livewire.consent-preferences', [
+        return view('laranail/ai-compliance::livewire.consent-preferences', [
             'types'     => is_array($consent['types'] ?? null) ? $consent['types'] : [],
             'state'     => is_array($consent['state'] ?? null) ? $consent['state'] : [],
             'reconsent' => is_array($consent['reconsent'] ?? null) ? $consent['reconsent'] : [],

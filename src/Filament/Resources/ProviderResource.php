@@ -17,6 +17,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
 use Simtabi\Laranail\AiCompliance\Models\Provider;
+use Simtabi\Laranail\AiCompliance\Support\RegisteredNames;
+use Simtabi\Laranail\AiCompliance\Filament\Concerns\RedirectsLegacyResourceSlug;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\EditProvider;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\ListProviders;
 use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\CreateProvider;
@@ -29,6 +31,20 @@ use Simtabi\Laranail\AiCompliance\Filament\Resources\Providers\Pages\CreateProvi
  */
 final class ProviderResource extends Resource
 {
+    // the pre-0.1 slug keeps answering, as a redirect (see RedirectsLegacyResourceSlug)
+    use RedirectsLegacyResourceSlug;
+
+    /**
+     * The pre-0.1 slug, derived by Filament from the class name. Its URLs and route names
+     * redirect to the scoped slug below.
+     *
+     * @deprecated use the `laranail-ai-compliance/providers` slug. Earliest
+     *             removal: the next minor after 0.1.
+     */
+    public const string LEGACY_SLUG = 'providers';
+
+    protected static ?string $slug = RegisteredNames::FILAMENT_SLUG_PREFIX . '/providers';
+
     protected static ?string $model = Provider::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cpu-chip';

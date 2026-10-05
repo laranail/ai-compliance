@@ -134,7 +134,7 @@ it('manages the provider registry with activity logging', function (): void {
 it('toggles feature kill switches and blocks gated routes', function (): void {
     config()->set('laranail.ai-compliance.features', ['chat_assistant' => ['ai_chatbot']]);
 
-    Route::middleware(['web', 'ai.feature:chat_assistant'])
+    Route::middleware(['web', 'laranail-ai-compliance.feature:chat_assistant'])
         ->get('/test-feature', static fn (): string => 'feature on');
 
     $this->getJson('/test-feature')->assertOk();

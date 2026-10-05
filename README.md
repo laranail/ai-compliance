@@ -97,7 +97,7 @@ Full documentation lives at
 
 - [Customizing policies](docs/recipes/customizing-policies.md) — publish and edit the shipped markdown
 - [Translating policies](docs/recipes/translating-policies.md) — add locales and track re-translation work
-- [Gating features by consent](docs/recipes/gating-features-by-consent.md) — allows() and the ai.consent middleware
+- [Gating features by consent](docs/recipes/gating-features-by-consent.md) — allows() and the laranail-ai-compliance.consent middleware
 - [Writing custom checks](docs/recipes/writing-custom-checks.md) — automate your own checklist items
 - [Do-not-train enforcement](docs/recipes/do-not-train-enforcement.md) — consent-aware provider calls
 - [Auditor handover](docs/recipes/auditor-handover.md) — the evidence bundle in four commands

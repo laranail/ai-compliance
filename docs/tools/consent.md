@@ -50,8 +50,12 @@ types that must all be granted; `AiConsent::allows($subject, $feature)` checks
 them. Unlisted features are denied by default. Route-level:
 
 ```php
-Route::middleware('ai.consent:ai_chatbot')->post('/chat', ...);
+Route::middleware('laranail-ai-compliance.consent:ai_chatbot')->post('/chat', ...);
 ```
+
+> `ai.consent` is the deprecated pre-0.1 alias of the same middleware. It still enforces the
+> check, logs one warning per process naming the replacement, and may be removed in the next
+> minor after 0.1.
 
 The middleware resolves the current subject (user, else guest cookie) and 403s
 without the grant. Admin feature toggles and the pennant bridge arrive with
