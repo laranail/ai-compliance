@@ -8,6 +8,7 @@
 /docs                  export-ignore
 /.github               export-ignore
 /.claude               export-ignore
+/.dev                  export-ignore
 /phpunit.xml           export-ignore
 /phpstan.neon          export-ignore
 /pint.json             export-ignore

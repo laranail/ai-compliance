@@ -1,20 +1,34 @@
 name: Release
 
+# A tag push creates the GitHub release and publishes the npm packages to the registry the repository variable
+# PUBLISH_REGISTRY names (npm when unset). A maintainer can publish an existing tag by hand to either registry,
+# which is what .dev/tools/npm-release does:  gh workflow run release.yml -f tag=vX.Y.Z -f registry=github
+# GitHub Packages (npm.pkg.github.com) needs no npm account: the run's own GITHUB_TOKEN publishes.
 on:
   push:
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'An existing release tag to publish, e.g. v0.1.0'
+        required: true
+      registry:
+        description: 'npm (registry.npmjs.org) or github (GitHub Packages)'
+        type: choice
+        options: [npm, github]
+        default: npm
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ inputs.tag || github.ref }}
   cancel-in-progress: false
 
 permissions: {}
 
 jobs:
   npm:
-    name: Publish npm packages (lockstep)
+    name: Publish npm packages (lockstep) to ${{ inputs.registry || vars.PUBLISH_REGISTRY || 'npm' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Gated because npm is not configured yet. All three packages return 404 on
@@ -37,12 +51,24 @@ jobs:
     permissions:
       contents: read
       id-token: write # npm trusted publishing + provenance
+      packages: write # GitHub Packages, with the run's GITHUB_TOKEN
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      TARGET: ${{ inputs.registry || vars.PUBLISH_REGISTRY || 'npm' }}
 
     steps:
+      - name: Check the tag
+        run: |
+          if ! printf '%s' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$TAG' is not a release tag (vX.Y.Z)." >&2
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v7
         with:
           persist-credentials: false
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v7
@@ -63,7 +89,7 @@ jobs:
 
       - name: Stamp the tag version on every workspace (lockstep)
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           # --allow-same-version because v0.1.0 is a moving tag: it is force-pushed on
           # every change, so this workflow re-runs against workspaces already stamped
           # with that version, and `npm version` exits 1 with "Version not changed".
@@ -76,13 +102,56 @@ jobs:
             npm pkg set "dependencies.@laranail/ai-compliance=$version" --workspace "packages/$pkg"
           done
 
-      # trusted publishing: the npm packages are configured with this repo +
-      # workflow as their oidc trusted publisher, so no token secret exists
-      - name: Publish with provenance
-        run: npm publish --provenance --access public --workspaces
+      # GitHub Packages is reached through its own userconfig, so the .npmrc
+      # setup-node wrote for npm is untouched. The three packages move in
+      # lockstep, so the core's version stands for all of them: one the
+      # registry already has is reported, not failed, which also keeps the
+      # moving v0.1.0 tag from failing on every move once it is published.
+      - name: Check whether this version is already published
+        id: published
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '@laranail:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=%s\n' "$GITHUB_TOKEN" > "$RUNNER_TEMP/github-packages.npmrc"
+          name="$(node -p "require('./packages/core/package.json').name")"
+          version="${TAG#v}"
+          if [ "$TARGET" = github ]; then
+            found=$(npm view "$name@$version" version --userconfig "$RUNNER_TEMP/github-packages.npmrc" 2>/dev/null || true)
+            label="GitHub Packages"
+          else
+            found=$(npm view "$name@$version" version 2>/dev/null || true)
+            label=npm
+          fi
+          if [ "$found" = "$version" ]; then
+            echo "already on $label: $name@$version"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # npm: trusted publishing (this repo + workflow are the packages' OIDC
+      # trusted publisher), or an NPM_TOKEN secret when one is set; npm tries
+      # OIDC before a token whenever the job can mint one, so the token route
+      # hides the OIDC variables and loses provenance.
+      # GitHub Packages: the run's own token; it signs no provenance.
+      - name: Publish
+        if: steps.published.outputs.exists != 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ "$TARGET" = github ]; then
+            npm publish --workspaces --userconfig "$RUNNER_TEMP/github-packages.npmrc" --registry https://npm.pkg.github.com --provenance=false
+          elif [ -n "$NPM_TOKEN" ]; then
+            env -u ACTIONS_ID_TOKEN_REQUEST_URL -u ACTIONS_ID_TOKEN_REQUEST_TOKEN \
+              NODE_AUTH_TOKEN="$NPM_TOKEN" npm publish --access public --workspaces --provenance=false
+          else
+            npm publish --provenance --access public --workspaces
+          fi
 
   release:
     name: Publish GitHub release + SBOM
+    # Only for a tag push: publishing an existing tag by hand leaves its release alone.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

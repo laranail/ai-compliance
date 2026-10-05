@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The npm packages publish to npm or GitHub Packages.** `release.yml` takes a
+  `workflow_dispatch` with `tag` and `registry` inputs, publishes to GitHub
+  Packages with the run's own `GITHUB_TOKEN`, follows the `PUBLISH_REGISTRY`
+  variable on a tag push (npm when unset), uses an `NPM_TOKEN` secret instead of
+  trusted publishing when one is set, and reports a version a registry already
+  has instead of failing. A hand-started run leaves the GitHub release alone.
+  `.dev/tools/npm-release github|npm` publishes every missing release; see
+  `docs/release.md`. `.dev/` is export-ignored, so it never reaches the Composer
+  dist.
+
 ### Fixed
 
 - **`tests.yml` no longer skips a markdown-only pull request.** The `pest`
