@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `illuminate/cookie`, `illuminate/database`, `illuminate/notifications`, `illuminate/validation`, `illuminate/view` are now declared in `require` at `^13.0`. `src/` imports them, and they were only arriving transitively.
 - **`ai-compliance.export` resolves its filters with `strOption()`.** The four filter values were
   built as `stringOption('x') !== '' ? stringOption('x') : null`, which is `strOption('x')` written
   out — each one calling the accessor twice. Behaviour is unchanged; the intent is now legible, and
