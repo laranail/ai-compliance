@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Translation\Translator;
 use Simtabi\Laranail\AiCompliance\Enums\PolicyType;
+use Simtabi\Laranail\AiCompliance\Support\Translations;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyCompiler;
 use Simtabi\Laranail\AiCompliance\Consent\ConsentManager;
 use Simtabi\Laranail\AiCompliance\Policy\PolicyRepository;
@@ -187,11 +188,7 @@ final readonly class BootPayload
      */
     private function strings(string $locale): array
     {
-        $strings = $this->translator->get('laranail-ai-compliance::ai-compliance.strings', [], $locale);
-
-        if (! is_array($strings)) {
-            return [];
-        }
+        $strings = Translations::lines('ai-compliance.strings', $locale, $this->translator);
 
         $flat = [];
 
@@ -259,10 +256,9 @@ final readonly class BootPayload
 
     private function translate(string $key, string $locale): ?string
     {
-        $fullKey = 'laranail-ai-compliance::ai-compliance.' . $key;
-        $translated = $this->translator->get($fullKey, [], $locale);
+        $translated = Translations::get('ai-compliance.' . $key, [], $locale, $this->translator);
 
-        return is_string($translated) && $translated !== $fullKey ? $translated : null;
+        return $translated !== Translations::key('ai-compliance.' . $key) ? $translated : null;
     }
 
     private function appLocale(): string

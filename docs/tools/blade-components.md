@@ -89,7 +89,11 @@ hyphen (`<x-laranail-ai-compliance::disclosure />`), because a tag cannot contai
 ## Strings
 
 Every visible string comes from `resources/lang/{locale}/ai-compliance.php`
-(`strings.*`, nested), publishable via the translations tag.
+(`strings.*`, nested), publishable via the translations tag. The package reads them through
+`laranail/ai-compliance::` (`__('laranail/ai-compliance::ai-compliance.strings.disclosure.badge')`),
+so a published override in `lang/vendor/laranail/ai-compliance/` takes effect.
+`laranail-ai-compliance::` resolves the same lines, and an override made against it still
+applies unless the slash namespace overrides the same line.
 
 ## See also
 

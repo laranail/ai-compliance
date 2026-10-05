@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\AiCompliance\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Simtabi\Laranail\AiCompliance\Support\Translations;
 
 final class ProviderDueDiligenceLapsedNotification extends Notification
 {
@@ -24,7 +25,7 @@ final class ProviderDueDiligenceLapsedNotification extends Notification
     public function toMail(): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('laranail-ai-compliance::ai-compliance.notifications.due_diligence_subject'))
+            ->subject(Translations::get('ai-compliance.notifications.due_diligence_subject'))
             ->line($this->message);
     }
 }
