@@ -64,6 +64,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- A guard now keeps literal credentials out of the tests, and every credential generated with
+  `TestCredentials` named with a single word, so secret scanning has nothing to report.
+  `laranail/package-tools` is raised to `^0.1.10`, which ships the purpose check.
+
 - `illuminate/cookie`, `illuminate/database`, `illuminate/notifications`, `illuminate/validation`, `illuminate/view` are now declared in `require` at `^13.0`. `src/` imports them, and they were only arriving transitively.
 - **`ai-compliance.export` resolves its filters with `strOption()`.** The four filter values were
   built as `stringOption('x') !== '' ? stringOption('x') : null`, which is `strOption('x')` written
