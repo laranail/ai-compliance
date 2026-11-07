@@ -1,8 +1,11 @@
 name: Release
 
-# A tag push creates the GitHub release and publishes the npm packages to the registry the repository variable
-# PUBLISH_REGISTRY names (npm when unset). A maintainer can publish an existing tag by hand to either registry,
-# which is what .dev/tools/npm-release does:  gh workflow run release.yml -f tag=vX.Y.Z -f registry=github
+# A tag push creates the GitHub release, and nothing else. The npm packages are NEVER published from a tag,
+# because v0.1.0 is a moving tag and a published registry version is immutable: the first push publishes, every
+# later move finds the version present and skips, and the registry freezes while the tag goes on moving. That is
+# what happened here -- GitHub Packages holds @laranail/ai-compliance@0.1.0 from one of the early tag pushes.
+# So the npm packages carry their OWN version in their manifests and are published by hand:
+#     gh workflow run release.yml -f tag=vX.Y.Z -f registry=github      (or .dev/tools/npm-release)
 # GitHub Packages (npm.pkg.github.com) needs no npm account: the run's own GITHUB_TOKEN publishes.
 on:
   push:
@@ -31,22 +34,15 @@ jobs:
     name: Publish npm packages (lockstep) to ${{ inputs.registry || vars.PUBLISH_REGISTRY || 'npm' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Gated because npm is not configured yet. All three packages return 404 on
-    # the registry, and `npm publish` answers E404 on the PUT -- npm's reply when
-    # the scope has no trusted publisher for this workflow, rather than 403,
-    # since it will not confirm whether a package exists. On a moving tag that
-    # failure repeats on every push, and a permanently red release is one nobody
-    # reads: the GitHub-release half of this workflow was broken for weeks behind
-    # exactly that kind of noise.
+    # workflow_dispatch ONLY. A tag push must never reach this job: v0.1.0 moves, a registry version does not,
+    # so an automatic publish can only ever fire once and then skip in silence for good. Publishing is a decision
+    # a maintainer takes, on a version the manifests name -- see the header.
     #
-    # To enable: configure npm trusted publishing for @laranail/ai-compliance,
-    # -react and -vue against this repository and workflow, then
+    # NPM_PUBLISH_ENABLED stays as a second switch, so the job can be turned off without editing the workflow.
+    # A repository variable, not the secret itself: the secrets context is not available in a job-level `if`.
     #
     #     gh variable set NPM_PUBLISH_ENABLED --body true --repo laranail/ai-compliance
-    #
-    # A repository variable, not the secret itself: the secrets context is not
-    # available in a job-level `if`.
-    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && vars.NPM_PUBLISH_ENABLED == 'true' }}
     environment: npm
     permissions:
       contents: read
@@ -87,26 +83,23 @@ jobs:
       - name: Vitest
         run: npx vitest run
 
-      - name: Stamp the tag version on every workspace (lockstep)
+      # The version published is the one in the manifests, NOT the one in the tag. Deriving it from the tag is
+      # what froze this package: the tag is permanently v0.1.0, so every release would be 0.1.0 for ever. The
+      # three packages still move in lockstep with each other -- the core's manifest version is the release.
+      - name: Pin the bindings to the core's version (lockstep)
         run: |
-          version="${TAG#v}"
-          # --allow-same-version because v0.1.0 is a moving tag: it is force-pushed on
-          # every change, so this workflow re-runs against workspaces already stamped
-          # with that version, and `npm version` exits 1 with "Version not changed".
-          # That turned every routine tag move into a failed publish job.
-          for pkg in core react vue; do
-            npm version "$version" --no-git-tag-version --allow-same-version --workspace "packages/$pkg"
-          done
-          # the bindings depend on the core at the same version
+          version="$(node -p "require('./packages/core/package.json').version")"
           for pkg in react vue; do
             npm pkg set "dependencies.@laranail/ai-compliance=$version" --workspace "packages/$pkg"
           done
+          echo "publishing @laranail/ai-compliance and bindings at $version (from the manifests)"
+          test "$version" != "${TAG#v}" || echo "::warning::the manifest version equals the tag's; bump the manifests before publishing a release"
 
-      # GitHub Packages is reached through its own userconfig, so the .npmrc
-      # setup-node wrote for npm is untouched. The three packages move in
-      # lockstep, so the core's version stands for all of them: one the
-      # registry already has is reported, not failed, which also keeps the
-      # moving v0.1.0 tag from failing on every move once it is published.
+
+      # GitHub Packages is reached through its own userconfig, so the .npmrc setup-node wrote for npm is
+      # untouched. The three packages move in lockstep, so the core's version stands for all of them. A version
+      # the registry already has is reported rather than failed, so a re-run after a partial publish is safe --
+      # but it is reported as a WARNING, because a run that published nothing must not read as a clean release.
       - name: Check whether this version is already published
         id: published
         env:
@@ -114,7 +107,7 @@ jobs:
         run: |
           printf '@laranail:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=%s\n' "$GITHUB_TOKEN" > "$RUNNER_TEMP/github-packages.npmrc"
           name="$(node -p "require('./packages/core/package.json').name")"
-          version="${TAG#v}"
+          version="$(node -p "require('./packages/core/package.json').version")"
           if [ "$TARGET" = github ]; then
             found=$(npm view "$name@$version" version --userconfig "$RUNNER_TEMP/github-packages.npmrc" 2>/dev/null || true)
             label="GitHub Packages"
@@ -123,6 +116,7 @@ jobs:
             label=npm
           fi
           if [ "$found" = "$version" ]; then
+            echo "::warning::$label already has $name@$version -- nothing was published; a registry version is immutable, so bump the manifests to release new code."
             echo "already on $label: $name@$version"
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
