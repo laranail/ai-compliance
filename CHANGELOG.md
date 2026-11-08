@@ -12,9 +12,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The npm packages publish to npm or GitHub Packages.** `release.yml` takes a
   `workflow_dispatch` with `tag` and `registry` inputs, publishes to GitHub
   Packages with the run's own `GITHUB_TOKEN`, follows the `PUBLISH_REGISTRY`
-  variable on a tag push (npm when unset), uses an `NPM_TOKEN` secret instead of
-  trusted publishing when one is set, and reports a version a registry already
-  has instead of failing. A hand-started run leaves the GitHub release alone.
+  variable (npm when unset), and uses an `NPM_TOKEN` secret instead of trusted
+  publishing when one is set. A hand-started run leaves the GitHub release alone.
+
+### Changed
+
+- **The npm packages are never published from a tag push, and version
+  independently of the Composer package.** A published registry version is
+  immutable, so it cannot follow `v0.1.0`, which this family moves on every
+  change: the first tag push published and every later one found the version
+  already there and skipped, so the registry froze while the tag moved on.
+  GitHub Packages holds `@laranail/ai-compliance@0.1.0` from an early push for
+  that reason, and every run reported success. The publish job is now
+  `workflow_dispatch` only, the version published is the one in
+  `packages/*/package.json` rather than the one in the tag, a run that publishes
+  nothing says so as a warning instead of passing quietly, and
+  `tests/Feature/ReleaseWorkflowTest.php` fails if any of that is undone. The
+  manifests move to `0.1.1`, since `0.1.0` is spent. A tag push still creates
+  the GitHub release, which is the half that should be automatic.
   `.dev/tools/npm-release github|npm` publishes every missing release; see
   `docs/release.md`. `.dev/` is export-ignored, so it never reaches the Composer
   dist.

@@ -1,6 +1,6 @@
 {
   "name": "@laranail/ai-compliance",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic client for the laranail/ai-compliance boot contract: consent state, policy documents, disclosures, and the <ai-c> island hydrator.",
   "license": "MIT",
   "homepage": "https://opensource.simtabi.com/documentation/laranail/ai-compliance/",

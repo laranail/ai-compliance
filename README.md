@@ -17,8 +17,13 @@ composer require laranail/ai-compliance
 php artisan laranail::ai-compliance.install
 ```
 
-The npm bindings for React/Vue apps ship in lockstep:
+The npm bindings for React/Vue apps ship in lockstep with each other:
 `npm install @laranail/ai-compliance-react` (or `-vue`, or the framework-agnostic core).
+**They version independently of the Composer package**, which is on a moving
+`v0.1.0` tag: a published registry version is immutable and cannot follow a tag
+that moves, so the npm packages carry their own version and are released by hand
+(see [docs/release.md](docs/release.md)). GitHub Packages currently holds
+`0.1.0`, published from that moving tag before the two were separated.
 They are published to GitHub Packages, not npm, which asks for a token even for
 a public package, so first add a GitHub token with `read:packages` to the
 project's `.npmrc`:
